@@ -13,6 +13,9 @@ export const metadata: Metadata = {
     title: "Never miss a follow-up | CircleBack.to",
     description:
         "Capture conversations, track context, and never let them go cold.",
+    icons: {
+        icon: "/logo.svg",
+    },
 };
 
 export default function RootLayout({
