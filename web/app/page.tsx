@@ -6,6 +6,7 @@ export default function Home() {
             {/* top nav */}
             <div className="absolute top-4 left-6 flex items-center gap-2 text-sm text-red">
                 <Image
+                    className="w-6 h-6"
                     src="/logo.svg"
                     alt="CircleBack logo"
                     width={24}
@@ -13,7 +14,7 @@ export default function Home() {
                     priority
                 />
                 <span className="tracking-tight font-medium text-lg">
-                    CircleBack.to
+                    CircleBack
                 </span>
             </div>
 

@@ -17,7 +17,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "Never miss a follow-up | CircleBack.to",
+    title: "Never miss a follow-up | CircleBack",
     description:
         "Capture conversations, track context, and never let them go cold.",
     icons: {
