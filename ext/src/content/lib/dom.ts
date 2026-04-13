@@ -1,5 +1,5 @@
 export function queryAllDeep(selector: string, root = document) {
-    const results: Element[] = [];
+    const results: HTMLElement[] = [];
 
     function traverse(node: any) {
         if (!node) return;
@@ -19,4 +19,17 @@ export function queryAllDeep(selector: string, root = document) {
 
     traverse(root);
     return results;
+}
+
+export function isVisible(el: Element | null): boolean {
+    if (!el) return false;
+
+    const rect = el.getBoundingClientRect();
+
+    return (
+        rect.width > 0 &&
+        rect.height > 0 &&
+        window.getComputedStyle(el).visibility !== "hidden" &&
+        window.getComputedStyle(el).display !== "none"
+    );
 }

@@ -1,14 +1,21 @@
 import { useEffect, useState } from "react";
 
-import "@/content/views/App.css";
-import { observeActiveRedditDM } from "@/content/reddit/dm";
+import {
+    injectAndReturnSaveButtonContainers,
+    observeActiveRedditDM,
+} from "@/content/reddit/dm";
+import { mount } from "@/content/lib/react";
+import { SaveButton } from "@/components/SaveButton";
 
 function App() {
     const [show, setShow] = useState(false);
     const toggle = () => setShow(!show);
 
     const [active, setActive] = useState<null | string>(null);
+    const [isReady, setIsReady] = useState(false);
 
+    // Keep track of the active chat's username.
+    // This will track for both, the pop up and reddit.com/chat/room/...
     useEffect(() => {
         const cleanup = observeActiveRedditDM((username) => {
             setActive(username);
@@ -17,19 +24,32 @@ function App() {
         return cleanup;
     }, []);
 
+    // Whenever the active chat's username changes, inject the <SaveButton />.
+    useEffect(() => {
+        setIsReady(false);
+
+        if (!active) return;
+
+        const containers = injectAndReturnSaveButtonContainers();
+        containers.forEach((el) => {
+            mount(el, SaveButton);
+        });
+
+        setIsReady(true);
+    }, [active]);
+
     return (
         <div className="popup-container">
             {show && (
                 <div
                     className={`popup-content ${show ? "opacity-100" : "opacity-0"}`}
                 >
-                    <h1>This is from CircleBack</h1>
-                    <span>Active: {active}</span>
+                    {!active ? "Open any chat" : `Current chat: ${active}`}
                 </div>
             )}
 
             <button
-                className="toggle-button flex items-center justify-center bg-red-400!"
+                className={`toggle-button ${isReady ? "btn-primary" : ""}`}
                 onClick={toggle}
             ></button>
         </div>

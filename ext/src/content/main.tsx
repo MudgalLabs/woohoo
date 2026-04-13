@@ -1,6 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./views/App.tsx";
+
+import "@/content/views/App.css";
+import App from "@/content/views/App.tsx";
 
 const container = document.createElement("div");
 container.id = "circleback-app";

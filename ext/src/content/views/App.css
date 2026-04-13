@@ -1,7 +1,7 @@
 .popup-container {
     position: fixed;
     right: 0;
-    bottom: 0;
+    top: 48px;
     margin: 1.25rem;
     z-index: 100;
     display: flex;
@@ -26,19 +26,22 @@
 }
 
 .toggle-button {
-    width: 2.5rem;
-    height: 2.5rem;
+    display: flex;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
     border-radius: 9999px;
     box-shadow:
         0 1px 3px 0 rgb(0 0 0 / 0.1),
         0 1px 2px -1px rgb(0 0 0 / 0.1);
     cursor: pointer;
     border: none;
-    background-color: #288cd7;
+    background-color: var(--rule);
 }
 
 .toggle-button:hover {
-    background-color: #1e6aa3;
+    background-color: var(--rule-dark);
+    transition: 200ms;
 }
 
 .button-icon {
@@ -51,4 +54,56 @@
 
 .opacity-0 {
     opacity: 0;
+}
+
+:root {
+    /* ===== Core tokens (unchanged) ===== */
+    --paper: #f5f0e8;
+    --paper-dark: #e3d8c2;
+
+    --ink: #1a1410;
+    --ink-light: #4a4035;
+    --ink-muted: #635a4a;
+
+    --red: #c0392b;
+    --red-dark: #962d22;
+
+    --rule: #c8bfb0;
+    --rule-dark: #9a9080;
+
+    --success: #4a7c59;
+    --warning: #b8860b;
+
+    --body: "IBM Plex Sans", sans-serif;
+    /* keep same for simplicity */
+    --serif: "IBM Plex Sans", sans-serif;
+    --mono: "JetBrains Mono", monospace;
+}
+
+.dark {
+    --paper: #16120f;
+    --paper-dark: #1f1a16;
+
+    --ink: #f3ede6;
+    --ink-light: #cfc6bb;
+    --ink-muted: #a89f93;
+
+    --rule: #2a241f;
+    --rule-dark: #3a332c;
+
+    --red: #d25545;
+    --red-dark: #a63f32;
+
+    --success: #5c8f6b;
+    --warning: #d4a017;
+}
+
+.btn-primary {
+    background-color: var(--red);
+    color: var(--paper);
+}
+
+.btn-primary:hover {
+    background-color: var(--red-dark);
+    transition-duration: 200ms;
 }
