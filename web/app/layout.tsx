@@ -2,11 +2,18 @@ import type { Metadata } from "next";
 
 import "./globals.css";
 
-import { IBM_Plex_Sans } from "next/font/google";
+import { IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
 
 const plex = IBM_Plex_Sans({
     subsets: ["latin"],
     weight: ["400", "500", "600"],
+    variable: "--font-sans",
+});
+
+const mono = JetBrains_Mono({
+    subsets: ["latin"],
+    weight: ["400", "500"],
+    variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
@@ -24,7 +31,10 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en" className={`${plex.className} h-full antialiased`}>
+        <html
+            lang="en"
+            className={`${plex.variable} ${mono.variable} h-full antialiased`}
+        >
             <body className="min-h-full flex flex-col">{children}</body>
         </html>
     );
