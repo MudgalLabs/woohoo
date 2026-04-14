@@ -4,8 +4,8 @@ import {
     injectAndReturnSaveButtonContainers,
     observeActiveRedditDM,
 } from "@/content/reddit/dm";
-import { mount } from "@/content/lib/react";
 import { SaveButton } from "@/components/SaveButton";
+import { mountWithShadow } from "../lib/react";
 
 function App() {
     const [show, setShow] = useState(false);
@@ -31,8 +31,15 @@ function App() {
         if (!active) return;
 
         const containers = injectAndReturnSaveButtonContainers();
-        containers.forEach((el) => {
-            mount(el, SaveButton);
+
+        // TODO: id = message/comment ID.
+        containers.forEach((container) => {
+            // already mounted
+            if (container.element.shadowRoot) return;
+
+            mountWithShadow(container.element, SaveButton, {
+                message: container.message,
+            });
         });
 
         setIsReady(true);
