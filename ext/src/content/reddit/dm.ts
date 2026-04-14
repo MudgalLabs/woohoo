@@ -6,6 +6,7 @@ import {
     queryAllDeep,
     withLineBreaks,
 } from "@/content/lib/dom";
+import { getActive } from "@/content/store/activeSaveButton";
 
 export function isChatPopupOpen(): boolean {
     const chatClient = queryAllDeep('[data-testid="reddit-chat-client"]')[0];
@@ -91,22 +92,23 @@ export function injectAndReturnSaveButtonContainers(): SaveButtonContainer[] {
 
         prevMessage = message;
 
-        console.log({ message });
-
         parent.style.position = "relative";
         parent.style.paddingBottom = "20px";
 
+        const inactiveOpacity = "0.3";
         let timeout: any;
 
         parent.addEventListener("mouseenter", () => {
             clearTimeout(timeout);
-            // container.style.opacity = "1";
+            element.style.opacity = "1";
             element.style.transform = "translateY(0) scale(1)";
         });
 
         parent.addEventListener("mouseleave", () => {
             timeout = setTimeout(() => {
-                // container.style.opacity = "0";
+                if (getActive() === message.id) return;
+
+                element.style.opacity = inactiveOpacity;
                 element.style.transform = "translateY(4px) scale(0.96)";
             }, 80);
         });
@@ -118,7 +120,7 @@ export function injectAndReturnSaveButtonContainers(): SaveButtonContainer[] {
         element.style.right = "0px";
         element.style.bottom = "0px";
         element.style.zIndex = "10";
-        // container.style.opacity = "0";
+        element.style.opacity = inactiveOpacity;
         element.style.transform = "translateY(4px) scale(0.96)";
         element.style.transition =
             "opacity 160ms ease, transform 160ms cubic-bezier(0.2, 0, 0, 1)";

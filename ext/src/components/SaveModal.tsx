@@ -1,70 +1,76 @@
 import { useState } from "react";
+import { SquareArrowOutUpRight } from "lucide-react";
 
 import { Message } from "@/content/reddit/dm";
+import { Branding } from "@/components/Branding";
 
 interface SaveModalProps {
     message: Message;
+    isSaved: boolean;
 }
 
-export function SaveModal({ message }: SaveModalProps) {
-    const [expanded, setExpanded] = useState(false);
+export function SaveModal(props: SaveModalProps) {
+    const { message, isSaved } = props;
+    const [askedForConfirmation, setAskedForConfirmation] = useState(false);
 
-    const previewText = getPreviewText(message.contentText);
+    const handleRemove = () => {
+        // Before removing, ask user to confirm.
+        if (!askedForConfirmation) {
+            setAskedForConfirmation(true);
+            return;
+        }
+    };
+
+    // const previewText = getPreviewText(message.contentText);
 
     return (
-        <div style={{ width: 260 }}>
-            {/* Header */}
-            <div style={{ fontSize: 12, color: "#6b5f50", marginBottom: 6 }}>
-                <strong>{message.username || "Unknown"}</strong>
+        <div className="cb-modal">
+            <div className="flex-y cb-modal-header" style={{ rowGap: 0 }}>
+                <h2 className="cb-modal-title">
+                    {isSaved ? "Update" : "Save"} message
+                </h2>
+
+                {isSaved ? (
+                    <a
+                        href="https://cirleback.to/conversation/69"
+                        className="flex-x"
+                        style={{ fontWeight: 500, columnGap: 2 }}
+                    >
+                        Show in CircleBack
+                        <SquareArrowOutUpRight size={12} strokeWidth={2.5} />
+                    </a>
+                ) : null}
             </div>
 
-            {/* Content */}
-            {!expanded ? (
-                <div
-                    style={{
-                        fontSize: 13,
-                        color: "#1a1410",
-                        lineHeight: 1.4,
-                    }}
-                >
-                    {previewText}
-                </div>
-            ) : (
-                <div
-                    style={{
-                        fontSize: 13,
-                        color: "#1a1410",
-                        lineHeight: 1.5,
-                    }}
-                    dangerouslySetInnerHTML={{
-                        __html: message.contentHTML,
-                    }}
-                />
-            )}
+            <div className="cb-modal-footer">
+                {isSaved ? (
+                    <div className="flex-x">
+                        <button
+                            className="btn btn-secondary"
+                            onClick={handleRemove}
+                        >
+                            {askedForConfirmation ? "Sure?" : "Remove"}
+                        </button>
 
-            {/* Expand */}
-            {message.contentText.length > 140 && (
-                <button
-                    onClick={() => setExpanded((v) => !v)}
-                    style={{
-                        marginTop: 6,
-                        fontSize: 12,
-                        color: "#8a7f72",
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        padding: 0,
-                    }}
-                >
-                    {expanded ? "Show less" : "View more"}
-                </button>
-            )}
+                        {askedForConfirmation ? (
+                            <button className="btn btn-primary">Cancel</button>
+                        ) : (
+                            <button className="btn btn-primary">Update</button>
+                        )}
+                    </div>
+                ) : (
+                    <button className="btn btn-primary">Save</button>
+                )}
+            </div>
         </div>
     );
 }
 
-function getPreviewText(text: string, maxChars = 140) {
+function getPreviewText(text: string, maxChars = 160) {
     if (text.length <= maxChars) return text;
 
-    return text.slice(0, maxChars).trim() + "...";
+    const trimmed = text.slice(0, maxChars);
+    const lastSpace = trimmed.lastIndexOf(" ");
+
+    return trimmed.slice(0, lastSpace) + "...";
 }

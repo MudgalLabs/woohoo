@@ -5,19 +5,21 @@ import {
     observeActiveRedditDM,
 } from "@/content/reddit/dm";
 import { SaveButton } from "@/components/SaveButton";
-import { mountWithShadow } from "../lib/react";
+import { mountWithShadow } from "@/content/lib/react";
+import { setActive } from "@/content/store/activeSaveButton";
 
 function App() {
     const [show, setShow] = useState(false);
     const toggle = () => setShow(!show);
 
-    const [active, setActive] = useState<null | string>(null);
+    const [peer, setPeer] = useState<null | string>(null);
     const [isReady, setIsReady] = useState(false);
 
     // Keep track of the active chat's username.
     // This will track for both, the pop up and reddit.com/chat/room/...
     useEffect(() => {
         const cleanup = observeActiveRedditDM((username) => {
+            setPeer(username);
             setActive(username);
         });
 
@@ -28,22 +30,23 @@ function App() {
     useEffect(() => {
         setIsReady(false);
 
-        if (!active) return;
+        if (!peer) return;
 
         const containers = injectAndReturnSaveButtonContainers();
 
         // TODO: id = message/comment ID.
-        containers.forEach((container) => {
+        containers.forEach((container, i) => {
             // already mounted
             if (container.element.shadowRoot) return;
 
             mountWithShadow(container.element, SaveButton, {
                 message: container.message,
+                isSaved: i % 2, // FOR TESTING.
             });
         });
 
         setIsReady(true);
-    }, [active]);
+    }, [peer]);
 
     return (
         <div className="popup-container">
@@ -51,7 +54,7 @@ function App() {
                 <div
                     className={`popup-content ${show ? "opacity-100" : "opacity-0"}`}
                 >
-                    {!active ? "Open any chat" : `Current chat: ${active}`}
+                    {!peer ? "Open any chat" : `Current chat: ${peer}`}
                 </div>
             )}
 
