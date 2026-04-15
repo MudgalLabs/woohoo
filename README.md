@@ -1,5 +1,20 @@
+<div align="center">
+  <img src="./.github/screenshots/banner.png" alt="arthveda banner" />
+
+Capture the moments that matter.
+
+[Website](https://woohoo.to) | [App](https:/woohoo.to/dashboard)
+
+</div>
+
 # Woohoo
 
-Never miss a follow-up.
+Arthveda allows peopls to save comments, replies, and DMs that are worth following up on — without losing them to the scroll.
 
-Capture conversations, track context, and never let them go cold.
+## 📜 License
+
+[AGPL v3](LICENSE)
+
+<p align="center">
+  Built with 💙️ by <a href="https://mudgallabs.com" target="_blank">Mudgal Labs</a>
+</p>
