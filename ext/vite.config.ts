@@ -6,6 +6,7 @@ import zip from "vite-plugin-zip-pack";
 import manifest from "./manifest.config.js";
 
 export default defineConfig({
+    envDir: path.resolve(__dirname, ".."),
     resolve: {
         alias: {
             "@": `${path.resolve(__dirname, "src")}`,

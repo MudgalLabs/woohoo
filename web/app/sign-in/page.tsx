@@ -1,4 +1,4 @@
-import SignInForm from "@/app/sign-in/sign-in-form";
+import SignInForm from "@/app/sign-in/SignInForm";
 
 export default function Page() {
     return <SignInForm />;

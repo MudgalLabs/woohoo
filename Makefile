@@ -2,7 +2,11 @@
 
 SESSION_NAME=woohoo
 
+up:
+	docker compose up -d db
+
 dev:
+	$(MAKE) up
 	@if tmux has-session -t $(SESSION_NAME) 2>/dev/null; then \
 		tmux attach -t $(SESSION_NAME); \
 	else \

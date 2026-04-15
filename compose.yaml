@@ -11,7 +11,6 @@ services:
             - 42070:42070
         networks:
             - woohoo_network
-            - caddy_net
         volumes:
             - ./volumes/db_data:/var/lib/postgresql/data
         restart: unless-stopped
@@ -24,6 +23,51 @@ services:
             interval: 10s
             timeout: 5s
             retries: 5
+
+    migrate:
+        container_name: woohoo_migrate
+        build:
+            context: ./web
+            dockerfile: Dockerfile
+        image: woohoo_web:latest
+        command:
+            [
+                "node",
+                "/app/node_modules/prisma/build/index.js",
+                "migrate",
+                "deploy",
+            ]
+        environment:
+            DATABASE_URL: postgres://${WOOHOO_DB_USER}:${WOOHOO_DB_PASSWORD}@db:42070/${WOOHOO_DB_NAME}?sslmode=disable
+        depends_on:
+            db:
+                condition: service_healthy
+        networks:
+            - woohoo_network
+        restart: "no"
+
+    web:
+        container_name: woohoo_web
+        build:
+            context: ./web
+        image: woohoo_web:latest
+        ports:
+            - 3000:3000
+        env_file: .env
+        environment:
+            NODE_ENV: production
+            PORT: 3000
+            HOSTNAME: 0.0.0.0
+            DATABASE_URL: postgres://${WOOHOO_DB_USER}:${WOOHOO_DB_PASSWORD}@db:42070/${WOOHOO_DB_NAME}?sslmode=disable
+        depends_on:
+            db:
+                condition: service_healthy
+            migrate:
+                condition: service_completed_successfully
+        networks:
+            - woohoo_network
+            - caddy_net
+        restart: unless-stopped
 
 networks:
     woohoo_network:

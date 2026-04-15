@@ -1,0 +1,13 @@
+node_modules
+.next
+.open-next
+.wrangler
+.env
+.env.*
+.git
+.gitignore
+Dockerfile
+.dockerignore
+npm-debug.log*
+volumes
+README.md

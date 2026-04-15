@@ -9,21 +9,20 @@ import { Button } from "@/components/ui/button";
 import { AuthLayout } from "@/app/components/auth/AuthLayout";
 import { Field } from "@/app/components/auth/Field";
 
-export default function SignUpForm() {
+export default function SignInForm() {
     const router = useRouter();
 
-    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    async function handleSignUp(e: React.FormEvent) {
+    async function handleSignIn(e: React.FormEvent) {
         e.preventDefault();
         setError(null);
         setLoading(true);
 
-        const res = await authClient.signUp.email({ name, email, password });
+        const res = await authClient.signIn.email({ email, password });
 
         setLoading(false);
 
@@ -37,31 +36,21 @@ export default function SignUpForm() {
 
     return (
         <AuthLayout
-            title="Create your account"
-            subtitle="Start saving the moments worth keeping."
+            title="Welcome back"
+            subtitle="Sign in to pick up where you left off."
             footer={
                 <>
-                    Already have an account?{" "}
+                    New here?{" "}
                     <Link
-                        href="/sign-in"
+                        href="/sign-up"
                         className="font-medium text-primary hover:underline"
                     >
-                        Sign in
+                        Create an account
                     </Link>
                 </>
             }
         >
-            <form onSubmit={handleSignUp} className="space-y-4">
-                <Field
-                    label="Name"
-                    name="name"
-                    autoComplete="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Your name"
-                    autoFocus
-                    required
-                />
+            <form onSubmit={handleSignIn} className="space-y-4">
                 <Field
                     label="Email"
                     name="email"
@@ -70,23 +59,21 @@ export default function SignUpForm() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
+                    autoFocus
                     required
                 />
                 <Field
                     label="Password"
                     name="password"
                     type="password"
-                    autoComplete="new-password"
+                    autoComplete="current-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="At least 8 characters"
-                    minLength={8}
+                    placeholder="••••••••"
                     required
                 />
 
-                {error && (
-                    <p className="text-sm text-destructive">{error}</p>
-                )}
+                {error && <p className="text-sm text-destructive">{error}</p>}
 
                 <Button
                     type="submit"
@@ -94,7 +81,7 @@ export default function SignUpForm() {
                     size="lg"
                     disabled={loading}
                 >
-                    {loading ? "Creating account…" : "Create account"}
+                    {loading ? "Signing in…" : "Sign in"}
                 </Button>
             </form>
         </AuthLayout>

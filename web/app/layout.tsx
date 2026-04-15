@@ -9,7 +9,7 @@ const sans = IBM_Plex_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
 const logo = Fredoka({
     subsets: ["latin"],
-    weight: ["400", "500", "700"],
+    weight: ["600"],
     variable: "--font-logo",
 });
 

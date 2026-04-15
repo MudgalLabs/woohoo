@@ -1,29 +1,11 @@
 @import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-    --paper: #f5f0e8;
-    --paper-dark: #ede7db;
-
-    --ink: #1a1410;
-    --ink-light: #4a4035;
-    --ink-muted: #635a4a;
-
-    --red: #c0392b;
-    --red-dark: #962d22;
-
-    --rule: #c8bfb0;
-    --rule-dark: #9a9080;
-
-    --success: #4a7c59;
-    --warning: #b8860b;
-
     --background: oklch(0.9568 0.0119 79.7842);
     --foreground: oklch(0.1972 0.0126 55.5458);
-    --card: oklch(0.9294 0.0173 84.588);
+    --card: oklch(0.945 0.012 80);
     --card-foreground: oklch(0.1972 0.0126 55.5458);
     --popover: oklch(0.9568 0.0119 79.7842);
     --popover-foreground: oklch(0.1972 0.0126 55.5458);
@@ -31,7 +13,7 @@
     --primary-foreground: oklch(0.9568 0.0119 79.7842);
     --secondary: oklch(0.4143 0.0474 63.439);
     --secondary-foreground: oklch(0.9568 0.0119 79.7842);
-    --muted: oklch(0.9294 0.0173 84.588);
+    --muted: oklch(0.915 0.015 82);
     --muted-foreground: oklch(0.4715 0.0274 81.982);
     --accent: oklch(0.8369 0.0309 73.8461);
     --accent-foreground: oklch(0.1972 0.0126 55.5458);
@@ -56,14 +38,13 @@
     --font-sans: "IBM Plex Sans", sans-serif;
     --font-serif: "IBM Plex Sans", sans-serif;
     --font-mono: "JetBrains Mono", monospace;
-    --font-logo: "Fredoka", "Nunito", sans-serif;
     --radius: 0.375rem;
     --shadow-x: 0;
     --shadow-y: 1px;
     --shadow-blur: 3px;
     --shadow-spread: 0px;
     --shadow-opacity: 0.1;
-    --shadow-color: oklch(0 0 0);
+    --shadow-color: #000000;
     --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-sm:
@@ -84,7 +65,7 @@
 .dark {
     --background: oklch(0.186 0.0089 59.0606);
     --foreground: oklch(0.9488 0.0114 71.8971);
-    --card: oklch(0.2222 0.011 60.8669);
+    --card: oklch(0.24 0.01 60);
     --card-foreground: oklch(0.9488 0.0114 71.8971);
     --popover: oklch(0.2222 0.011 60.8669);
     --popover-foreground: oklch(0.9488 0.0114 71.8971);
@@ -92,7 +73,7 @@
     --primary-foreground: oklch(0.186 0.0089 59.0606);
     --secondary: oklch(0.4143 0.0474 63.439);
     --secondary-foreground: oklch(0.9488 0.0114 71.8971);
-    --muted: oklch(0.2222 0.011 60.8669);
+    --muted: oklch(0.28 0.012 60);
     --muted-foreground: oklch(0.7067 0.0201 75.2556);
     --accent: oklch(0.362 0.0312 60.6807);
     --accent-foreground: oklch(0.9488 0.0114 71.8971);
@@ -117,14 +98,13 @@
     --font-sans: "IBM Plex Sans", sans-serif;
     --font-serif: "IBM Plex Sans", sans-serif;
     --font-mono: "JetBrains Mono", monospace;
-    --font-logo: "Fredoka", "Nunito", sans-serif;
     --radius: 0.375rem;
     --shadow-x: 0;
     --shadow-y: 1px;
     --shadow-blur: 3px;
     --shadow-spread: 0px;
     --shadow-opacity: 0.1;
-    --shadow-color: oklch(0 0 0);
+    --shadow-color: #000000;
     --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-sm:
@@ -175,9 +155,8 @@
     --color-sidebar-ring: var(--sidebar-ring);
 
     --font-sans: var(--font-sans);
-    --font-serif: var(--font-serif);
     --font-mono: var(--font-mono);
-    --font-logo: var(--font-logo);
+    --font-serif: var(--font-serif);
 
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
@@ -204,9 +183,6 @@
 }
 
 /* ===== Global base ===== */
-* {
-    border-color: var(--rule);
-}
 
 ::selection {
     background: var(--red);
@@ -216,37 +192,4 @@
 .dark ::selection {
     background: var(--red);
     color: var(--paper);
-}
-
-/* ===== Typography ===== */
-h1,
-h2,
-h3 {
-    font-family: var(--serif);
-    letter-spacing: -0.01em;
-}
-
-/* ===== Utility classes (light touch) ===== */
-
-/* Meta / secondary text */
-.text-meta {
-    color: var(--ink-muted);
-}
-
-/* Subtle text */
-.text-soft {
-    color: var(--ink-light);
-}
-
-/* Divider */
-.divider {
-    border-bottom: 1px solid var(--rule);
-}
-
-/* Accent interactions */
-a {
-    color: var(--red);
-}
-a:hover {
-    color: var(--red-dark);
 }

@@ -20,7 +20,10 @@ export function Hero() {
                 <Link href="/sign-up">
                     <Button size="lg" className="group h-12 px-7 text-base">
                         Start for free
-                        <ArrowRight className="ml-1 transition-transform duration-200 group-hover:translate-x-1" />
+                        <ArrowRight
+                            className="ml-1 transition-transform duration-200 group-hover:translate-x-1"
+                            strokeWidth={2.5}
+                        />
                     </Button>
                 </Link>
             </div>

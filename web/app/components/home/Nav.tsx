@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/app/components/brand/Logo";
 
 interface NavProps {
     isLoggedIn?: boolean;
@@ -9,15 +11,10 @@ export function Nav({ isLoggedIn = false }: NavProps) {
     return (
         <nav className="w-full border-b border-border">
             <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-                {/* Logo */}
-                <Link
-                    href="/"
-                    className="text-lg font-semibold tracking-tight text-primary"
-                >
-                    woohoo
-                </Link>
+                <div>
+                    <Logo />
+                </div>
 
-                {/* Right side */}
                 <div className="flex items-center gap-3">
                     <Link
                         href="/pricing"
@@ -25,10 +22,15 @@ export function Nav({ isLoggedIn = false }: NavProps) {
                     >
                         Pricing
                     </Link>
+                </div>
 
+                <div className="flex items-center gap-2">
                     {isLoggedIn ? (
                         <Link href="/dashboard">
-                            <Button variant="default">Dashboard →</Button>
+                            <Button className="group" variant="default">
+                                Dashboard
+                                <ArrowRight className="transition-transform duration-200 group-hover:translate-x-1" />
+                            </Button>
                         </Link>
                     ) : (
                         <>

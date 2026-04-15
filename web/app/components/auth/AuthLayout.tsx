@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { ReactNode } from "react";
+import { Logo } from "@/app/components/brand/Logo";
 
 interface AuthLayoutProps {
     title: string;
@@ -18,13 +18,7 @@ export function AuthLayout({
         <div className="min-h-screen grid lg:grid-cols-2">
             {/* Left: form */}
             <div className="flex flex-col px-6 py-8 sm:px-12">
-                <Link
-                    href="/"
-                    className="text-lg font-semibold tracking-tight text-primary no-underline hover:text-primary"
-                    style={{ fontFamily: "var(--font-logo)" }}
-                >
-                    woohoo
-                </Link>
+                <Logo />
 
                 <div className="flex flex-1 items-center justify-center py-12">
                     <div className="w-full max-w-sm">
@@ -83,8 +77,9 @@ export function AuthLayout({
                     </div>
                 </div>
 
-                <div className="relative text-xs text-muted-foreground">
-                    © {new Date().getFullYear()} woohoo
+                <div className="relative flex items-center gap-2 text-xs text-muted-foreground">
+                    <Logo variant="mark" size="sm" href={null} />
+                    <span>© {new Date().getFullYear()} woohoo</span>
                 </div>
             </div>
         </div>
