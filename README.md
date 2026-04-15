@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./.github/screenshots/banner.png" alt="woohoo banner" />
+  <img src="./.github/screenshots/Banner.png" alt="woohoo banner" />
 
 Capture the moments that matter.
 
