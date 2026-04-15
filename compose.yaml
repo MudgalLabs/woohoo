@@ -2,6 +2,8 @@ services:
     db:
         container_name: woohoo_db
         image: postgres:17.4-alpine
+        ports:
+            - 42071:42071
         environment:
             PGPORT: 42071
             POSTGRES_DB: ${WOOHOO_DB_NAME}

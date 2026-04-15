@@ -20,9 +20,9 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "Never miss a follow-up | Woohoo",
+    title: "Never miss a follow-up - woohoo",
     description:
-        "Capture conversations, track context, and never let them go cold.",
+        "Save comments, replies, and DMs worth following up on — without losing them to the scroll.",
     icons: {
         icon: "/logo.svg",
     },
