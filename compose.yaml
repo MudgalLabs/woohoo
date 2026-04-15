@@ -1,0 +1,32 @@
+services:
+    db:
+        container_name: woohoo_db
+        image: postgres:17.4-alpine
+        environment:
+            PGPORT: 42070
+            POSTGRES_DB: ${WOOHOO_DB_NAME}
+            POSTGRES_USER: ${WOOHOO_DB_USER}
+            POSTGRES_PASSWORD: ${WOOHOO_DB_PASSWORD}
+        ports:
+            - 42070:42070
+        networks:
+            - woohoo_network
+            - caddy_net
+        volumes:
+            - ./volumes/db_data:/var/lib/postgresql/data
+        restart: unless-stopped
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "pg_isready -U ${WOOHOO_DB_USER} -d ${WOOHOO_DB_NAME}",
+                ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+networks:
+    woohoo_network:
+        name: woohoo_network
+    caddy_net:
+        external: true

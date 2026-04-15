@@ -36,7 +36,7 @@ export function SaveModal(props: SaveModalProps) {
                         className="flex-x"
                         style={{ fontWeight: 500, columnGap: 2 }}
                     >
-                        Show in CircleBack
+                        Show in Woohoo
                         <SquareArrowOutUpRight size={12} strokeWidth={2.5} />
                     </a>
                 ) : null}

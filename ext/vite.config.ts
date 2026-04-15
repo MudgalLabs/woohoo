@@ -14,7 +14,7 @@ export default defineConfig({
     plugins: [
         react(),
         crx({ manifest }),
-        zip({ outDir: "release", outFileName: "circleback.zip" }),
+        zip({ outDir: "release", outFileName: "woohoo.zip" }),
     ],
     server: {
         cors: {

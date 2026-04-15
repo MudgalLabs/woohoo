@@ -2,12 +2,15 @@ import type { Metadata } from "next";
 
 import "./globals.css";
 
-import { IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
+import { IBM_Plex_Sans, JetBrains_Mono, Fredoka } from "next/font/google";
+import { cn } from "@/lib/utils";
 
-const plex = IBM_Plex_Sans({
+const sans = IBM_Plex_Sans({ subsets: ["latin"], variable: "--font-sans" });
+
+const logo = Fredoka({
     subsets: ["latin"],
-    weight: ["400", "500", "600"],
-    variable: "--font-sans",
+    weight: ["400", "500", "700"],
+    variable: "--font-logo",
 });
 
 const mono = JetBrains_Mono({
@@ -17,7 +20,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "Never miss a follow-up | CircleBack",
+    title: "Never miss a follow-up | Woohoo",
     description:
         "Capture conversations, track context, and never let them go cold.",
     icons: {
@@ -33,7 +36,14 @@ export default function RootLayout({
     return (
         <html
             lang="en"
-            className={`${plex.variable} ${mono.variable} h-full antialiased`}
+            className={cn(
+                "h-full",
+                "antialiased",
+                mono.variable,
+                logo.variable,
+                "font-sans",
+                sans.variable,
+            )}
         >
             <body className="min-h-full flex flex-col">{children}</body>
         </html>

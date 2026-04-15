@@ -1,6 +1,6 @@
 .PHONY: dev kill
 
-SESSION_NAME=circleback
+SESSION_NAME=woohoo
 
 dev:
 	@if tmux has-session -t $(SESSION_NAME) 2>/dev/null; then \

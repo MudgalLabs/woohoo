@@ -79,7 +79,8 @@ export function injectAndReturnSaveButtonContainers(): SaveButtonContainer[] {
     let prevMessage: Message | null = null;
 
     messages.forEach((msg) => {
-        const parent = msg.closest('[class*="room-message"]') as HTMLElement;
+        // const parent = msg.closest('[class*="room-message"]') as HTMLElement;
+        const parent = msg.closest(".room-message") as HTMLElement;
         if (!parent) return;
 
         if (parent.querySelector(".cb-save-root")) return;
@@ -95,7 +96,20 @@ export function injectAndReturnSaveButtonContainers(): SaveButtonContainer[] {
         parent.style.position = "relative";
         parent.style.paddingBottom = "20px";
 
+        const element = document.createElement("div");
+        element.className = "cb-save-root";
+
         const inactiveOpacity = "0.3";
+
+        element.style.position = "absolute";
+        element.style.right = "0px";
+        element.style.bottom = "0px";
+        element.style.zIndex = "10";
+        element.style.opacity = inactiveOpacity;
+        element.style.transform = "translateY(4px) scale(0.96)";
+        element.style.transition =
+            "opacity 160ms ease, transform 160ms cubic-bezier(0.2, 0, 0, 1)";
+
         let timeout: any;
 
         parent.addEventListener("mouseenter", () => {
@@ -112,18 +126,6 @@ export function injectAndReturnSaveButtonContainers(): SaveButtonContainer[] {
                 element.style.transform = "translateY(4px) scale(0.96)";
             }, 80);
         });
-
-        const element = document.createElement("div");
-        element.className = "cb-save-root";
-
-        element.style.position = "absolute";
-        element.style.right = "0px";
-        element.style.bottom = "0px";
-        element.style.zIndex = "10";
-        element.style.opacity = inactiveOpacity;
-        element.style.transform = "translateY(4px) scale(0.96)";
-        element.style.transition =
-            "opacity 160ms ease, transform 160ms cubic-bezier(0.2, 0, 0, 1)";
 
         parent.appendChild(element);
 

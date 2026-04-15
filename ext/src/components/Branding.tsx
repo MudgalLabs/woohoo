@@ -10,7 +10,7 @@ export function Branding(props: BrandingProps) {
     return (
         <div className="cb-branding-box">
             <Logo height={logoSize} />
-            <p style={{ fontSize: textSize }}>CircleBack</p>
+            <p style={{ fontSize: textSize }}>Woohoo</p>
         </div>
     );
 }

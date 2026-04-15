@@ -5,7 +5,7 @@ import "@/content/views/App.css";
 import App from "@/content/views/App.tsx";
 
 const container = document.createElement("div");
-container.id = "circleback-app";
+container.id = "woohoo-app";
 
 document.body.appendChild(container);
 

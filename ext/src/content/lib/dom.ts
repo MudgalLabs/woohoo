@@ -75,7 +75,7 @@ export function getShadowRoot() {
     if (shadowRoot) return shadowRoot;
 
     const container = document.createElement("div");
-    container.id = "circleback-root";
+    container.id = "woohoo-root";
     document.body.appendChild(container);
 
     shadowRoot = container.attachShadow({ mode: "open" });
