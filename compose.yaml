@@ -3,12 +3,10 @@ services:
         container_name: woohoo_db
         image: postgres:17.4-alpine
         environment:
-            PGPORT: 42070
+            PGPORT: 42071
             POSTGRES_DB: ${WOOHOO_DB_NAME}
             POSTGRES_USER: ${WOOHOO_DB_USER}
             POSTGRES_PASSWORD: ${WOOHOO_DB_PASSWORD}
-        ports:
-            - 42070:42070
         networks:
             - woohoo_network
         volumes:
@@ -38,7 +36,7 @@ services:
                 "deploy",
             ]
         environment:
-            DATABASE_URL: postgres://${WOOHOO_DB_USER}:${WOOHOO_DB_PASSWORD}@db:42070/${WOOHOO_DB_NAME}?sslmode=disable
+            DATABASE_URL: postgres://${WOOHOO_DB_USER}:${WOOHOO_DB_PASSWORD}@db:42071/${WOOHOO_DB_NAME}?sslmode=disable
         depends_on:
             db:
                 condition: service_healthy
@@ -58,7 +56,7 @@ services:
             NODE_ENV: production
             PORT: 3000
             HOSTNAME: 0.0.0.0
-            DATABASE_URL: postgres://${WOOHOO_DB_USER}:${WOOHOO_DB_PASSWORD}@db:42070/${WOOHOO_DB_NAME}?sslmode=disable
+            DATABASE_URL: postgres://${WOOHOO_DB_USER}:${WOOHOO_DB_PASSWORD}@db:42071/${WOOHOO_DB_NAME}?sslmode=disable
         depends_on:
             db:
                 condition: service_healthy
