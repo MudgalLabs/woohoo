@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./.github/screenshots/banner.png" alt="arthveda banner" />
+  <img src="./.github/screenshots/banner.png" alt="woohoo banner" />
 
 Capture the moments that matter.
 
@@ -7,9 +7,9 @@ Capture the moments that matter.
 
 </div>
 
-# Woohoo
+# woohoo
 
-Arthveda allows peopls to save comments, replies, and DMs that are worth following up on — without losing them to the scroll.
+Woohoo allows peopls to save comments, replies, and DMs that are worth following up on — without losing them to the scroll.
 
 ## 📜 License
 
