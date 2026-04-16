@@ -1,0 +1,10 @@
+services:
+    web:
+        ports: !reset []
+        networks:
+            - woohoo_network
+            - caddy_net
+
+networks:
+    caddy_net:
+        external: true

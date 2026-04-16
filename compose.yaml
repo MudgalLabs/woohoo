@@ -37,7 +37,7 @@ services:
                 "deploy",
             ]
         environment:
-            DATABASE_URL: postgres://${WOOHOO_DB_USER}:${WOOHOO_DB_PASSWORD}@db:5432/${WOOHOO_DB_NAME}
+            DATABASE_URL: postgres://${WOOHOO_DB_USER}:${WOOHOO_DB_PASSWORD}@woohoo_db:5432/${WOOHOO_DB_NAME}
         depends_on:
             db:
                 condition: service_healthy
@@ -57,7 +57,7 @@ services:
             NODE_ENV: production
             PORT: 3000
             HOSTNAME: 0.0.0.0
-            DATABASE_URL: postgres://${WOOHOO_DB_USER}:${WOOHOO_DB_PASSWORD}@db:5432/${WOOHOO_DB_NAME}
+            DATABASE_URL: postgres://${WOOHOO_DB_USER}:${WOOHOO_DB_PASSWORD}@woohoo_db:5432/${WOOHOO_DB_NAME}
         depends_on:
             db:
                 condition: service_healthy
@@ -65,11 +65,8 @@ services:
                 condition: service_completed_successfully
         networks:
             - woohoo_network
-            - caddy_net
         restart: unless-stopped
 
 networks:
     woohoo_network:
         name: woohoo_network
-    caddy_net:
-        external: true
