@@ -1,0 +1,49 @@
+import { WoohooApiClient } from "@woohoo/api";
+import type { AuthSession } from "@woohoo/api";
+
+const BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3000";
+
+type IncomingMessage =
+    | { type: "GET_SESSION" }
+    | { type: "SIGN_IN"; email: string; password: string }
+    | { type: "SIGN_OUT" };
+
+type Reply =
+    | { session: AuthSession | null }
+    | { ok: true }
+    | { ok: false; error: string };
+
+async function handle(msg: IncomingMessage): Promise<Reply> {
+    if (msg.type === "GET_SESSION") {
+        const stored = await chrome.storage.local.get("session");
+        return { session: (stored["session"] as AuthSession) ?? null };
+    }
+
+    if (msg.type === "SIGN_IN") {
+        const client = new WoohooApiClient(BASE_URL);
+        const result = await client.signIn(msg.email, msg.password);
+        if ("error" in result) return { ok: false, error: result.error };
+        await chrome.storage.local.set({ session: result.session });
+        return { ok: true };
+    }
+
+    if (msg.type === "SIGN_OUT") {
+        const stored = await chrome.storage.local.get("session");
+        const session = stored["session"] as AuthSession | undefined;
+        if (session) {
+            const client = new WoohooApiClient(BASE_URL, session.token);
+            await client.signOut();
+        }
+        await chrome.storage.local.remove("session");
+        return { ok: true };
+    }
+
+    return { ok: false, error: "Unknown message type." };
+}
+
+chrome.runtime.onMessage.addListener(
+    (msg: IncomingMessage, _sender, sendResponse) => {
+        handle(msg).then(sendResponse);
+        return true; // keeps the message channel open for the async reply
+    },
+);

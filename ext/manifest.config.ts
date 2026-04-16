@@ -14,7 +14,16 @@ export default defineManifest({
         },
         default_popup: "src/popup/index.html",
     },
-    permissions: ["sidePanel", "contentSettings"],
+    background: {
+        service_worker: "src/background/index.ts",
+        type: "module" as const,
+    },
+    permissions: ["sidePanel", "storage", "tabs"],
+    host_permissions: [
+        "https://www.reddit.com/*",
+        "https://woohoo.to/*",
+        "http://localhost:3000/*",
+    ],
     content_scripts: [
         {
             js: ["src/content/main.tsx"],

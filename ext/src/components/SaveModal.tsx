@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SquareArrowOutUpRight } from "lucide-react";
+import type { AuthSession } from "@woohoo/api";
 
 import { Message } from "@/content/reddit/dm";
 import { Branding } from "@/components/Branding";
@@ -10,18 +11,56 @@ interface SaveModalProps {
 }
 
 export function SaveModal(props: SaveModalProps) {
-    const { message, isSaved } = props;
+    const { message: _message, isSaved } = props;
+    const [session, setSession] = useState<AuthSession | null | undefined>(
+        undefined,
+    );
     const [askedForConfirmation, setAskedForConfirmation] = useState(false);
 
+    useEffect(() => {
+        chrome.runtime.sendMessage(
+            { type: "GET_SESSION" },
+            (res: { session: AuthSession | null }) => {
+                setSession(res.session);
+            },
+        );
+
+        const handleStorageChange = (changes: {
+            [key: string]: chrome.storage.StorageChange;
+        }) => {
+            if ("session" in changes) {
+                const newSession =
+                    (changes["session"]?.newValue as AuthSession) ?? null;
+                setSession(newSession);
+            }
+        };
+
+        chrome.storage.onChanged.addListener(handleStorageChange);
+        return () => chrome.storage.onChanged.removeListener(handleStorageChange);
+    }, []);
+
+    // Still loading session — render nothing to avoid flash.
+    if (session === undefined) return null;
+
+    if (!session) {
+        return (
+            <div className="cb-modal">
+                <div className="flex-y cb-modal-header" style={{ rowGap: 0 }}>
+                    <Branding />
+                </div>
+                <p className="cb-modal-text" style={{ marginTop: 8 }}>
+                    Login to your Woohoo account in the extension first.
+                </p>
+            </div>
+        );
+    }
+
     const handleRemove = () => {
-        // Before removing, ask user to confirm.
         if (!askedForConfirmation) {
             setAskedForConfirmation(true);
             return;
         }
     };
-
-    // const previewText = getPreviewText(message.contentText);
 
     return (
         <div className="cb-modal">
@@ -32,7 +71,7 @@ export function SaveModal(props: SaveModalProps) {
 
                 {isSaved ? (
                     <a
-                        href="https://cirleback.to/conversation/69"
+                        href="https://woohoo.to"
                         className="flex-x"
                         style={{ fontWeight: 500, columnGap: 2 }}
                     >
@@ -64,13 +103,4 @@ export function SaveModal(props: SaveModalProps) {
             </div>
         </div>
     );
-}
-
-function getPreviewText(text: string, maxChars = 160) {
-    if (text.length <= maxChars) return text;
-
-    const trimmed = text.slice(0, maxChars);
-    const lastSpace = trimmed.lastIndexOf(" ");
-
-    return trimmed.slice(0, lastSpace) + "...";
 }
