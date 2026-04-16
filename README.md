@@ -1,15 +1,15 @@
 <div align="center">
   <img src="./.github/screenshots/Banner.png" alt="woohoo banner" />
 
-Capture the moments that matter.
+Capture the DMs and comments worth acting on. Follow up before the moment's gone.
 
-[Website](https://woohoo.to) | [App](https:/woohoo.to/dashboard)
+[Website](https://woohoo.to) | [App](https://woohoo.to/dashboard)
 
 </div>
 
 # woohoo
 
-Woohoo allows peopls to save DMs, comments, and replies that are worth following up on — without losing them to the scroll.
+Woohoo is a lightweight follow-up tool for social media conversations. Save the messages and comments that matter in one click, and get reminded to follow up before the moment's gone.
 
 ## 📜 License
 

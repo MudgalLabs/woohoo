@@ -1,13 +1,20 @@
-import type { AuthSession, WoohooUser } from "./types";
+import type {
+    AuthSession,
+    WoohooUser,
+    SaveItemPayload,
+    SaveItemResponse,
+    CheckSavedResponse,
+} from "./types";
 
 export class WoohooApiClient {
     constructor(
         private baseUrl: string,
         private token?: string,
+        private onUnauthorized?: () => void,
     ) {}
 
     withToken(token: string): WoohooApiClient {
-        return new WoohooApiClient(this.baseUrl, token);
+        return new WoohooApiClient(this.baseUrl, token, this.onUnauthorized);
     }
 
     async signIn(
@@ -81,6 +88,50 @@ export class WoohooApiClient {
                 email: body.user.email,
             },
         };
+    }
+
+    async saveItem(
+        payload: SaveItemPayload,
+    ): Promise<SaveItemResponse | { error: string }> {
+        const res = await fetch(`${this.baseUrl}/api/woohoos/save`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", ...this.authHeaders() },
+            body: JSON.stringify(payload),
+        });
+
+        if (res.status === 401) {
+            this.onUnauthorized?.();
+            return { error: "Session expired. Please sign in again." };
+        }
+
+        if (!res.ok) {
+            const body = (await res.json().catch(() => ({}))) as {
+                error?: string;
+            };
+            return { error: body.error ?? "Save failed." };
+        }
+
+        return res.json() as Promise<SaveItemResponse>;
+    }
+
+    async checkSaved(params: {
+        platform: string;
+        peerId: string;
+        externalId: string;
+    }): Promise<CheckSavedResponse> {
+        const qs = new URLSearchParams(params).toString();
+        const res = await fetch(`${this.baseUrl}/api/woohoos/check?${qs}`, {
+            headers: this.authHeaders(),
+        });
+
+        if (res.status === 401) {
+            this.onUnauthorized?.();
+            return { saved: false };
+        }
+
+        if (!res.ok) return { saved: false };
+
+        return res.json() as Promise<CheckSavedResponse>;
     }
 
     private authHeaders(): Record<string, string> {

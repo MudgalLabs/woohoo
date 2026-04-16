@@ -21,7 +21,7 @@ body {
 }
 
 .popup {
-    width: 280px;
+    width: 100vw;
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -73,7 +73,6 @@ body {
 .btn-signout {
     all: unset;
     display: block;
-    width: 100%;
     text-align: center;
     padding: 8px;
     font-size: 13px;
@@ -122,7 +121,6 @@ body {
 .btn-primary {
     all: unset;
     display: block;
-    width: 100%;
     text-align: center;
     padding: 9px;
     font-size: 13px;

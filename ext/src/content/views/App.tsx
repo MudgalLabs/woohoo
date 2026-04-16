@@ -35,13 +35,18 @@ function App() {
         const containers = injectAndReturnSaveButtonContainers();
 
         // TODO: id = message/comment ID.
-        containers.forEach((container, i) => {
+        containers.forEach((container) => {
             // already mounted
             if (container.element.shadowRoot) return;
 
-            mountWithShadow(container.element, SaveButton, {
-                message: container.message,
-                isSaved: i % 2, // FOR TESTING.
+            const messageId = container.message.id;
+            chrome.storage.local.get(`saved_${messageId}`, (result) => {
+                const isSaved = !!result[`saved_${messageId}`];
+                mountWithShadow(container.element, SaveButton, {
+                    message: container.message,
+                    isSaved,
+                    peer: peer ?? "",
+                });
             });
         });
 

@@ -7,6 +7,15 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Platform {
+  reddit
+}
+
+enum TimelineItemType {
+  dm
+  comment
+}
+
 model User {
   id            String    @id
   name          String
@@ -17,9 +26,49 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  woohoos       Woohoo[]
 
   @@unique([email])
   @@map("user")
+}
+
+model Woohoo {
+  id                String         @id @default(cuid())
+  userId            String
+  platform          Platform
+  peerId            String
+  peerName          String?
+  chatUrl           String?
+  followUpAt        DateTime?
+  lastInteractionAt DateTime?
+  lastSavedAt       DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  timeline          TimelineItem[]
+
+  @@unique([userId, platform, peerId])
+  @@map("woohoo")
+}
+
+model TimelineItem {
+  id            String           @id @default(cuid())
+  woohooId      String
+  type          TimelineItemType @default(dm)
+  externalId    String?
+  contentText   String
+  contentHtml   String?
+  sourceUrl     String?
+  authorId      String
+  authorName    String?
+  interactionAt DateTime
+  savedAt       DateTime         @default(now())
+
+  woohoo        Woohoo           @relation(fields: [woohooId], references: [id], onDelete: Cascade)
+
+  @@unique([woohooId, externalId])
+  @@map("timeline_item")
 }
 
 model Session {

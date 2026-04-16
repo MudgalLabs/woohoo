@@ -56,8 +56,7 @@ export function AuthLayout({
 
                 <div className="relative">
                     <span className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
-                        <span className="h-px w-8 bg-border" />A quieter corner
-                        of the internet
+                        <span className="h-px w-8 bg-border" />Your warm leads deserve a follow-up.
                     </span>
                 </div>
 
@@ -73,9 +72,9 @@ export function AuthLayout({
                     </p>
 
                     <div className="mt-10 space-y-3">
-                        <Feature text="One click to save from anywhere on Reddit" />
-                        <Feature text="Organized, searchable, always yours" />
-                        <Feature text="No noise. No feed. Just what you kept." />
+                        <Feature text="1-click save from any DM or comment" />
+                        <Feature text="Every interaction with a person, in one timeline" />
+                        <Feature text="Follow-up reminders so nothing slips through" />
                     </div>
                 </div>
 

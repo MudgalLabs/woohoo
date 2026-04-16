@@ -11,13 +11,16 @@
         "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
     },
     "dependencies": {
-        "@woohoo/ui": "*",
         "@base-ui/react": "^1.4.0",
         "@opennextjs/cloudflare": "^1.19.1",
         "@prisma/adapter-pg": "^7.7.0",
         "@prisma/client": "^7.7.0",
+        "@radix-ui/react-dialog": "^1.1.15",
         "@radix-ui/react-label": "^2.1.8",
+        "@radix-ui/react-separator": "^1.1.8",
         "@radix-ui/react-slot": "^1.2.4",
+        "@radix-ui/react-tooltip": "^1.2.8",
+        "@woohoo/ui": "*",
         "better-auth": "^1.6.3",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",

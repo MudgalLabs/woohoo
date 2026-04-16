@@ -21,8 +21,39 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "Never miss a follow-up - woohoo",
+    title: {
+        default: "Woohoo — Follow up before the moment goes cold",
+        template: "%s | Woohoo",
+    },
     description: APP_DESCRIPTION,
+    keywords: [
+        "social CRM",
+        "follow-up tool",
+        "lead tracking",
+        "DM tracker",
+        "social media leads",
+        "Reddit leads",
+        "LinkedIn leads",
+        "inbox organizer",
+        "follow up reminder",
+    ],
+    metadataBase: new URL("https://woohoo.to"),
+    openGraph: {
+        title: "Woohoo — Follow up before the moment goes cold",
+        description: APP_DESCRIPTION,
+        url: "https://woohoo.to",
+        siteName: "Woohoo",
+        type: "website",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Woohoo — Follow up before the moment goes cold",
+        description: APP_DESCRIPTION,
+    },
+    robots: {
+        index: true,
+        follow: true,
+    },
     icons: {
         icon: "/logo.svg",
     },

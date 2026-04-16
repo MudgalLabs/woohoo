@@ -12,12 +12,14 @@ import { Message } from "@/content/reddit/dm";
 interface SaveButtonProps {
     message: Message;
     isSaved: boolean;
+    peer: string;
 }
 
 export function SaveButton(props: SaveButtonProps) {
-    const { message, isSaved } = props;
+    const { message, peer } = props;
     const { id } = message;
     const [isActive, setIsActive] = useState(getActive() === id);
+    const [isSaved, setIsSaved] = useState(props.isSaved);
 
     useEffect(() => {
         return subscribe((activeId) => {
@@ -41,7 +43,14 @@ export function SaveButton(props: SaveButtonProps) {
             }}
         >
             <div className={`cb-popover ${isActive ? "open" : ""}`}>
-                <SaveModal message={message} isSaved={isSaved} />
+                {isActive && (
+                    <SaveModal
+                        message={message}
+                        isSaved={isSaved}
+                        peer={peer}
+                        onSaved={() => setIsSaved(true)}
+                    />
+                )}
             </div>
 
             <button
