@@ -1,9 +1,13 @@
 services:
     web:
+        image: ${DOCKERHUB_USERNAME}/woohoo-web:latest
         ports: !reset []
         networks:
             - woohoo_network
             - caddy_net
+
+    migrate:
+        image: ${DOCKERHUB_USERNAME}/woohoo-web:latest
 
 networks:
     caddy_net:

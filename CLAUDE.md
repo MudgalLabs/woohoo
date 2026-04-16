@@ -85,4 +85,4 @@ Authentication is handled entirely by better-auth. The schema includes standard 
 
 - Web deploys to Cloudflare Workers via `opennextjs-cloudflare` (`npm run deploy` from `web/`)
 - Extension builds to `ext/release/woohoo.zip` for Chrome Web Store upload
-- Production Docker setup uses `compose.prod.yaml` (overrides `compose.yaml`)
+- Production Docker setup uses `compose.deploy.yaml` (overrides `compose.yaml`)
