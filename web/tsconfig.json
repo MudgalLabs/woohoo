@@ -19,7 +19,9 @@
             }
         ],
         "paths": {
-            "@/*": ["./*"]
+            "@/*": ["./*"],
+            "@woohoo/ui": ["../packages/ui/src/index.ts"],
+            "@woohoo/ui/*": ["../packages/ui/src/*"]
         }
     },
     "include": [

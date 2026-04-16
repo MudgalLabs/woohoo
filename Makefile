@@ -1,6 +1,9 @@
-.PHONY: dev kill
+.PHONY: dev kill up install
 
 SESSION_NAME=woohoo
+
+install:
+	npm install
 
 up:
 	docker compose up -d db

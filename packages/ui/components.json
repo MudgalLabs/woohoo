@@ -1,0 +1,20 @@
+{
+    "$schema": "https://ui.shadcn.com/schema.json",
+    "style": "default",
+    "rsc": true,
+    "tsx": true,
+    "tailwind": {
+        "config": "",
+        "css": "../../web/app/globals.css",
+        "baseColor": "neutral",
+        "cssVariables": true,
+        "prefix": ""
+    },
+    "iconLibrary": "lucide",
+    "aliases": {
+        "components": "@woohoo/ui/components",
+        "utils": "@woohoo/ui/lib/utils",
+        "ui": "@woohoo/ui/components",
+        "lib": "@woohoo/ui/lib"
+    }
+}

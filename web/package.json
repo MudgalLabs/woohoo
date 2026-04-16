@@ -1,5 +1,5 @@
 {
-    "name": "woohoo",
+    "name": "@woohoo/web",
     "version": "0.1.0",
     "private": true,
     "scripts": {
@@ -11,6 +11,7 @@
         "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
     },
     "dependencies": {
+        "@woohoo/ui": "*",
         "@base-ui/react": "^1.4.0",
         "@opennextjs/cloudflare": "^1.19.1",
         "@prisma/adapter-pg": "^7.7.0",

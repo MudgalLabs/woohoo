@@ -1,0 +1,5 @@
+{
+    "name": "woohoo",
+    "private": true,
+    "workspaces": ["packages/*", "web", "ext"]
+}

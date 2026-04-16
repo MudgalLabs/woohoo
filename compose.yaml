@@ -25,9 +25,6 @@ services:
 
     migrate:
         container_name: woohoo_migrate
-        build:
-            context: ./web
-            dockerfile: Dockerfile
         image: woohoo_web:latest
         command:
             [
@@ -48,7 +45,8 @@ services:
     web:
         container_name: woohoo_web
         build:
-            context: ./web
+            context: .
+            dockerfile: web/Dockerfile
         image: woohoo_web:latest
         ports:
             - 3000:3000

@@ -7,8 +7,9 @@ loadEnv({ path: path.resolve(__dirname, "../.env") });
 const nextConfig: NextConfig = {
     output: "standalone",
     serverExternalPackages: ["pg", "@prisma/adapter-pg"],
+    transpilePackages: ["@woohoo/ui"],
     turbopack: {
-        root: __dirname,
+        root: path.resolve(__dirname, ".."),
     },
 };
 
