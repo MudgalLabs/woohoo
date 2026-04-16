@@ -9,7 +9,7 @@ Capture the moments that matter.
 
 # woohoo
 
-Woohoo allows peopls to save comments, replies, and DMs that are worth following up on — without losing them to the scroll.
+Woohoo allows peopls to save DMs, comments, and replies that are worth following up on — without losing them to the scroll.
 
 ## 📜 License
 

@@ -18,7 +18,7 @@ export default function SignUpForm() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    async function handleSignUp(e: React.FormEvent) {
+    async function handleSignUp(e: React.SubmitEvent) {
         e.preventDefault();
         setError(null);
         setLoading(true);
@@ -40,15 +40,16 @@ export default function SignUpForm() {
             title="Create your account"
             subtitle="Start saving the moments worth keeping."
             footer={
-                <>
-                    Already have an account?{" "}
+                <span className="flex items-center gap-x-1">
+                    <p>Already have an account?</p>
+
                     <Link
                         href="/sign-in"
                         className="font-medium text-primary hover:underline"
                     >
                         Sign in
                     </Link>
-                </>
+                </span>
             }
         >
             <form onSubmit={handleSignUp} className="space-y-4">

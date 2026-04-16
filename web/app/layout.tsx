@@ -4,12 +4,13 @@ import "./globals.css";
 
 import { IBM_Plex_Sans, JetBrains_Mono, Fredoka } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { APP_DESCRIPTION } from "@/lib/constants";
 
 const sans = IBM_Plex_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
 const logo = Fredoka({
     subsets: ["latin"],
-    weight: ["600"],
+    weight: ["500", "600"],
     variable: "--font-logo",
 });
 
@@ -21,8 +22,7 @@ const mono = JetBrains_Mono({
 
 export const metadata: Metadata = {
     title: "Never miss a follow-up - woohoo",
-    description:
-        "Save comments, replies, and DMs worth following up on — without losing them to the scroll.",
+    description: APP_DESCRIPTION,
     icons: {
         icon: "/logo.svg",
     },

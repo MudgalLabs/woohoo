@@ -1,19 +1,17 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { APP_TITLE, APP_DESCRIPTION } from "@/lib/constants";
 
 export function Hero() {
     return (
         <section className="mx-auto flex max-w-4xl flex-col items-center px-4 py-32 text-center sm:py-40">
             <h1 className="text-5xl font-semibold tracking-tight text-foreground sm:text-7xl leading-[1.05]">
-                Capture the moments
-                <br />
-                that matter.
+                {APP_TITLE}
             </h1>
 
             <p className="mt-6 max-w-xl text-lg text-muted-foreground sm:text-xl">
-                Save comments, replies, and DMs worth following up on — without
-                losing them to the scroll.
+                {APP_DESCRIPTION}
             </p>
 
             <div className="mt-10">

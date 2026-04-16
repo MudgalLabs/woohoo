@@ -13,7 +13,7 @@ interface LogoProps {
 
 const sizeClass: Record<LogoSize, string> = {
     sm: "text-base",
-    md: "text-lg",
+    md: "text-xl",
     lg: "text-2xl",
 };
 
@@ -33,11 +33,10 @@ export function Logo({
         variant === "full" ? (
             <span
                 className={cn(
-                    "font-semibold text-primary",
+                    "font-medium text-primary font-logo",
                     sizeClass[size],
                     className,
                 )}
-                style={{ fontFamily: "var(--font-logo)" }}
             >
                 woohoo
             </span>
@@ -45,11 +44,10 @@ export function Logo({
             <span
                 aria-label="woohoo"
                 className={cn(
-                    "inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground font-semibold leading-none",
+                    "inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground font-semibold leading-none font-logo",
                     markSizeClass[size],
                     className,
                 )}
-                style={{ fontFamily: "var(--font-logo)" }}
             >
                 W
             </span>

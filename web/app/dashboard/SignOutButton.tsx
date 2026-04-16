@@ -8,8 +8,8 @@ import { authClient } from "@/lib/auth-client";
 export default function SignOutButton() {
     const router = useRouter();
 
-    const handleOnClick = () => {
-        authClient.signOut();
+    const handleOnClick = async () => {
+        await authClient.signOut();
         router.push("/sign-in");
     };
 

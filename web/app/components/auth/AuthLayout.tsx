@@ -1,5 +1,14 @@
 import { ReactNode } from "react";
 import { Logo } from "@/app/components/brand/Logo";
+import { APP_TITLE, APP_DESCRIPTION } from "@/lib/constants";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
 
 interface AuthLayoutProps {
     title: string;
@@ -21,22 +30,16 @@ export function AuthLayout({
                 <Logo />
 
                 <div className="flex flex-1 items-center justify-center py-12">
-                    <div className="w-full max-w-sm">
-                        <div className="mb-8">
-                            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-                                {title}
-                            </h1>
-                            <p className="mt-2 text-sm text-muted-foreground">
-                                {subtitle}
-                            </p>
-                        </div>
-
-                        {children}
-
-                        <div className="mt-6 text-center text-sm text-muted-foreground">
+                    <Card className="w-full max-w-sm">
+                        <CardHeader>
+                            <CardTitle className="text-2xl">{title}</CardTitle>
+                            <CardDescription>{subtitle}</CardDescription>
+                        </CardHeader>
+                        <CardContent>{children}</CardContent>
+                        <CardFooter className="justify-center text-sm text-muted-foreground">
                             {footer}
-                        </div>
-                    </div>
+                        </CardFooter>
+                    </Card>
                 </div>
             </div>
 
@@ -53,8 +56,8 @@ export function AuthLayout({
 
                 <div className="relative">
                     <span className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
-                        <span className="h-px w-8 bg-border" />
-                        A quieter corner of the internet
+                        <span className="h-px w-8 bg-border" />A quieter corner
+                        of the internet
                     </span>
                 </div>
 
@@ -63,11 +66,10 @@ export function AuthLayout({
                         className="text-4xl font-semibold tracking-tight text-foreground leading-tight"
                         style={{ fontFamily: "var(--font-serif)" }}
                     >
-                        Capture the moments that matter.
+                        {APP_TITLE}
                     </h2>
                     <p className="mt-4 text-base text-muted-foreground leading-relaxed">
-                        Save comments, replies, and DMs worth following up on —
-                        without losing them to the scroll.
+                        {APP_DESCRIPTION}
                     </p>
 
                     <div className="mt-10 space-y-3">
