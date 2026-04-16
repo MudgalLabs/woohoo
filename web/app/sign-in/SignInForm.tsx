@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 import { authClient } from "@/lib/auth-client";
-import { Button } from "@/components/ui/button";
+import { Button } from "@woohoo/ui";
 import { AuthLayout } from "@/app/components/auth/AuthLayout";
 import { Field } from "@/app/components/auth/Field";
 

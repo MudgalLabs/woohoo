@@ -1,6 +1,5 @@
 import { InputHTMLAttributes, forwardRef } from "react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { Label, Input } from "@woohoo/ui";
 
 interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
     label: string;

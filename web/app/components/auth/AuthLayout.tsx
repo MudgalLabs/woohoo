@@ -8,7 +8,7 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card";
+} from "@woohoo/ui";
 
 interface AuthLayoutProps {
     title: string;

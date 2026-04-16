@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@woohoo/ui";
 import { authClient } from "@/lib/auth-client";
 
 export default function SignOutButton() {

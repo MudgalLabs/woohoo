@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@woohoo/ui";
 import { Logo } from "@/app/components/brand/Logo";
 
 interface NavProps {

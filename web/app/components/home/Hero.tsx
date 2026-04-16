@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@woohoo/ui";
 import { APP_TITLE, APP_DESCRIPTION } from "@/lib/constants";
 
 export function Hero() {
