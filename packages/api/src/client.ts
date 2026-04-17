@@ -114,6 +114,52 @@ export class WoohooApiClient {
         return res.json() as Promise<SaveItemResponse>;
     }
 
+    async deleteWoohoo(
+        id: string,
+    ): Promise<{ ok: true } | { error: string }> {
+        const res = await fetch(`${this.baseUrl}/api/woohoos/${id}`, {
+            method: "DELETE",
+            headers: this.authHeaders(),
+        });
+
+        if (res.status === 401) {
+            this.onUnauthorized?.();
+            return { error: "Session expired. Please sign in again." };
+        }
+
+        if (!res.ok) {
+            const body = (await res.json().catch(() => ({}))) as {
+                error?: string;
+            };
+            return { error: body.error ?? "Delete failed." };
+        }
+
+        return { ok: true };
+    }
+
+    async deleteTimelineItem(
+        itemId: string,
+    ): Promise<{ ok: true } | { error: string }> {
+        const res = await fetch(`${this.baseUrl}/api/timeline-items/${itemId}`, {
+            method: "DELETE",
+            headers: this.authHeaders(),
+        });
+
+        if (res.status === 401) {
+            this.onUnauthorized?.();
+            return { error: "Session expired. Please sign in again." };
+        }
+
+        if (!res.ok) {
+            const body = (await res.json().catch(() => ({}))) as {
+                error?: string;
+            };
+            return { error: body.error ?? "Delete failed." };
+        }
+
+        return { ok: true };
+    }
+
     async checkSaved(params: {
         platform: string;
         peerId: string;

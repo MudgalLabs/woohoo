@@ -15,18 +15,21 @@ interface SaveModalProps {
     isSaved: boolean;
     peer: string;
     onSaved?: () => void;
+    onUnsaved?: () => void;
 }
 
 export function SaveModal(props: SaveModalProps) {
-    const { message, peer, onSaved } = props;
+    const { message, peer, onSaved, onUnsaved } = props;
 
     const [session, setSession] = useState<AuthSession | null | undefined>(
         undefined,
     );
     const [isSaved, setIsSaved] = useState(props.isSaved);
     const [woohooId, setWoohooId] = useState<string | null>(null);
+    const [timelineItemId, setTimelineItemId] = useState<string | null>(null);
     const [followUpAt, setFollowUpAt] = useState("");
     const [saving, setSaving] = useState(false);
+    const [unsaving, setUnsaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const signOutOnExpiry = () => {
@@ -50,6 +53,22 @@ export function SaveModal(props: SaveModalProps) {
                     });
                     setIsSaved(result.saved);
                     setWoohooId(result.woohooId ?? null);
+                    setTimelineItemId(result.timelineItemId ?? null);
+
+                    // Keep the parent SaveButton + local cache in sync with the
+                    // server — the cache can go stale if the user deletes from
+                    // the web app.
+                    if (result.saved) {
+                        onSaved?.();
+                        if (result.woohooId) {
+                            chrome.storage.local.set({
+                                [`saved_${message.id}`]: result.woohooId,
+                            });
+                        }
+                    } else {
+                        onUnsaved?.();
+                        chrome.storage.local.remove(`saved_${message.id}`);
+                    }
                 }
             },
         );
@@ -112,10 +131,34 @@ export function SaveModal(props: SaveModalProps) {
 
         setIsSaved(true);
         setWoohooId(result.woohoo.id);
+        setTimelineItemId(result.timelineItem.id);
         onSaved?.();
 
         // Cache saved state locally for quick bookmark icon init.
         chrome.storage.local.set({ [`saved_${message.id}`]: result.woohoo.id });
+    };
+
+    const handleUnsave = async () => {
+        if (!session || !timelineItemId) return;
+        setUnsaving(true);
+        setError(null);
+
+        const client = new WoohooApiClient(BASE_URL, session.token, signOutOnExpiry);
+        const result = await client.deleteTimelineItem(timelineItemId);
+
+        setUnsaving(false);
+
+        if ("error" in result) {
+            setError(result.error);
+            return;
+        }
+
+        setIsSaved(false);
+        setWoohooId(null);
+        setTimelineItemId(null);
+        onUnsaved?.();
+
+        chrome.storage.local.remove(`saved_${message.id}`);
     };
 
     const woohooUrl = woohooId
@@ -217,6 +260,16 @@ export function SaveModal(props: SaveModalProps) {
                         style={{ width: "100%", textAlign: "center" }}
                     >
                         {saving ? "Saving…" : "Save"}
+                    </button>
+                )}
+                {isSaved && (
+                    <button
+                        className="btn btn-secondary"
+                        onClick={handleUnsave}
+                        disabled={unsaving || !timelineItemId}
+                        style={{ width: "100%", textAlign: "center" }}
+                    >
+                        {unsaving ? "Removing…" : "Unsave"}
                     </button>
                 )}
             </div>

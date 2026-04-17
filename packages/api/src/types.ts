@@ -51,4 +51,5 @@ export interface SaveItemResponse {
 export interface CheckSavedResponse {
     saved: boolean;
     woohooId?: string;
+    timelineItemId?: string;
 }

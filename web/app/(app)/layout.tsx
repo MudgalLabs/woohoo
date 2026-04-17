@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { getSession } from "@/lib/get-session";
 import {
     Sidebar,
@@ -28,7 +27,10 @@ export default async function AppLayout({
         <SidebarProvider>
             <Sidebar collapsible="icon">
                 <SidebarHeader>
-                    <Logo href="/dashboard" className="px-2 py-1 group-data-[collapsible=icon]:hidden" />
+                    <Logo
+                        href="/dashboard"
+                        className="px-2 py-1 group-data-[collapsible=icon]:hidden"
+                    />
                     <Logo
                         href="/dashboard"
                         variant="mark"

@@ -52,5 +52,6 @@ export async function GET(request: Request) {
     return NextResponse.json({
         saved: !!item,
         woohooId: item ? woohoo.id : undefined,
+        timelineItemId: item?.id,
     });
 }

@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { getSession } from "@/lib/get-session";
 import { prisma } from "@/lib/prisma";
 import { FollowUpEditor } from "./FollowUpEditor";
+import { DeleteWoohooButton } from "./DeleteWoohooButton";
+import { DeleteTimelineItemButton } from "./DeleteTimelineItemButton";
 
 export const metadata = { title: "Woohoo" };
 
@@ -24,14 +26,19 @@ export default async function WoohooDetailPage({
     if (!woohoo) notFound();
 
     return (
-        <div className="p-6 max-w-2xl mx-auto">
+        <div className="w-full max-w-3xl mx-auto p-6">
             <div className="mb-6">
-                <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                        {woohoo.platform}
-                    </span>
-                    <span className="text-muted-foreground">·</span>
-                    <h1 className="text-xl font-semibold">u/{woohoo.peerId}</h1>
+                <div className="flex items-center justify-between gap-2 mb-1">
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                            {woohoo.platform}
+                        </span>
+                        <span className="text-muted-foreground">·</span>
+                        <h1 className="text-xl font-semibold">
+                            u/{woohoo.peerId}
+                        </h1>
+                    </div>
+                    <DeleteWoohooButton woohooId={woohoo.id} />
                 </div>
 
                 <p className="text-xs text-muted-foreground mb-3">
@@ -44,7 +51,9 @@ export default async function WoohooDetailPage({
                 </p>
 
                 <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">Follow up:</span>
+                    <span className="text-sm text-muted-foreground">
+                        Follow up:
+                    </span>
                     <FollowUpEditor
                         woohooId={woohoo.id}
                         followUpAt={
@@ -62,7 +71,9 @@ export default async function WoohooDetailPage({
                 </h2>
 
                 {woohoo.timeline.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No items yet.</p>
+                    <p className="text-sm text-muted-foreground">
+                        No items yet.
+                    </p>
                 ) : (
                     <div className="flex flex-col gap-4">
                         {woohoo.timeline.map((item) => (
@@ -74,16 +85,21 @@ export default async function WoohooDetailPage({
                                     <span className="text-sm font-medium">
                                         {item.authorName ?? item.authorId}
                                     </span>
-                                    <span className="text-xs text-muted-foreground">
-                                        {new Date(
-                                            item.interactionAt,
-                                        ).toLocaleString("en-US", {
-                                            month: "short",
-                                            day: "numeric",
-                                            hour: "numeric",
-                                            minute: "2-digit",
-                                        })}
-                                    </span>
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-xs text-muted-foreground">
+                                            {new Date(
+                                                item.interactionAt,
+                                            ).toLocaleString("en-US", {
+                                                month: "short",
+                                                day: "numeric",
+                                                hour: "numeric",
+                                                minute: "2-digit",
+                                            })}
+                                        </span>
+                                        <DeleteTimelineItemButton
+                                            itemId={item.id}
+                                        />
+                                    </div>
                                 </div>
 
                                 <p className="text-sm text-foreground whitespace-pre-wrap">
