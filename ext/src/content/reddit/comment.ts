@@ -80,7 +80,8 @@ export function injectAndReturnCommentSaveButtonContainers(): CommentSaveButtonC
         element.style.position = "absolute";
         element.style.right = "0px";
         element.style.bottom = "0px";
-        element.style.zIndex = "10";
+        // Stay above comment text but below Reddit overlays (chat popup, etc).
+        element.style.zIndex = "1";
         element.style.opacity = inactiveOpacity;
         element.style.transform = "translateY(4px) scale(0.96)";
         element.style.transition =

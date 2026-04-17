@@ -13,6 +13,13 @@ export function isChatPopupOpen(): boolean {
     return isVisible(chatClient);
 }
 
+function getPeerFromChatHeader(): string | null {
+    const el = queryAllDeep(
+        '[aria-label^="Current chat, Direct chat with "]',
+    )[0];
+    return el?.textContent?.trim() || null;
+}
+
 export function getActiveRedditChatRoomUrl(): string | null {
     // On the full chat page, the address bar is authoritative.
     if (window.location.pathname.startsWith("/chat/room/")) {
@@ -47,10 +54,14 @@ export function observeActiveRedditDM(
         }
 
         const active = queryAllDeep("a.peer.container.selected")[0];
-        if (!active) return null;
+        const fromSidenav =
+            active?.querySelector(".room-name")?.textContent?.trim() || null;
+        if (fromSidenav) return fromSidenav;
 
-        // Active chat box's title is the Reddit user's username.
-        return active.querySelector(".room-name")?.textContent?.trim() || null;
+        // Sidenav misses old chats whose row hasn't been rendered yet.
+        // Fall back to the chat header, which is present on both the popup
+        // and /chat/room/* surfaces via the <rs-room> shadow DOM.
+        return getPeerFromChatHeader();
     };
 
     const run = () => {
@@ -83,6 +94,27 @@ export function observeActiveRedditDM(
     };
 }
 
+// Rescans while a DM chat is open so lazy-loaded history and newly-arriving
+// messages still get save buttons. Mirrors observeRedditPostPage.
+export function observeActiveRedditDMMessages(callback: () => void) {
+    let scheduled = false;
+    const schedule = () => {
+        if (scheduled) return;
+        scheduled = true;
+        setTimeout(() => {
+            scheduled = false;
+            callback();
+        }, 150);
+    };
+
+    const observer = new MutationObserver(schedule);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    schedule();
+
+    return () => observer.disconnect();
+}
+
 interface SaveButtonContainer {
     element: HTMLDivElement;
     message: Message;
@@ -91,8 +123,6 @@ interface SaveButtonContainer {
 export function injectAndReturnSaveButtonContainers(): SaveButtonContainer[] {
     const messages = queryAllDeep(".room-message-body");
     const containers: SaveButtonContainer[] = [];
-
-    console.log("Num of messages found:", messages.length);
 
     let prevMessage: Message | null = null;
 

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
     injectAndReturnSaveButtonContainers,
     observeActiveRedditDM,
+    observeActiveRedditDMMessages,
 } from "@/content/reddit/dm";
 import {
     injectAndReturnCommentSaveButtonContainers,
@@ -30,32 +31,35 @@ function App() {
         return cleanup;
     }, []);
 
-    // Whenever the active chat's username changes, inject the <SaveButton />.
+    // While a DM chat is open, keep rescanning on DOM mutations so
+    // lazy-loaded history and incoming messages also receive save buttons.
     useEffect(() => {
         setIsReady(false);
 
         if (!peer) return;
 
-        const containers = injectAndReturnSaveButtonContainers();
+        const cleanup = observeActiveRedditDMMessages(() => {
+            const containers = injectAndReturnSaveButtonContainers();
 
-        // TODO: id = message/comment ID.
-        containers.forEach((container) => {
-            // already mounted
-            if (container.element.shadowRoot) return;
+            containers.forEach((container) => {
+                if (container.element.shadowRoot) return;
 
-            const messageId = container.message.id;
-            chrome.storage.local.get(`saved_${messageId}`, (result) => {
-                const isSaved = !!result[`saved_${messageId}`];
-                mountWithShadow(container.element, SaveButton, {
-                    message: container.message,
-                    isSaved,
-                    peer: peer ?? "",
-                    kind: "dm",
+                const messageId = container.message.id;
+                chrome.storage.local.get(`saved_${messageId}`, (result) => {
+                    const isSaved = !!result[`saved_${messageId}`];
+                    mountWithShadow(container.element, SaveButton, {
+                        message: container.message,
+                        isSaved,
+                        peer: peer ?? "",
+                        kind: "dm",
+                    });
                 });
             });
+
+            setIsReady(true);
         });
 
-        setIsReady(true);
+        return cleanup;
     }, [peer]);
 
     // Inject a save button on every Reddit post comment. Unlike DMs, comments
