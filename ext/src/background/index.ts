@@ -16,7 +16,21 @@ type Reply =
 async function handle(msg: IncomingMessage): Promise<Reply> {
     if (msg.type === "GET_SESSION") {
         const stored = await chrome.storage.local.get("session");
-        return { session: (stored["session"] as AuthSession) ?? null };
+        const session = stored["session"] as AuthSession | undefined;
+
+        if (!session) return { session: null };
+
+        // Validate with server — also refreshes expiresAt if within updateAge window.
+        const client = new WoohooApiClient(BASE_URL, session.token);
+        const refreshed = await client.getSession();
+
+        if (!refreshed) {
+            await chrome.storage.local.remove("session");
+            return { session: null };
+        }
+
+        await chrome.storage.local.set({ session: refreshed });
+        return { session: refreshed };
     }
 
     if (msg.type === "SIGN_IN") {

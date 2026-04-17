@@ -32,7 +32,7 @@ export function WoohooCard({ woohoo }: WoohooCardProps) {
     return (
         <Link
             href={`/my-woohoos/${woohoo.id}`}
-            className="block rounded-lg border border-border bg-card hover:bg-accent/30 transition-colors p-4"
+            className="block rounded-lg border border-border bg-card p-4"
         >
             <div className="flex items-start justify-between gap-2 mb-1">
                 <div className="flex items-center gap-2 min-w-0">
@@ -52,11 +52,9 @@ export function WoohooCard({ woohoo }: WoohooCardProps) {
                 )}
             </div>
 
-            {preview && (
-                <p className="text-sm text-muted-foreground italic mt-1 mb-2 line-clamp-2">
-                    &ldquo;{preview}&rdquo;
-                </p>
-            )}
+            <p className="text-sm text-muted-foreground italic mt-1 mb-2 line-clamp-2 min-h-[2.5rem]">
+                {preview ? <>&ldquo;{preview}&rdquo;</> : null}
+            </p>
 
             {woohoo.lastSavedAt && (
                 <p className="text-xs text-muted-foreground">

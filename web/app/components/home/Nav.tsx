@@ -22,6 +22,12 @@ export function Nav({ isLoggedIn = false }: NavProps) {
                     >
                         Pricing
                     </Link>
+                    <Link
+                        href="/extension"
+                        className="text-sm text-muted-foreground hover:text-foreground transition"
+                    >
+                        Extension
+                    </Link>
                 </div>
 
                 <div className="flex items-center gap-2">
