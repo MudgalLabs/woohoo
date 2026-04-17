@@ -13,6 +13,24 @@ export function isChatPopupOpen(): boolean {
     return isVisible(chatClient);
 }
 
+export function getActiveRedditChatRoomUrl(): string | null {
+    // On the full chat page, the address bar is authoritative.
+    if (window.location.pathname.startsWith("/chat/room/")) {
+        const { origin, pathname } = window.location;
+        return `${origin}${pathname.replace(/\/+$/, "")}`;
+    }
+
+    // On other Reddit pages the chat must be open for a room to be active.
+    if (!isChatPopupOpen()) return null;
+
+    const nav = queryAllDeep("rs-rooms-nav")[0];
+    const roomId = nav?.getAttribute("activeroom");
+    if (!roomId) return null;
+
+    // activeroom is the decoded form (e.g. "!abc:reddit.com") — encode ':' etc.
+    return `https://www.reddit.com/chat/room/${encodeURIComponent(roomId)}`;
+}
+
 export function observeActiveRedditDM(
     callback: (username: string | null) => void,
 ) {

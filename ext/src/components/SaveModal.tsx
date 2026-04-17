@@ -3,7 +3,7 @@ import { SquareArrowOutUpRight } from "lucide-react";
 import { WoohooApiClient } from "@woohoo/api";
 import type { AuthSession } from "@woohoo/api";
 
-import { Message } from "@/content/reddit/dm";
+import { Message, getActiveRedditChatRoomUrl } from "@/content/reddit/dm";
 import { Branding } from "@/components/Branding";
 
 const BASE_URL =
@@ -107,9 +107,11 @@ export function SaveModal(props: SaveModalProps) {
         setError(null);
 
         const client = new WoohooApiClient(BASE_URL, session.token, signOutOnExpiry);
+        const chatUrl = getActiveRedditChatRoomUrl() ?? undefined;
         const result = await client.saveItem({
             platform: "reddit",
             peerId: peer,
+            chatUrl,
             followUpAt: followUpAt || undefined,
             item: {
                 type: "dm",
@@ -183,7 +185,7 @@ export function SaveModal(props: SaveModalProps) {
                             href={woohooUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex-x"
+                            className="link flex-x"
                             style={{ fontWeight: 500, columnGap: 2, fontSize: 12 }}
                         >
                             Open

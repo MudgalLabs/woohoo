@@ -106,13 +106,14 @@ h4 {
     margin: 0;
 }
 
-a {
+.link {
     color: var(--red);
     text-decoration: none;
 }
 
-a:hover {
+.link:hover {
     color: var(--red-dark);
+    text-decoration: underline;
 }
 
 .btn {

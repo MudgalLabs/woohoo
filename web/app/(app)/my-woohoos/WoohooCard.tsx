@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Woohoo, TimelineItem } from "@/app/generated/prisma/client";
+import { PlatformIcon, peerHandle } from "@/components/PlatformIcon";
 
 interface WoohooCardProps {
     woohoo: Woohoo & { timeline: TimelineItem[] };
@@ -36,12 +37,9 @@ export function WoohooCard({ woohoo }: WoohooCardProps) {
         >
             <div className="flex items-start justify-between gap-2 mb-1">
                 <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        {woohoo.platform}
-                    </span>
-                    <span className="text-muted-foreground">·</span>
+                    <PlatformIcon platform={woohoo.platform} size={16} />
                     <span className="text-sm font-medium text-foreground truncate">
-                        u/{woohoo.peerId}
+                        {peerHandle(woohoo.platform, woohoo.peerId)}
                     </span>
                 </div>
 

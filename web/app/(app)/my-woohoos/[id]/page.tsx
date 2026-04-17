@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { ExternalLink } from "lucide-react";
 
 import { getSession } from "@/lib/get-session";
 import { prisma } from "@/lib/prisma";
@@ -6,6 +7,7 @@ import { FollowUpEditor } from "./FollowUpEditor";
 import { DeleteWoohooButton } from "./DeleteWoohooButton";
 import { DeleteTimelineItemButton } from "./DeleteTimelineItemButton";
 import { ChatBubble } from "./ChatBubble";
+import { PlatformIcon, peerHandle } from "@/components/PlatformIcon";
 
 function dayLabel(date: Date): string {
     const d = new Date(date);
@@ -51,14 +53,27 @@ export default async function WoohooDetailPage({
         <div className="w-full max-w-3xl mx-auto p-6 border-x border-sidebar-border/50 flex-1">
             <div className="rounded-lg border border-border bg-card p-5 mb-6">
                 <div className="flex items-center justify-between gap-2 mb-1">
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                            {woohoo.platform}
-                        </span>
-                        <span className="text-muted-foreground">·</span>
-                        <h1 className="text-xl font-semibold">
-                            u/{woohoo.peerId}
-                        </h1>
+                    <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex items-center gap-2 min-w-0">
+                            <PlatformIcon platform={woohoo.platform} />
+                            <h1 className="text-xl font-semibold truncate">
+                                {peerHandle(woohoo.platform, woohoo.peerId)}
+                            </h1>
+                        </div>
+                        {woohoo.chatUrl && (
+                            <>
+                                <span className="text-muted-foreground">·</span>
+                                <a
+                                    href={woohoo.chatUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1 text-sm text-primary hover:underline shrink-0"
+                                >
+                                    Open chat
+                                    <ExternalLink size={13} />
+                                </a>
+                            </>
+                        )}
                     </div>
                     <DeleteWoohooButton woohooId={woohoo.id} />
                 </div>

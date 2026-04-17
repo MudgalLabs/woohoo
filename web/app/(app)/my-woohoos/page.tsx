@@ -19,14 +19,14 @@ export default async function MyWoohoos() {
     });
 
     return (
-        <div className="p-6 max-w-5xl w-full">
+        <div className="p-6 w-full">
             {woohoos.length === 0 ? (
                 <p className="text-muted-foreground text-sm">
                     No Woohoos yet. Save a Reddit DM with the extension to get
                     started.
                 </p>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3">
                     {woohoos.map((w) => (
                         <WoohooCard key={w.id} woohoo={w} />
                     ))}
