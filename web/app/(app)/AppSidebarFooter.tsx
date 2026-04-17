@@ -10,6 +10,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function AppSidebarFooter() {
     const router = useRouter();
@@ -22,6 +23,7 @@ export function AppSidebarFooter() {
     return (
         <SidebarFooter>
             <SidebarMenu>
+                <ThemeToggle />
                 <SidebarMenuItem>
                     <SidebarMenuButton onClick={handleSignOut} tooltip="Sign out">
                         <LogOut />

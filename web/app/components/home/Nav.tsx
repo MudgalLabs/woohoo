@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@woohoo/ui";
 import { Logo } from "@/app/components/brand/Logo";
+import { ThemeToggleIcon } from "@/app/components/ThemeToggleIcon";
 
 interface NavProps {
     isLoggedIn?: boolean;
@@ -31,6 +32,7 @@ export function Nav({ isLoggedIn = false }: NavProps) {
                 </div>
 
                 <div className="flex items-center gap-2">
+                    <ThemeToggleIcon />
                     {isLoggedIn ? (
                         <Link href="/dashboard">
                             <Button className="group" variant="default">

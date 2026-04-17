@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/get-session";
 import {
@@ -23,8 +24,11 @@ export default async function AppLayout({
     const session = await getSession();
     if (!session) redirect("/sign-in");
 
+    const cookieStore = await cookies();
+    const defaultOpen = cookieStore.get("sidebar_state")?.value !== "false";
+
     return (
-        <SidebarProvider>
+        <SidebarProvider defaultOpen={defaultOpen}>
             <Sidebar collapsible="icon">
                 <SidebarHeader>
                     <Logo

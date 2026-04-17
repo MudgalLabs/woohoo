@@ -5,6 +5,7 @@ import "./globals.css";
 import { IBM_Plex_Sans, JetBrains_Mono, Fredoka } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { APP_DESCRIPTION } from "@/lib/constants";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const sans = IBM_Plex_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -67,6 +68,7 @@ export default function RootLayout({
     return (
         <html
             lang="en"
+            suppressHydrationWarning
             className={cn(
                 "h-full",
                 "antialiased",
@@ -76,7 +78,16 @@ export default function RootLayout({
                 sans.variable,
             )}
         >
-            <body className="min-h-full flex flex-col">{children}</body>
+            <body className="min-h-full flex flex-col">
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                >
+                    {children}
+                </ThemeProvider>
+            </body>
         </html>
     );
 }

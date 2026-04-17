@@ -5,6 +5,28 @@ import { prisma } from "@/lib/prisma";
 import { FollowUpEditor } from "./FollowUpEditor";
 import { DeleteWoohooButton } from "./DeleteWoohooButton";
 import { DeleteTimelineItemButton } from "./DeleteTimelineItemButton";
+import { ChatBubble } from "./ChatBubble";
+
+function dayLabel(date: Date): string {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diffDays = Math.round(
+        (today.getTime() - d.getTime()) / (1000 * 60 * 60 * 24),
+    );
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "Yesterday";
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function sameDay(a: Date, b: Date): boolean {
+    return (
+        a.getFullYear() === b.getFullYear() &&
+        a.getMonth() === b.getMonth() &&
+        a.getDate() === b.getDate()
+    );
+}
 
 export const metadata = { title: "Woohoo" };
 
@@ -26,8 +48,8 @@ export default async function WoohooDetailPage({
     if (!woohoo) notFound();
 
     return (
-        <div className="w-full max-w-3xl mx-auto p-6">
-            <div className="mb-6">
+        <div className="w-full max-w-3xl mx-auto p-6 border-x border-sidebar-border/50 flex-1">
+            <div className="rounded-lg border border-border bg-card p-5 mb-6">
                 <div className="flex items-center justify-between gap-2 mb-1">
                     <div className="flex items-center gap-2">
                         <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -65,7 +87,7 @@ export default async function WoohooDetailPage({
                 </div>
             </div>
 
-            <div className="border-t border-border pt-6">
+            <div>
                 <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-4">
                     Timeline
                 </h2>
@@ -75,55 +97,90 @@ export default async function WoohooDetailPage({
                         No items yet.
                     </p>
                 ) : (
-                    <div className="flex flex-col gap-4">
-                        {woohoo.timeline.map((item) => (
-                            <div
-                                key={item.id}
-                                className="rounded-lg border border-border bg-card p-4"
-                            >
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm font-medium">
-                                        {item.authorName ?? item.authorId}
-                                    </span>
-                                    <div className="flex items-center gap-1">
-                                        <span className="text-xs text-muted-foreground">
-                                            {new Date(
-                                                item.interactionAt,
-                                            ).toLocaleString("en-US", {
-                                                month: "short",
-                                                day: "numeric",
-                                                hour: "numeric",
-                                                minute: "2-digit",
-                                            })}
-                                        </span>
-                                        <DeleteTimelineItemButton
-                                            itemId={item.id}
+                    <div className="flex flex-col gap-3">
+                        {woohoo.timeline.map((item, idx) => {
+                            const prev = woohoo.timeline[idx - 1];
+                            const showDayDivider =
+                                !prev ||
+                                !sameDay(
+                                    new Date(prev.interactionAt),
+                                    new Date(item.interactionAt),
+                                );
+                            const isFromPeer = item.authorId === woohoo.peerId;
+
+                            return (
+                                <div
+                                    key={item.id}
+                                    className="flex flex-col gap-3"
+                                >
+                                    {showDayDivider && (
+                                        <div className="flex justify-center my-2">
+                                            <span className="text-xs text-muted-foreground px-2">
+                                                {dayLabel(
+                                                    new Date(item.interactionAt),
+                                                )}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {item.type === "dm" ? (
+                                        <ChatBubble
+                                            item={item}
+                                            isFromPeer={isFromPeer}
                                         />
-                                    </div>
-                                </div>
+                                    ) : (
+                                        <div className="rounded-lg border border-border bg-card p-4">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-sm font-medium">
+                                                    {item.authorName ??
+                                                        item.authorId}
+                                                </span>
+                                                <div className="flex items-center gap-1">
+                                                    <span className="text-xs text-muted-foreground">
+                                                        {new Date(
+                                                            item.interactionAt,
+                                                        ).toLocaleString(
+                                                            "en-US",
+                                                            {
+                                                                month: "short",
+                                                                day: "numeric",
+                                                                hour: "numeric",
+                                                                minute: "2-digit",
+                                                            },
+                                                        )}
+                                                    </span>
+                                                    <DeleteTimelineItemButton
+                                                        itemId={item.id}
+                                                    />
+                                                </div>
+                                            </div>
 
-                                <p className="text-sm text-foreground whitespace-pre-wrap">
-                                    {item.contentText}
-                                </p>
+                                            <p className="text-sm text-foreground whitespace-pre-wrap">
+                                                {item.contentText}
+                                            </p>
 
-                                <div className="flex items-center justify-between mt-2">
-                                    <span className="text-xs text-muted-foreground capitalize">
-                                        via {woohoo.platform} {item.type}
-                                    </span>
+                                            <div className="flex items-center justify-between mt-2">
+                                                <span className="text-xs text-muted-foreground capitalize">
+                                                    via {woohoo.platform}{" "}
+                                                    {item.type}
+                                                </span>
 
-                                    {item.sourceUrl && (
-                                        <a
-                                            href={item.sourceUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-xs text-primary hover:underline"
-                                        >
-                                            View original ↗
-                                        </a>
+                                                {item.sourceUrl && (
+                                                    <a
+                                                        href={item.sourceUrl}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-xs text-primary hover:underline"
+                                                    >
+                                                        View original ↗
+                                                    </a>
+                                                )}
+                                            </div>
+                                        </div>
                                     )}
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
             </div>
