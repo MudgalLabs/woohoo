@@ -32,6 +32,12 @@ export function SaveModal(props: SaveModalProps) {
     const [saving, setSaving] = useState(false);
     const [unsaving, setUnsaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [ancestorMatch, setAncestorMatch] = useState<{
+        woohooId: string;
+        peerId: string;
+        peerName?: string | null;
+    } | null>(null);
+    const [forceNewWoohoo, setForceNewWoohoo] = useState(false);
 
     const signOutOnExpiry = () => {
         chrome.runtime.sendMessage({ type: "SIGN_OUT" });
@@ -46,15 +52,24 @@ export function SaveModal(props: SaveModalProps) {
                 setSession(s);
 
                 if (s && peer && message.id) {
-                    const client = new WoohooApiClient(BASE_URL, s.token, signOutOnExpiry);
+                    const client = new WoohooApiClient(
+                        BASE_URL,
+                        s.token,
+                        signOutOnExpiry,
+                    );
                     const result = await client.checkSaved({
                         platform: "reddit",
                         peerId: peer,
                         externalId: message.id,
+                        ancestorExternalIds:
+                            kind === "comment"
+                                ? message.ancestorExternalIds
+                                : undefined,
                     });
                     setIsSaved(result.saved);
                     setWoohooId(result.woohooId ?? null);
                     setTimelineItemId(result.timelineItemId ?? null);
+                    setAncestorMatch(result.ancestorMatch ?? null);
 
                     // Keep the parent SaveButton + local cache in sync with the
                     // server — the cache can go stale if the user deletes from
@@ -85,7 +100,8 @@ export function SaveModal(props: SaveModalProps) {
         };
 
         chrome.storage.onChanged.addListener(handleStorageChange);
-        return () => chrome.storage.onChanged.removeListener(handleStorageChange);
+        return () =>
+            chrome.storage.onChanged.removeListener(handleStorageChange);
     }, []);
 
     if (session === undefined) return null;
@@ -107,14 +123,23 @@ export function SaveModal(props: SaveModalProps) {
         setSaving(true);
         setError(null);
 
-        const client = new WoohooApiClient(BASE_URL, session.token, signOutOnExpiry);
+        const client = new WoohooApiClient(
+            BASE_URL,
+            session.token,
+            signOutOnExpiry,
+        );
         const chatUrl =
-            kind === "dm" ? getActiveRedditChatRoomUrl() ?? undefined : undefined;
+            kind === "dm"
+                ? (getActiveRedditChatRoomUrl() ?? undefined)
+                : undefined;
         const result = await client.saveItem({
             platform: "reddit",
             peerId: peer,
             chatUrl,
             followUpAt: followUpAt || undefined,
+            ancestorExternalIds:
+                kind === "comment" ? message.ancestorExternalIds : undefined,
+            forceNewWoohoo: kind === "comment" ? forceNewWoohoo : undefined,
             item: {
                 type: kind,
                 externalId: message.id,
@@ -148,7 +173,11 @@ export function SaveModal(props: SaveModalProps) {
         setUnsaving(true);
         setError(null);
 
-        const client = new WoohooApiClient(BASE_URL, session.token, signOutOnExpiry);
+        const client = new WoohooApiClient(
+            BASE_URL,
+            session.token,
+            signOutOnExpiry,
+        );
         const result = await client.deleteTimelineItem(timelineItemId);
 
         setUnsaving(false);
@@ -178,7 +207,10 @@ export function SaveModal(props: SaveModalProps) {
     return (
         <div className="cb-modal">
             <div className="flex-y cb-modal-header" style={{ rowGap: 0 }}>
-                <div className="flex-x" style={{ justifyContent: "space-between" }}>
+                <div
+                    className="flex-x"
+                    style={{ justifyContent: "space-between" }}
+                >
                     <h2 className="cb-modal-title">
                         {isSaved
                             ? "Saved"
@@ -193,10 +225,17 @@ export function SaveModal(props: SaveModalProps) {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="link flex-x"
-                            style={{ fontWeight: 500, columnGap: 2, fontSize: 12 }}
+                            style={{
+                                fontWeight: 500,
+                                columnGap: 2,
+                                fontSize: 12,
+                            }}
                         >
                             Open
-                            <SquareArrowOutUpRight size={11} strokeWidth={2.5} />
+                            <SquareArrowOutUpRight
+                                size={11}
+                                strokeWidth={2.5}
+                            />
                         </a>
                     )}
                 </div>
@@ -213,6 +252,53 @@ export function SaveModal(props: SaveModalProps) {
             >
                 &ldquo;{contentPreview}&rdquo;
             </p>
+
+            {!isSaved && kind === "comment" && ancestorMatch && (
+                <div style={{ marginBottom: 10, whiteSpace: "normal" }}>
+                    <label
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            columnGap: 6,
+                            fontSize: 12,
+                            color: "var(--ink)",
+                            cursor: "pointer",
+                        }}
+                    >
+                        <input
+                            type="checkbox"
+                            checked={forceNewWoohoo}
+                            onChange={(e) =>
+                                setForceNewWoohoo(e.target.checked)
+                            }
+                            style={{ flexShrink: 0 }}
+                        />
+                        <span
+                            style={{
+                                minWidth: 0,
+                                overflowWrap: "break-word",
+                                wordBreak: "break-word",
+                            }}
+                        >
+                            Save in Woohoo for u/{peer}
+                        </span>
+                    </label>
+                    <p
+                        style={{
+                            fontSize: 11,
+                            color: "var(--ink-muted)",
+                            margin: 0,
+                            marginTop: 2,
+                            marginLeft: 22,
+                            overflowWrap: "break-word",
+                            wordBreak: "break-word",
+                        }}
+                    >
+                        Otherwise this reply will be added to u/
+                        {ancestorMatch.peerId}'s Woohoo.
+                    </p>
+                </div>
+            )}
 
             {!isSaved && (
                 <div style={{ marginBottom: 10 }}>

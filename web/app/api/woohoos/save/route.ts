@@ -9,6 +9,8 @@ interface SaveItemBody {
     peerId: string;
     chatUrl?: string;
     followUpAt?: string;
+    ancestorExternalIds?: string[];
+    forceNewWoohoo?: boolean;
     item: {
         type: string;
         externalId: string;
@@ -28,7 +30,7 @@ export async function POST(request: Request) {
     }
 
     const body = (await request.json()) as SaveItemBody;
-    const { platform, peerId, chatUrl, followUpAt, item } = body;
+    const { platform, peerId, chatUrl, followUpAt, ancestorExternalIds, forceNewWoohoo, item } = body;
 
     if (!platform || !peerId || !item?.externalId || !item?.contentText) {
         return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -42,30 +44,70 @@ export async function POST(request: Request) {
     const interactionAt = new Date(item.interactionAt);
     const now = new Date();
 
-    const woohoo = await prisma.woohoo.upsert({
-        where: {
-            userId_platform_peerId: {
+    // If this comment is a reply to an already-saved ancestor, thread it
+    // into that ancestor's Woohoo instead of creating one for the reply's
+    // author. Iterates nearest-first so the closest saved ancestor wins.
+    let woohoo = null as Awaited<ReturnType<typeof prisma.woohoo.upsert>> | null;
+    if (
+        item.type === "comment" &&
+        !forceNewWoohoo &&
+        ancestorExternalIds &&
+        ancestorExternalIds.length > 0
+    ) {
+        for (const ancestorId of ancestorExternalIds) {
+            const match = await prisma.timelineItem.findFirst({
+                where: {
+                    externalId: ancestorId,
+                    woohoo: {
+                        userId: session.user.id,
+                        platform: Platform[platformValue],
+                    },
+                },
+                include: { woohoo: true },
+            });
+            if (match) {
+                woohoo = await prisma.woohoo.update({
+                    where: { id: match.woohoo.id },
+                    data: {
+                        ...(chatUrl ? { chatUrl } : {}),
+                        ...(followUpAt !== undefined
+                            ? { followUpAt: followUpAt ? new Date(followUpAt) : null }
+                            : {}),
+                        lastInteractionAt: interactionAt,
+                        lastSavedAt: now,
+                    },
+                });
+                break;
+            }
+        }
+    }
+
+    if (!woohoo) {
+        woohoo = await prisma.woohoo.upsert({
+            where: {
+                userId_platform_peerId: {
+                    userId: session.user.id,
+                    platform: Platform[platformValue],
+                    peerId,
+                },
+            },
+            create: {
                 userId: session.user.id,
                 platform: Platform[platformValue],
                 peerId,
+                chatUrl: chatUrl ?? null,
+                followUpAt: followUpAt ? new Date(followUpAt) : null,
+                lastInteractionAt: interactionAt,
+                lastSavedAt: now,
             },
-        },
-        create: {
-            userId: session.user.id,
-            platform: Platform[platformValue],
-            peerId,
-            chatUrl: chatUrl ?? null,
-            followUpAt: followUpAt ? new Date(followUpAt) : null,
-            lastInteractionAt: interactionAt,
-            lastSavedAt: now,
-        },
-        update: {
-            ...(chatUrl ? { chatUrl } : {}),
-            ...(followUpAt !== undefined ? { followUpAt: followUpAt ? new Date(followUpAt) : null } : {}),
-            lastInteractionAt: interactionAt,
-            lastSavedAt: now,
-        },
-    });
+            update: {
+                ...(chatUrl ? { chatUrl } : {}),
+                ...(followUpAt !== undefined ? { followUpAt: followUpAt ? new Date(followUpAt) : null } : {}),
+                lastInteractionAt: interactionAt,
+                lastSavedAt: now,
+            },
+        });
+    }
 
     const existing = item.externalId
         ? await prisma.timelineItem.findUnique({

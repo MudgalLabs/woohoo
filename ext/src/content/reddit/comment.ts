@@ -13,6 +13,10 @@ export type Comment = {
     contentText: string;
     contentHTML: string;
     sourceUrl: string;
+    // Reddit comment IDs (thingid, e.g. t1_xxx) of ancestor comments,
+    // nearest-first. Used by the save path to thread replies into an
+    // already-saved ancestor's Woohoo.
+    ancestorExternalIds: string[];
 };
 
 export function isOnRedditPostPage(): boolean {
@@ -113,6 +117,20 @@ export function injectAndReturnCommentSaveButtonContainers(): CommentSaveButtonC
     return containers;
 }
 
+function collectAncestorCommentIds(el: Element): string[] {
+    const ids: string[] = [];
+    let cursor: Element | null | undefined = el.parentElement?.closest(
+        "shreddit-comment",
+    );
+    // Cap iterations as a guard; real threads rarely exceed 5–10 deep.
+    for (let i = 0; i < 10 && cursor; i++) {
+        const thingId = cursor.getAttribute("thingid");
+        if (thingId) ids.push(thingId);
+        cursor = cursor.parentElement?.closest("shreddit-comment");
+    }
+    return ids;
+}
+
 export function parseComment(el: Element): Comment | null {
     try {
         const id = el.getAttribute("thingid");
@@ -141,6 +159,7 @@ export function parseComment(el: Element): Comment | null {
             contentText,
             contentHTML,
             sourceUrl,
+            ancestorExternalIds: collectAncestorCommentIds(el),
         };
     } catch (e) {
         console.error("Failed to parse comment", e);

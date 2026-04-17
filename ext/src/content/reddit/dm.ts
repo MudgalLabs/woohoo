@@ -196,6 +196,8 @@ export type Message = {
     contentHTML: string;
     // Only populated for comments; DMs leave this undefined.
     sourceUrl?: string;
+    // Only populated for comments; nearest-first ancestor Reddit thingids.
+    ancestorExternalIds?: string[];
 };
 
 export function parseMessage(

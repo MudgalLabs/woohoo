@@ -164,9 +164,16 @@ export class WoohooApiClient {
         platform: string;
         peerId: string;
         externalId: string;
+        ancestorExternalIds?: string[];
     }): Promise<CheckSavedResponse> {
-        const qs = new URLSearchParams(params).toString();
-        const res = await fetch(`${this.baseUrl}/api/woohoos/check?${qs}`, {
+        const { ancestorExternalIds, ...rest } = params;
+        const qs = new URLSearchParams(rest);
+        if (ancestorExternalIds) {
+            for (const id of ancestorExternalIds) {
+                qs.append("ancestorExternalIds", id);
+            }
+        }
+        const res = await fetch(`${this.baseUrl}/api/woohoos/check?${qs.toString()}`, {
             headers: this.authHeaders(),
         });
 
