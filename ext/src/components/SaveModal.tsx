@@ -14,12 +14,13 @@ interface SaveModalProps {
     message: Message;
     isSaved: boolean;
     peer: string;
+    kind: "dm" | "comment";
     onSaved?: () => void;
     onUnsaved?: () => void;
 }
 
 export function SaveModal(props: SaveModalProps) {
-    const { message, peer, onSaved, onUnsaved } = props;
+    const { message, peer, kind, onSaved, onUnsaved } = props;
 
     const [session, setSession] = useState<AuthSession | null | undefined>(
         undefined,
@@ -107,17 +108,19 @@ export function SaveModal(props: SaveModalProps) {
         setError(null);
 
         const client = new WoohooApiClient(BASE_URL, session.token, signOutOnExpiry);
-        const chatUrl = getActiveRedditChatRoomUrl() ?? undefined;
+        const chatUrl =
+            kind === "dm" ? getActiveRedditChatRoomUrl() ?? undefined : undefined;
         const result = await client.saveItem({
             platform: "reddit",
             peerId: peer,
             chatUrl,
             followUpAt: followUpAt || undefined,
             item: {
-                type: "dm",
+                type: kind,
                 externalId: message.id,
                 contentText: message.contentText,
                 contentHtml: message.contentHTML,
+                sourceUrl: kind === "comment" ? message.sourceUrl : undefined,
                 authorId: message.username,
                 authorName: message.username,
                 interactionAt: message.timestamp,
@@ -177,7 +180,11 @@ export function SaveModal(props: SaveModalProps) {
             <div className="flex-y cb-modal-header" style={{ rowGap: 0 }}>
                 <div className="flex-x" style={{ justifyContent: "space-between" }}>
                     <h2 className="cb-modal-title">
-                        {isSaved ? "Saved" : "Save DM"}
+                        {isSaved
+                            ? "Saved"
+                            : kind === "dm"
+                              ? "Save DM"
+                              : "Save Comment"}
                     </h2>
 
                     {isSaved && (

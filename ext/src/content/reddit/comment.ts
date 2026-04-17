@@ -1,0 +1,148 @@
+import {
+    cleanHTML,
+    normalizeLinks,
+    queryAllDeep,
+    withLineBreaks,
+} from "@/content/lib/dom";
+import { getActive } from "@/content/store/activeSaveButton";
+
+export type Comment = {
+    id: string;
+    username: string;
+    timestamp: string;
+    contentText: string;
+    contentHTML: string;
+    sourceUrl: string;
+};
+
+export function isOnRedditPostPage(): boolean {
+    return /^\/r\/[^/]+\/comments\//.test(window.location.pathname);
+}
+
+// Fires the callback whenever the DOM changes on a Reddit post page so the
+// caller can rescan for newly-rendered shreddit-comment elements. Reddit
+// lazy-loads replies and pages in more comments on scroll, so one-shot
+// injection isn't enough.
+export function observeRedditPostPage(callback: () => void) {
+    let scheduled = false;
+    const schedule = () => {
+        if (scheduled) return;
+        scheduled = true;
+        setTimeout(() => {
+            scheduled = false;
+            callback();
+        }, 150);
+    };
+
+    const observer = new MutationObserver(schedule);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    schedule();
+
+    return () => observer.disconnect();
+}
+
+interface CommentSaveButtonContainer {
+    element: HTMLDivElement;
+    comment: Comment;
+}
+
+const INJECTED_MARK = "data-cb-comment-injected";
+
+export function injectAndReturnCommentSaveButtonContainers(): CommentSaveButtonContainer[] {
+    if (!isOnRedditPostPage()) return [];
+
+    const comments = queryAllDeep("shreddit-comment");
+    const containers: CommentSaveButtonContainer[] = [];
+
+    comments.forEach((commentEl) => {
+        if (commentEl.hasAttribute(INJECTED_MARK)) return;
+
+        const comment = parseComment(commentEl);
+        if (!comment) return;
+
+        const contentEl = commentEl.querySelector<HTMLElement>(
+            '[slot="comment"]',
+        );
+        if (!contentEl) return;
+
+        // Make the content body our positioning parent and override Reddit's
+        // overflow-hidden so the hover button isn't clipped.
+        contentEl.style.position = "relative";
+        contentEl.style.overflow = "visible";
+        contentEl.style.paddingBottom = "20px";
+
+        const element = document.createElement("div");
+        element.className = "cb-save-root";
+
+        const inactiveOpacity = "0.3";
+
+        element.style.position = "absolute";
+        element.style.right = "0px";
+        element.style.bottom = "0px";
+        element.style.zIndex = "10";
+        element.style.opacity = inactiveOpacity;
+        element.style.transform = "translateY(4px) scale(0.96)";
+        element.style.transition =
+            "opacity 160ms ease, transform 160ms cubic-bezier(0.2, 0, 0, 1)";
+
+        let timeout: any;
+
+        (commentEl as HTMLElement).addEventListener("mouseenter", () => {
+            clearTimeout(timeout);
+            element.style.opacity = "1";
+            element.style.transform = "translateY(0) scale(1)";
+        });
+
+        (commentEl as HTMLElement).addEventListener("mouseleave", () => {
+            timeout = setTimeout(() => {
+                if (getActive() === comment.id) return;
+
+                element.style.opacity = inactiveOpacity;
+                element.style.transform = "translateY(4px) scale(0.96)";
+            }, 80);
+        });
+
+        contentEl.appendChild(element);
+        commentEl.setAttribute(INJECTED_MARK, "");
+
+        containers.push({ element, comment });
+    });
+
+    return containers;
+}
+
+export function parseComment(el: Element): Comment | null {
+    try {
+        const id = el.getAttribute("thingid");
+        const author = el.getAttribute("author");
+        const created = el.getAttribute("created");
+        const permalink = el.getAttribute("permalink");
+
+        if (!id || !author || !created || !permalink) return null;
+
+        const contentEl = el.querySelector<HTMLElement>('[slot="comment"]');
+        if (!contentEl) return null;
+
+        const contentText = contentEl.textContent?.trim() || "";
+        const contentHTML = withLineBreaks(
+            normalizeLinks(cleanHTML(contentEl.innerHTML || "")),
+        );
+
+        const sourceUrl = permalink.startsWith("http")
+            ? permalink
+            : `https://www.reddit.com${permalink}`;
+
+        return {
+            id,
+            username: author,
+            timestamp: created,
+            contentText,
+            contentHTML,
+            sourceUrl,
+        };
+    } catch (e) {
+        console.error("Failed to parse comment", e);
+        return null;
+    }
+}

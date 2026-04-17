@@ -1,13 +1,17 @@
 import { notFound } from "next/navigation";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, SquareArrowOutUpRight } from "lucide-react";
 
 import { getSession } from "@/lib/get-session";
 import { prisma } from "@/lib/prisma";
 import { FollowUpEditor } from "./FollowUpEditor";
 import { DeleteWoohooButton } from "./DeleteWoohooButton";
-import { DeleteTimelineItemButton } from "./DeleteTimelineItemButton";
 import { ChatBubble } from "./ChatBubble";
-import { PlatformIcon, peerHandle } from "@/components/PlatformIcon";
+import { CommentCard } from "./CommentCard";
+import {
+    PlatformIcon,
+    peerHandle,
+    peerProfileUrl,
+} from "@/components/PlatformIcon";
 
 function dayLabel(date: Date): string {
     const d = new Date(date);
@@ -56,9 +60,37 @@ export default async function WoohooDetailPage({
                     <div className="flex items-center gap-3 min-w-0">
                         <div className="flex items-center gap-2 min-w-0">
                             <PlatformIcon platform={woohoo.platform} />
-                            <h1 className="text-xl font-semibold truncate">
-                                {peerHandle(woohoo.platform, woohoo.peerId)}
-                            </h1>
+                            {(() => {
+                                const profileUrl = peerProfileUrl(
+                                    woohoo.platform,
+                                    woohoo.peerId,
+                                );
+                                const handle = peerHandle(
+                                    woohoo.platform,
+                                    woohoo.peerId,
+                                );
+                                return profileUrl ? (
+                                    <a
+                                        href={profileUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-1.5 min-w-0 text-xl font-semibold hover:underline"
+                                    >
+                                        <span className="truncate">
+                                            {handle}
+                                        </span>
+                                        <SquareArrowOutUpRight
+                                            size={14}
+                                            strokeWidth={2.5}
+                                            className="shrink-0 text-muted-foreground"
+                                        />
+                                    </a>
+                                ) : (
+                                    <h1 className="text-xl font-semibold truncate">
+                                        {handle}
+                                    </h1>
+                                );
+                            })()}
                         </div>
                         {woohoo.chatUrl && (
                             <>
@@ -144,54 +176,7 @@ export default async function WoohooDetailPage({
                                             isFromPeer={isFromPeer}
                                         />
                                     ) : (
-                                        <div className="rounded-lg border border-border bg-card p-4">
-                                            <div className="flex items-center justify-between mb-2">
-                                                <span className="text-sm font-medium">
-                                                    {item.authorName ??
-                                                        item.authorId}
-                                                </span>
-                                                <div className="flex items-center gap-1">
-                                                    <span className="text-xs text-muted-foreground">
-                                                        {new Date(
-                                                            item.interactionAt,
-                                                        ).toLocaleString(
-                                                            "en-US",
-                                                            {
-                                                                month: "short",
-                                                                day: "numeric",
-                                                                hour: "numeric",
-                                                                minute: "2-digit",
-                                                            },
-                                                        )}
-                                                    </span>
-                                                    <DeleteTimelineItemButton
-                                                        itemId={item.id}
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <p className="text-sm text-foreground whitespace-pre-wrap">
-                                                {item.contentText}
-                                            </p>
-
-                                            <div className="flex items-center justify-between mt-2">
-                                                <span className="text-xs text-muted-foreground capitalize">
-                                                    via {woohoo.platform}{" "}
-                                                    {item.type}
-                                                </span>
-
-                                                {item.sourceUrl && (
-                                                    <a
-                                                        href={item.sourceUrl}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="text-xs text-primary hover:underline"
-                                                    >
-                                                        View original ↗
-                                                    </a>
-                                                )}
-                                            </div>
-                                        </div>
+                                        <CommentCard item={item} />
                                     )}
                                 </div>
                             );

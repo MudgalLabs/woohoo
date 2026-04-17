@@ -164,6 +164,8 @@ export type Message = {
     timestamp: string;
     contentText: string;
     contentHTML: string;
+    // Only populated for comments; DMs leave this undefined.
+    sourceUrl?: string;
 };
 
 export function parseMessage(

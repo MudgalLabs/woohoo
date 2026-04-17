@@ -13,10 +13,11 @@ interface SaveButtonProps {
     message: Message;
     isSaved: boolean;
     peer: string;
+    kind: "dm" | "comment";
 }
 
 export function SaveButton(props: SaveButtonProps) {
-    const { message, peer } = props;
+    const { message, peer, kind } = props;
     const { id } = message;
     const [isActive, setIsActive] = useState(getActive() === id);
     const [isSaved, setIsSaved] = useState(props.isSaved);
@@ -48,6 +49,7 @@ export function SaveButton(props: SaveButtonProps) {
                         message={message}
                         isSaved={isSaved}
                         peer={peer}
+                        kind={kind}
                         onSaved={() => setIsSaved(true)}
                         onUnsaved={() => setIsSaved(false)}
                     />

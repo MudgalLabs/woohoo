@@ -35,3 +35,15 @@ export function peerHandle(platform: string, peerId: string): string {
             return peerId;
     }
 }
+
+export function peerProfileUrl(
+    platform: string,
+    peerId: string,
+): string | null {
+    switch (platform.toLowerCase()) {
+        case "reddit":
+            return `https://www.reddit.com/user/${peerId}/`;
+        default:
+            return null;
+    }
+}
