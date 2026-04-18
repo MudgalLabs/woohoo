@@ -75,7 +75,7 @@ export function AppSidebarFooter({ user }: { user: AppSidebarFooterUser }) {
                             <SidebarMenuButton
                                 size="lg"
                                 tooltip={user.email}
-                                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                                className="text-sidebar-foreground/70 hover:text-sidebar-foreground data-[state=open]:text-sidebar-foreground"
                             >
                                 <Avatar className="h-8 w-8 rounded-lg">
                                     {user.image ? (

@@ -144,7 +144,9 @@ export default async function WoohooDetailPage({
                             )}
                             {woohoo.chatUrl && (
                                 <>
-                                    <span aria-hidden>·</span>
+                                    {(label || woohoo.lastInteractionAt) && (
+                                        <span aria-hidden>·</span>
+                                    )}
                                     <a
                                         href={woohoo.chatUrl}
                                         target="_blank"

@@ -58,6 +58,7 @@ export function SaveButton(props: SaveButtonProps) {
                         peer={peer}
                         kind={kind}
                         onSaved={() => setIsSaved(true)}
+                        onUnsaved={() => setIsSaved(false)}
                         onClose={close}
                     />
                 )}
