@@ -2,7 +2,13 @@ import type { Metadata } from "next";
 
 import "./globals.css";
 
-import { IBM_Plex_Sans, JetBrains_Mono, Fredoka } from "next/font/google";
+import {
+    IBM_Plex_Sans,
+    JetBrains_Mono,
+    Fredoka,
+    Instrument_Serif,
+    Caveat,
+} from "next/font/google";
 import { cn } from "@/lib/utils";
 import { APP_DESCRIPTION } from "@/lib/constants";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -21,9 +27,22 @@ const mono = JetBrains_Mono({
     variable: "--font-mono",
 });
 
+const display = Instrument_Serif({
+    subsets: ["latin"],
+    weight: ["400"],
+    style: ["normal", "italic"],
+    variable: "--font-display",
+});
+
+const hand = Caveat({
+    subsets: ["latin"],
+    weight: ["500", "600"],
+    variable: "--font-hand",
+});
+
 export const metadata: Metadata = {
     title: {
-        default: "Woohoo — Follow up before the moment goes cold",
+        default: "Woohoo — You saw it. It's gone.",
         template: "%s | Woohoo",
     },
     description: APP_DESCRIPTION,
@@ -74,6 +93,8 @@ export default function RootLayout({
                 "antialiased",
                 mono.variable,
                 logo.variable,
+                display.variable,
+                hand.variable,
                 "font-sans",
                 sans.variable,
             )}

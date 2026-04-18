@@ -6,9 +6,15 @@ import { ThemeToggleIcon } from "@/app/components/ThemeToggleIcon";
 
 interface NavProps {
     isLoggedIn?: boolean;
+    showAnchorLinks?: boolean;
+    showThemeToggle?: boolean;
 }
 
-export function Nav({ isLoggedIn = false }: NavProps) {
+export function Nav({
+    isLoggedIn = false,
+    showAnchorLinks = false,
+    showThemeToggle = true,
+}: NavProps) {
     return (
         <nav className="w-full border-b border-border">
             <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
@@ -16,9 +22,31 @@ export function Nav({ isLoggedIn = false }: NavProps) {
                     <Logo />
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="hidden md:flex items-center gap-5">
+                    {showAnchorLinks && (
+                        <>
+                            <Link
+                                href="/#how"
+                                className="text-sm text-muted-foreground hover:text-foreground transition"
+                            >
+                                How it works
+                            </Link>
+                            <Link
+                                href="/#product"
+                                className="text-sm text-muted-foreground hover:text-foreground transition"
+                            >
+                                Product
+                            </Link>
+                            <Link
+                                href="/#faq"
+                                className="text-sm text-muted-foreground hover:text-foreground transition"
+                            >
+                                FAQ
+                            </Link>
+                        </>
+                    )}
                     <Link
-                        href="/pricing"
+                        href={showAnchorLinks ? "/#pricing" : "/#pricing"}
                         className="text-sm text-muted-foreground hover:text-foreground transition"
                     >
                         Pricing
@@ -32,7 +60,7 @@ export function Nav({ isLoggedIn = false }: NavProps) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <ThemeToggleIcon />
+                    {showThemeToggle && <ThemeToggleIcon />}
                     {isLoggedIn ? (
                         <Link href="/dashboard">
                             <Button className="group" variant="default">

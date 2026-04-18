@@ -10,8 +10,12 @@ export default async function MarketingLayout({
     const session = await getSession();
 
     return (
-        <div className="min-h-screen flex flex-col">
-            <Nav isLoggedIn={session !== null} />
+        <div className="marketing-scope min-h-screen flex flex-col">
+            <Nav
+                isLoggedIn={session !== null}
+                showAnchorLinks
+                showThemeToggle={false}
+            />
             <main className="flex-1">{children}</main>
             <Footer />
         </div>

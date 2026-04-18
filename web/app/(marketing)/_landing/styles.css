@@ -1,0 +1,1237 @@
+/* ==========================================================
+   Woohoo Landing — scoped "Paper" theme
+   All styles are scoped under .landing so they don't leak
+   into the app's light/dark theming.
+   ========================================================== */
+
+.landing {
+    --bg: var(--landing-bg);
+    --bg-2: var(--landing-bg-2);
+    --ink: var(--landing-ink);
+    --ink-2: var(--landing-ink-2);
+    --ink-3: var(--landing-ink-3);
+    --line: var(--landing-line);
+    --line-strong: var(--landing-line-strong);
+    --accent: var(--landing-coral);
+    --accent-ink: #ffffff;
+    --highlight: var(--landing-highlight);
+    --good: var(--landing-good);
+    --warn: var(--landing-warn);
+    --bad: var(--landing-bad);
+    --card: var(--landing-card);
+    --card-2: var(--landing-card-2);
+    --chip-bg: var(--landing-chip);
+    --reddit: var(--landing-reddit);
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+    --shadow-card: 0 1px 0 rgba(0, 0, 0, 0.04),
+        0 12px 30px -12px rgba(20, 14, 8, 0.18);
+    --shadow-pop: 0 4px 0 rgba(0, 0, 0, 0.05),
+        0 24px 60px -20px rgba(20, 14, 8, 0.25);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.landing,
+.landing * {
+    box-sizing: border-box;
+}
+
+.landing a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.landing::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+        radial-gradient(
+            1200px 600px at 10% -10%,
+            rgba(229, 70, 59, 0.06),
+            transparent 60%
+        ),
+        radial-gradient(
+            900px 500px at 100% 0%,
+            rgba(246, 212, 91, 0.1),
+            transparent 60%
+        );
+}
+
+.landing ::selection {
+    background: var(--highlight);
+    color: var(--ink);
+}
+
+.landing .page {
+    position: relative;
+    z-index: 1;
+}
+
+.landing .wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* ---------- type ---------- */
+.landing h1,
+.landing h2,
+.landing h3,
+.landing h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    margin: 0;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+}
+.landing h1 {
+    font-size: clamp(46px, 7vw, 96px);
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+}
+.landing h2 {
+    font-size: clamp(36px, 4.8vw, 64px);
+    line-height: 1.02;
+    letter-spacing: -0.015em;
+}
+.landing h3 {
+    font-size: clamp(22px, 2.2vw, 30px);
+    line-height: 1.15;
+}
+.landing p {
+    margin: 0;
+}
+
+.landing .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+}
+.landing .eyebrow .dot {
+    color: var(--accent);
+}
+.landing .italic-serif {
+    font-family: var(--font-display);
+    font-style: italic;
+}
+.landing .hand {
+    font-family: var(--font-hand);
+    font-weight: 500;
+}
+
+/* ---------- buttons ---------- */
+.landing .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease,
+        border-color 0.15s ease, box-shadow 0.15s ease;
+    white-space: nowrap;
+    cursor: pointer;
+    font-family: var(--font-sans);
+}
+.landing .btn:hover {
+    transform: translateY(-1px);
+}
+.landing .btn-primary {
+    background: var(--accent);
+    color: var(--accent-ink);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08),
+        0 10px 24px -12px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.landing .btn-primary:hover {
+    filter: brightness(1.02);
+}
+.landing .btn-ghost {
+    color: var(--ink);
+    border-color: var(--line-strong);
+    background: color-mix(in srgb, var(--card) 70%, transparent);
+}
+.landing .btn-ghost:hover {
+    background: var(--card);
+}
+.landing .btn-lg {
+    padding: 14px 22px;
+    font-size: 15px;
+}
+.landing .btn-arrow::after {
+    content: "→";
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+.landing .btn-arrow:hover::after {
+    transform: translateX(3px);
+}
+
+/* ---------- HERO ---------- */
+.landing .hero {
+    padding: 64px 0 40px;
+    position: relative;
+    overflow: hidden;
+}
+.landing .hero-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 64px;
+    align-items: center;
+}
+.landing .hero-copy {
+    position: relative;
+}
+.landing .hero h1 .ink {
+    color: var(--ink);
+}
+.landing .hero h1 .muted {
+    color: var(--ink-3);
+}
+.landing .hero h1 .mark {
+    background: linear-gradient(
+        180deg,
+        transparent 60%,
+        var(--highlight) 60%
+    );
+    padding: 0 4px;
+    border-radius: 2px;
+}
+.landing .hero h1 .punch {
+    color: var(--accent);
+    font-style: italic;
+}
+.landing .hero-sub {
+    margin-top: 28px;
+    font-size: 19px;
+    color: var(--ink-2);
+    max-width: 560px;
+    line-height: 1.45;
+}
+.landing .hero-sub b {
+    font-weight: 600;
+    color: var(--ink);
+}
+.landing .hero-cta {
+    margin-top: 34px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.landing .hero-note {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--ink-3);
+}
+.landing .hero-note .avatars {
+    display: inline-flex;
+}
+.landing .hero-note .avatars span {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+    margin-left: -6px;
+    display: inline-block;
+}
+.landing .hero-note .avatars span:first-child {
+    margin-left: 0;
+}
+.landing .flourish {
+    position: absolute;
+    left: -8px;
+    top: -38px;
+    color: var(--accent);
+    opacity: 0.85;
+    transform: rotate(-4deg);
+}
+
+/* ---------- DEMO ---------- */
+.landing .demo-stage {
+    position: relative;
+    padding: 18px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-pop);
+    overflow: hidden;
+}
+.landing .reddit-panel {
+    background: var(--card-2);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 18px;
+    position: relative;
+}
+.landing .reddit-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-bottom: 8px;
+    font-family: var(--font-mono);
+}
+.landing .reddit-top .sub {
+    color: var(--reddit);
+    font-weight: 700;
+}
+.landing .reddit-msg {
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.5;
+    padding-right: 72px;
+}
+.landing .reddit-msg .highlight {
+    background: linear-gradient(
+        180deg,
+        transparent 62%,
+        var(--highlight) 62%
+    );
+}
+.landing .reddit-meta {
+    margin-top: 10px;
+    display: flex;
+    gap: 16px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+}
+.landing .reddit-meta b {
+    color: var(--ink-2);
+    font-weight: 600;
+}
+
+/* Extension-style floating Save button (Bookmark icon) */
+.landing .save-floater {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    color: var(--accent);
+    border-radius: 6px;
+    border: 0;
+    cursor: pointer;
+    opacity: 0.45;
+    transition: opacity 0.16s ease, background 0.16s ease, transform 0.16s ease;
+}
+.landing .reddit-panel:hover .save-floater,
+.landing .save-floater:hover,
+.landing .save-floater.saved {
+    opacity: 1;
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.landing .save-floater:hover {
+    transform: translateY(-1px);
+}
+
+/* confetti burst */
+.landing .burst {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+.landing .burst i {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 2px;
+    opacity: 0;
+}
+.landing .demo-stage.is-saved .burst i {
+    animation: landing-burst 0.9s ease-out forwards;
+}
+
+/* Slide-in thread preview */
+.landing .thread-preview {
+    margin-top: 12px;
+    background: var(--card-2);
+    border: 1px dashed var(--line-strong);
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    transform: translateY(14px);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+        opacity 0.3s ease;
+}
+.landing .demo-stage.is-saved .thread-preview {
+    transform: translateY(0);
+    opacity: 1;
+}
+.landing .thread-preview .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--accent-ink);
+    display: grid;
+    place-items: center;
+    font-family: var(--font-display);
+    font-size: 18px;
+}
+.landing .thread-preview .meta {
+    flex: 1;
+    min-width: 0;
+}
+.landing .thread-preview .name {
+    font-weight: 600;
+    font-size: 14px;
+}
+.landing .thread-preview .caption {
+    font-size: 12px;
+    color: var(--ink-3);
+    font-family: var(--font-mono);
+}
+.landing .thread-preview .pill {
+    padding: 5px 10px;
+    background: color-mix(in srgb, var(--highlight) 50%, var(--card-2));
+    border-radius: 999px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--ink);
+    border: 1px solid
+        color-mix(in srgb, var(--highlight) 80%, var(--line));
+}
+
+/* ---------- STRIP ---------- */
+.landing .strip {
+    padding: 28px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: var(--bg-2);
+    overflow: hidden;
+}
+.landing .strip-row {
+    display: flex;
+    gap: 48px;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--ink-3);
+    white-space: nowrap;
+    animation: landing-marquee 40s linear infinite;
+    width: max-content;
+}
+.landing .strip-row span.dot {
+    color: var(--accent);
+}
+
+/* ---------- SECTIONS ---------- */
+.landing section {
+    position: relative;
+}
+.landing .section {
+    padding: 96px 0;
+}
+.landing .section-head {
+    margin-bottom: 48px;
+    max-width: 780px;
+}
+.landing .section-head h2 .mark {
+    background: linear-gradient(
+        180deg,
+        transparent 60%,
+        var(--highlight) 60%
+    );
+    padding: 0 4px;
+}
+.landing .section-head h2 .muted {
+    color: var(--ink-3);
+}
+.landing .section-head h2 .punch {
+    color: var(--accent);
+    font-style: italic;
+}
+.landing .section-head p {
+    margin-top: 18px;
+    color: var(--ink-2);
+    font-size: 18px;
+    max-width: 620px;
+    line-height: 1.5;
+}
+
+/* ---------- PROBLEM ---------- */
+.landing .problem {
+    background: var(--bg-2);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+.landing .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+}
+.landing .problem-lede {
+    margin-top: 22px;
+    font-size: 18px;
+    color: var(--ink-2);
+    max-width: 520px;
+    line-height: 1.5;
+}
+.landing .timeline {
+    position: relative;
+    padding-left: 20px;
+}
+.landing .timeline::before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--line-strong);
+}
+.landing .timeline-item {
+    position: relative;
+    padding: 14px 0 14px 18px;
+}
+.landing .timeline-item::before {
+    content: "";
+    position: absolute;
+    left: -18px;
+    top: 22px;
+    width: 14px;
+    height: 14px;
+    background: var(--card);
+    border: 2px solid var(--line-strong);
+    border-radius: 50%;
+}
+.landing .timeline-item.is-hot::before {
+    border-color: var(--accent);
+    background: var(--accent);
+}
+.landing .timeline-item .time {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.landing .timeline-item .txt {
+    font-size: 17px;
+    color: var(--ink-2);
+    margin-top: 2px;
+}
+.landing .timeline-item .txt b {
+    color: var(--ink);
+    font-weight: 600;
+}
+.landing .timeline-item.lost .txt {
+    color: var(--ink-3);
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+    text-decoration-color: color-mix(in srgb, var(--bad) 80%, transparent);
+}
+
+/* ---------- HOW IT WORKS ---------- */
+.landing .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+.landing .step {
+    position: relative;
+    padding: 28px 26px 26px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    min-height: 340px;
+    display: flex;
+    flex-direction: column;
+}
+.landing .step .num {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 56px;
+    line-height: 1;
+    color: var(--accent);
+    margin-bottom: 10px;
+}
+.landing .step h3 {
+    margin-bottom: 8px;
+}
+.landing .step p {
+    color: var(--ink-2);
+    font-size: 15px;
+}
+.landing .step .illo {
+    margin-top: auto;
+    padding-top: 20px;
+}
+.landing .mini-msg {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-2);
+    padding: 10px 12px;
+    background: var(--card-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    position: relative;
+}
+.landing .mini-msg .who {
+    color: var(--reddit);
+    font-weight: 700;
+}
+.landing .mini-msg .bm {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    color: var(--accent);
+    display: inline-flex;
+}
+.landing .mini-thread {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.landing .mini-thread .bubble {
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    max-width: 92%;
+    background: var(--card-2);
+    border: 1px solid var(--line);
+}
+.landing .mini-thread .bubble.them {
+    align-self: flex-start;
+}
+.landing .mini-thread .bubble.you {
+    align-self: flex-end;
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+}
+.landing .mini-thread .bubble .caption {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    opacity: 0.7;
+    display: block;
+}
+.landing .mini-date {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: color-mix(in srgb, var(--highlight) 40%, var(--card-2));
+    border: 1px solid color-mix(in srgb, var(--highlight) 80%, var(--line));
+    border-radius: 10px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--ink);
+}
+.landing .mini-date b {
+    font-weight: 700;
+}
+
+/* ---------- THREAD MOCK ---------- */
+.landing .thread-mock {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 28px;
+    align-items: stretch;
+}
+.landing .phone-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-pop);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.landing .phone-card .ph-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--line);
+    background: var(--card-2);
+}
+.landing .phone-card .ph-top .av {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--accent-ink);
+    display: grid;
+    place-items: center;
+    font-family: var(--font-display);
+    font-size: 20px;
+}
+.landing .phone-card .ph-top .handle {
+    font-weight: 600;
+}
+.landing .phone-card .ph-top .plat {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.landing .phone-card .ph-top .plat i {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--reddit);
+}
+.landing .phone-card .ph-top .followup {
+    margin-left: auto;
+    padding: 6px 12px;
+    background: color-mix(in srgb, var(--highlight) 50%, var(--card));
+    border: 1px solid color-mix(in srgb, var(--highlight) 80%, var(--line));
+    border-radius: 999px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.landing .ph-body {
+    padding: 22px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background: var(--card);
+    background-image: radial-gradient(
+        circle at 1px 1px,
+        rgba(26, 21, 18, 0.08) 1px,
+        transparent 0
+    );
+    background-size: 16px 16px;
+    flex: 1;
+}
+.landing .ph-date {
+    align-self: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    padding: 4px 10px;
+    background: var(--card-2);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+}
+
+/* Demo variants mirroring web/app/(app)/my-woohoos/[id]/ChatBubble.tsx */
+.landing .dmsg {
+    max-width: 82%;
+    padding: 12px 14px;
+    border-radius: 14px;
+    font-size: 14px;
+    line-height: 1.45;
+    position: relative;
+}
+.landing .dmsg .caption {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    opacity: 0.65;
+    margin-top: 4px;
+    display: block;
+}
+.landing .dmsg.them {
+    align-self: flex-start;
+    background: var(--card-2);
+    border: 1px solid var(--line);
+}
+.landing .dmsg.you {
+    align-self: flex-end;
+    background: var(--ink);
+    color: var(--bg);
+    border: 1px solid var(--ink);
+}
+.landing .dmsg.comment {
+    align-self: flex-start;
+    background: color-mix(in srgb, var(--reddit) 10%, var(--card-2));
+    border: 1px solid color-mix(in srgb, var(--reddit) 25%, var(--line));
+}
+.landing .dmsg.comment::before {
+    content: "comment thread";
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--reddit);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.landing .side-notes {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    justify-content: center;
+}
+.landing .side-note {
+    padding: 22px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+}
+.landing .side-note h4 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    margin-bottom: 6px;
+}
+.landing .side-note p {
+    color: var(--ink-2);
+    font-size: 14px;
+}
+.landing .side-note .kicker {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: block;
+}
+
+/* ---------- DASHBOARD ---------- */
+.landing .dash {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-pop);
+    overflow: hidden;
+}
+.landing .dash-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--card-2);
+}
+.landing .dash-top .title {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-size: 22px;
+}
+.landing .dash-top .title .date {
+    font-size: 13px;
+    color: var(--ink-3);
+    font-family: var(--font-mono);
+}
+.landing .dash-top .meta {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-3);
+}
+.landing .dash-cols {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+.landing .dash-col {
+    padding: 16px 18px;
+    border-right: 1px solid var(--line);
+}
+.landing .dash-col:last-child {
+    border-right: 0;
+}
+.landing .dash-col h5 {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.landing .dash-col h5 .count {
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: var(--chip-bg);
+    color: var(--ink-2);
+}
+.landing .dash-col.today h5 .count {
+    background: color-mix(in srgb, var(--accent) 20%, var(--card));
+    color: var(--accent);
+}
+.landing .dash-col.overdue h5 .count {
+    background: color-mix(in srgb, var(--bad) 18%, var(--card));
+    color: var(--bad);
+}
+.landing .dash-item {
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 8px;
+    border-radius: 10px;
+    transition: background 0.15s ease;
+    cursor: pointer;
+}
+.landing .dash-item + .dash-item {
+    margin-top: 4px;
+}
+.landing .dash-item:hover {
+    background: var(--bg-2);
+}
+.landing .dash-item .av {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-display);
+    font-size: 16px;
+    background: var(--chip-bg);
+    color: var(--ink);
+    border: 1px solid var(--line);
+}
+.landing .dash-item .who {
+    font-weight: 600;
+    font-size: 14px;
+}
+.landing .dash-item .why {
+    color: var(--ink-3);
+    font-size: 12px;
+    font-family: var(--font-mono);
+}
+.landing .dash-item .tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: var(--chip-bg);
+    color: var(--ink-2);
+}
+.landing .dash-item .tag.hot {
+    background: color-mix(in srgb, var(--accent) 18%, var(--card));
+    color: var(--accent);
+}
+.landing .dash-item .tag.warm {
+    background: color-mix(in srgb, var(--warn) 18%, var(--card));
+    color: var(--warn);
+}
+.landing .dash-item .tag.old {
+    background: var(--chip-bg);
+    color: var(--ink-3);
+}
+
+/* ---------- IS / ISN'T ---------- */
+.landing .isnot-section {
+    background: var(--bg-2);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+.landing .isnot-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+.landing .is-card,
+.landing .isnot-card {
+    padding: 32px 28px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--line);
+}
+.landing .is-card {
+    background: var(--card);
+    box-shadow: var(--shadow-card);
+}
+.landing .isnot-card {
+    background: transparent;
+    border-style: dashed;
+}
+.landing .is-card h3,
+.landing .isnot-card h3 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+.landing .is-card h3 .tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--good);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+.landing .isnot-card h3 .tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--bad);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+.landing .is-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.landing .is-list li {
+    padding: 10px 0;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 16px;
+    border-top: 1px dashed var(--line);
+}
+.landing .is-list li:first-child {
+    border-top: 0;
+}
+.landing .is-list li::before {
+    content: "✓";
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--good);
+    flex: 0 0 auto;
+    width: 20px;
+}
+.landing .isnot-card .is-list li::before {
+    content: "✕";
+    color: var(--bad);
+}
+.landing .isnot-card .is-list li .main {
+    color: var(--ink-3);
+}
+
+/* ---------- PRICING ---------- */
+.landing .pricing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    max-width: 880px;
+    margin: 0 auto;
+}
+.landing .price-card {
+    padding: 36px 32px 32px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    position: relative;
+}
+.landing .price-card.featured {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+    box-shadow: var(--shadow-pop);
+}
+.landing .price-card.featured .price-note {
+    color: color-mix(in srgb, var(--bg) 70%, transparent);
+}
+.landing .price-card.featured h3 {
+    color: var(--bg);
+}
+.landing .price-card .plan-name {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+}
+.landing .price-card.featured .plan-name {
+    color: color-mix(in srgb, var(--bg) 70%, transparent);
+}
+.landing .price-card .amt {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-top: 8px;
+}
+.landing .price-card .amt .big {
+    font-family: var(--font-display);
+    font-size: 72px;
+    line-height: 1;
+}
+.landing .price-card .amt .per {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-3);
+}
+.landing .price-card.featured .amt .per {
+    color: color-mix(in srgb, var(--bg) 60%, transparent);
+}
+.landing .price-card .price-note {
+    margin-top: 8px;
+    font-size: 14px;
+    color: var(--ink-3);
+}
+.landing .price-list {
+    list-style: none;
+    padding: 0;
+    margin: 22px 0 28px;
+}
+.landing .price-list li {
+    padding: 8px 0;
+    font-size: 15px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+.landing .price-list li::before {
+    content: "→";
+    color: var(--accent);
+    width: 18px;
+    flex: 0 0 auto;
+}
+.landing .price-card.featured .price-list li::before {
+    color: var(--highlight);
+}
+.landing .price-card .badge {
+    position: absolute;
+    top: -12px;
+    right: 20px;
+    padding: 4px 10px;
+    background: var(--highlight);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    font-weight: 600;
+    border: 1px solid color-mix(in srgb, var(--highlight) 80%, var(--ink));
+}
+.landing .pricing-foot {
+    text-align: center;
+    margin-top: 28px;
+    color: var(--ink-3);
+    font-family: var(--font-mono);
+    font-size: 12px;
+}
+
+/* ---------- FAQ ---------- */
+.landing .faq {
+    max-width: 820px;
+    margin: 0 auto;
+}
+.landing .faq-item {
+    border-top: 1px solid var(--line);
+    padding: 20px 0;
+}
+.landing .faq-item:last-child {
+    border-bottom: 1px solid var(--line);
+}
+.landing .faq-q {
+    width: 100%;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-display);
+    font-size: 22px;
+    cursor: pointer;
+    gap: 20px;
+    background: transparent;
+    border: 0;
+    color: inherit;
+    padding: 0;
+}
+.landing .faq-q .sign {
+    color: var(--accent);
+    font-size: 22px;
+    transition: transform 0.2s ease;
+    font-family: var(--font-mono);
+}
+.landing .faq-item.open .faq-q .sign {
+    transform: rotate(45deg);
+}
+.landing .faq-a {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    color: var(--ink-2);
+    font-size: 16px;
+    line-height: 1.55;
+}
+.landing .faq-item.open .faq-a {
+    max-height: 260px;
+    padding-top: 12px;
+}
+
+/* ---------- CTA BIG ---------- */
+.landing .cta-big {
+    padding: 96px 0 120px;
+    text-align: center;
+    position: relative;
+}
+.landing .cta-big h2 {
+    max-width: 780px;
+    margin: 0 auto;
+}
+.landing .cta-big .cta-sub {
+    margin: 18px auto 32px;
+    color: var(--ink-2);
+    font-size: 18px;
+    max-width: 540px;
+}
+.landing .cta-stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 32px;
+    color: var(--accent);
+    opacity: 0.4;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 960px) {
+    .landing .hero-grid,
+    .landing .problem-grid,
+    .landing .thread-mock,
+    .landing .isnot-grid,
+    .landing .pricing-grid {
+        grid-template-columns: 1fr;
+    }
+    .landing .steps {
+        grid-template-columns: 1fr;
+    }
+    .landing .dash-cols {
+        grid-template-columns: 1fr;
+    }
+    .landing .dash-col {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+    }
+    .landing .dash-col:last-child {
+        border-bottom: 0;
+    }
+    .landing .section {
+        padding: 64px 0;
+    }
+    .landing .hero {
+        padding: 40px 0 24px;
+    }
+}
