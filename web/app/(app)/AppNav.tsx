@@ -31,7 +31,7 @@ export function AppNav() {
                             asChild
                             isActive={isActive}
                             tooltip={item.label}
-                            className="h-9 gap-3 px-3 font-medium text-sidebar-foreground/70 hover:text-sidebar-foreground data-[active=true]:text-sidebar-foreground data-[active=true]:font-semibold [&>svg]:size-4"
+                            className="h-9 gap-3 px-3 font-medium text-sidebar-foreground/70 hover:text-sidebar-foreground data-[active=true]:font-semibold [&>svg]:size-4"
                         >
                             <Link href={item.href}>
                                 <item.icon />

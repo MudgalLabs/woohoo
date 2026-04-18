@@ -130,7 +130,7 @@ The shadcn story is split across two directories:
 - **`packages/ui/src/components/`** — reusable primitives (button, card, input, label, alert-dialog, avatar, dropdown-menu, …). `components.json` lives at `packages/ui/components.json`. Add new primitives here with `cd packages/ui && npx shadcn@latest add <component>`, then re-export from `packages/ui/src/index.ts`. Consume from `web/` via `import { Button } from "@woohoo/ui"`.
 - **`web/components/ui/`** — app-specific primitives that are unlikely to be reused (sidebar, sheet, separator, skeleton, tooltip). Imported via `@/components/ui/*`.
 
-Rule of thumb: generic primitive → `packages/ui`. Layout/app-specific primitive → `web/components/ui`. Note: button and input currently exist in both locations for legacy reasons — prefer the `@woohoo/ui` version in new code.
+Rule of thumb: generic primitive → `packages/ui`. Layout/app-specific primitive → `web/components/ui`.
 
 ### Auth
 

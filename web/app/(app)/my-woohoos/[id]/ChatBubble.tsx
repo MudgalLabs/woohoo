@@ -1,5 +1,3 @@
-import { SquareArrowOutUpRight } from "lucide-react";
-
 import type { TimelineItem } from "@/app/generated/prisma/client";
 import { DeleteTimelineItemButton } from "./DeleteTimelineItemButton";
 
@@ -36,17 +34,6 @@ export function ChatBubble({ item, isFromPeer }: ChatBubbleProps) {
                 }`}
             >
                 <span>{time}</span>
-                {item.sourceUrl && (
-                    <a
-                        href={item.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 hover:underline opacity-0 group-hover:opacity-100 transition"
-                    >
-                        View original
-                        <SquareArrowOutUpRight size={11} strokeWidth={2.5} />
-                    </a>
-                )}
                 <DeleteTimelineItemButton itemId={item.id} />
             </div>
         </div>
