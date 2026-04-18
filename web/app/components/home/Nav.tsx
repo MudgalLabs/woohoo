@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@woohoo/ui";
 import { Logo } from "@/app/components/brand/Logo";
 import { ThemeToggleIcon } from "@/app/components/ThemeToggleIcon";
+import { MobileMenu } from "@/app/components/home/MobileMenu";
 
 interface NavProps {
     isLoggedIn?: boolean;
@@ -16,7 +17,7 @@ export function Nav({
     showThemeToggle = true,
 }: NavProps) {
     return (
-        <nav className="w-full border-b border-border">
+        <nav className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-md">
             <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
                 <div>
                     <Logo />
@@ -60,7 +61,11 @@ export function Nav({
                 </div>
 
                 <div className="flex items-center gap-2">
-                    {showThemeToggle && <ThemeToggleIcon />}
+                    {showThemeToggle && (
+                        <div className="hidden md:flex">
+                            <ThemeToggleIcon />
+                        </div>
+                    )}
                     {isLoggedIn ? (
                         <Link href="/dashboard">
                             <Button className="group" variant="default">
@@ -73,12 +78,15 @@ export function Nav({
                             <Link href="/sign-in">
                                 <Button variant="ghost">Sign In</Button>
                             </Link>
-
                             <Link href="/sign-up">
                                 <Button>Start for free</Button>
                             </Link>
                         </>
                     )}
+                    <MobileMenu
+                        isLoggedIn={isLoggedIn}
+                        showAnchorLinks={showAnchorLinks}
+                    />
                 </div>
             </div>
         </nav>
