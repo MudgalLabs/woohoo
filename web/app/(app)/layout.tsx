@@ -52,7 +52,13 @@ export default async function AppLayout({
                 </SidebarContent>
 
                 <SidebarRail />
-                <AppSidebarFooter />
+                <AppSidebarFooter
+                    user={{
+                        name: session.user.name,
+                        email: session.user.email,
+                        image: session.user.image,
+                    }}
+                />
             </Sidebar>
 
             <SidebarInset>

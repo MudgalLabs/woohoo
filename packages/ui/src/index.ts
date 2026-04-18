@@ -11,6 +11,7 @@ export {
     AlertDialogAction,
     AlertDialogCancel,
 } from "./components/alert-dialog"
+export { Avatar, AvatarImage, AvatarFallback } from "./components/avatar"
 export { Button, buttonVariants } from "./components/button"
 export type { ButtonProps } from "./components/button"
 export {
@@ -21,6 +22,23 @@ export {
     CardDescription,
     CardContent,
 } from "./components/card"
+export {
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuCheckboxItem,
+    DropdownMenuRadioItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuShortcut,
+    DropdownMenuGroup,
+    DropdownMenuPortal,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuRadioGroup,
+} from "./components/dropdown-menu"
 export { Input } from "./components/input"
 export { Label } from "./components/label"
 export { cn } from "./lib/utils"

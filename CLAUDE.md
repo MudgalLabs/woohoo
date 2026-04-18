@@ -48,10 +48,12 @@ A **Woohoo** is a thread of saved interactions between the founder and one perso
 
 ---
 
-Woohoo is a social CRM for indie founders. It captures warm leads from Reddit DMs and comments via a browser extension (1-click save, no tab switching), organizes them into Woohoos (one per platform + person), and reminds founders to follow up — so no warm lead goes cold. It consists of two applications sharing a PostgreSQL database:
+Woohoo is a social CRM for indie founders. It captures warm leads from Reddit DMs and comments via a browser extension (1-click save, no tab switching), organizes them into Woohoos (one per platform + person), and reminds founders to follow up — so no warm lead goes cold. It is an npm workspace monorepo sharing a PostgreSQL database:
 
 - **`web/`** — Next.js 16 full-stack app (App Router, React 19, Tailwind v4, shadcn/ui, better-auth, Prisma)
 - **`ext/`** — Chrome extension MV3 (React 19, Vite, @crxjs/vite-plugin), currently scoped to `https://www.reddit.com/*`
+- **`packages/ui`** (`@woohoo/ui`) — shared, reusable shadcn primitives consumed by `web/` (and any future app)
+- **`packages/api`** (`@woohoo/api`) — shared API client and types consumed by `web/` and `ext/`
 
 ## Development Commands
 
@@ -120,6 +122,15 @@ Copy `.env.example` to `.env` and fill in:
 - `src/sidepanel/` — side panel UI
 - `src/components/` — shared components (SaveButton, SaveModal, etc.)
 - `manifest.config.ts` — extension manifest (permissions, content script matches)
+
+### UI components
+
+The shadcn story is split across two directories:
+
+- **`packages/ui/src/components/`** — reusable primitives (button, card, input, label, alert-dialog, avatar, dropdown-menu, …). `components.json` lives at `packages/ui/components.json`. Add new primitives here with `cd packages/ui && npx shadcn@latest add <component>`, then re-export from `packages/ui/src/index.ts`. Consume from `web/` via `import { Button } from "@woohoo/ui"`.
+- **`web/components/ui/`** — app-specific primitives that are unlikely to be reused (sidebar, sheet, separator, skeleton, tooltip). Imported via `@/components/ui/*`.
+
+Rule of thumb: generic primitive → `packages/ui`. Layout/app-specific primitive → `web/components/ui`. Note: button and input currently exist in both locations for legacy reasons — prefer the `@woohoo/ui` version in new code.
 
 ### Auth
 
