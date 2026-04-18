@@ -41,4 +41,7 @@ export {
 } from "./components/dropdown-menu"
 export { Input } from "./components/input"
 export { Label } from "./components/label"
+export { Popover, PopoverTrigger, PopoverContent } from "./components/popover"
+export { Tabs, TabsList, TabsTrigger, TabsContent } from "./components/tabs"
+export { Calendar, CalendarDayButton } from "./components/calendar"
 export { cn } from "./lib/utils"

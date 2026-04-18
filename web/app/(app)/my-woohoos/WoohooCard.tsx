@@ -23,7 +23,7 @@ function formatDate(date: Date | string): string {
     });
 }
 
-function timeAgo(date: Date | string): string {
+export function timeAgo(date: Date | string): string {
     const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
     if (seconds < 60) return "just now";
     if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
@@ -31,13 +31,13 @@ function timeAgo(date: Date | string): string {
     return `${Math.floor(seconds / 86400)}d ago`;
 }
 
-function peerInitial(platform: string, peerId: string): string {
+export function peerInitial(platform: string, peerId: string): string {
     const handle = peerHandle(platform, peerId);
     const stripped = handle.replace(/^u\//, "").replace(/^@/, "");
     return (stripped[0] ?? "?").toUpperCase();
 }
 
-function countsLabel(counts: WoohooCounts): string | null {
+export function countsLabel(counts: WoohooCounts): string | null {
     const parts: string[] = [];
     if (counts.dm > 0) {
         parts.push(`${counts.dm} ${counts.dm === 1 ? "DM" : "DMs"}`);

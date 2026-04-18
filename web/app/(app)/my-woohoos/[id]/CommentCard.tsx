@@ -1,10 +1,13 @@
 import { SquareArrowOutUpRight } from "lucide-react";
 
 import type { TimelineItem } from "@/app/generated/prisma/client";
+import { cn } from "@/lib/utils";
+import { timeAgo } from "../WoohooCard";
 import { DeleteTimelineItemButton } from "./DeleteTimelineItemButton";
 
 interface CommentCardProps {
     item: TimelineItem;
+    isFromPeer: boolean;
 }
 
 function extractSubreddit(sourceUrl: string | null): string | null {
@@ -13,57 +16,67 @@ function extractSubreddit(sourceUrl: string | null): string | null {
     return match?.[1] ?? null;
 }
 
-export function CommentCard({ item }: CommentCardProps) {
-    const time = new Date(item.interactionAt).toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-    });
-    const author = item.authorName ?? item.authorId;
-    const initial = author.charAt(0).toUpperCase();
+export function CommentCard({ item, isFromPeer }: CommentCardProps) {
     const subreddit = extractSubreddit(item.sourceUrl);
+    const ago = timeAgo(item.interactionAt);
 
     return (
-        <div className="group flex gap-3">
-            <div className="flex shrink-0 flex-col items-center">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-semibold text-muted-foreground">
-                    {initial}
-                </div>
-                <div className="mt-1 w-px flex-1 bg-border" />
+        <div
+            className={cn(
+                "group relative rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent/20",
+                !isFromPeer && "border-l-2 border-l-primary/60",
+            )}
+        >
+            <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+                {isFromPeer ? (
+                    <>
+                        {subreddit && (
+                            <>
+                                <span className="font-medium text-foreground">
+                                    r/{subreddit}
+                                </span>
+                                <span aria-hidden>·</span>
+                            </>
+                        )}
+                        <span>{ago}</span>
+                    </>
+                ) : (
+                    <>
+                        <span className="font-medium text-primary">
+                            You replied
+                        </span>
+                        {subreddit && (
+                            <>
+                                <span aria-hidden>·</span>
+                                <span>r/{subreddit}</span>
+                            </>
+                        )}
+                        <span aria-hidden>·</span>
+                        <span>{ago}</span>
+                    </>
+                )}
             </div>
 
-            <div className="min-w-0 flex-1 pb-2">
-                <div className="mb-1 flex items-center gap-1.5 text-xs">
-                    <span className="font-semibold text-foreground">
-                        u/{author}
-                    </span>
-                    <span className="text-muted-foreground">·</span>
-                    <span className="text-muted-foreground">{time}</span>
-                    <div className="ml-auto opacity-0 transition group-hover:opacity-100">
-                        <DeleteTimelineItemButton itemId={item.id} />
-                    </div>
-                </div>
+            <p className="whitespace-pre-wrap text-sm text-foreground">
+                {item.contentText}
+            </p>
 
-                <p className="whitespace-pre-wrap text-sm text-foreground">
-                    {item.contentText}
-                </p>
-
-                <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
-                    {subreddit && <span>r/{subreddit}</span>}
-                    {item.sourceUrl && (
-                        <a
-                            href={item.sourceUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-1 hover:text-primary hover:underline"
-                        >
-                            View comment
-                            <SquareArrowOutUpRight
-                                size={11}
-                                strokeWidth={2.5}
-                            />
-                        </a>
-                    )}
+            {item.sourceUrl && (
+                <div className="mt-3 flex justify-end">
+                    <a
+                        href={item.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary hover:underline"
+                    >
+                        View on Reddit
+                        <SquareArrowOutUpRight size={11} strokeWidth={2.5} />
+                    </a>
                 </div>
+            )}
+
+            <div className="absolute right-2 top-2 opacity-0 transition group-hover:opacity-100">
+                <DeleteTimelineItemButton itemId={item.id} />
             </div>
         </div>
     );

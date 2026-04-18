@@ -12,9 +12,79 @@ Reviewed the current MVP surfaces (dashboard, My Woohoos detail view, sidebar, e
 
 - [x] Sidebar — account row with dropdown (avatar, theme toggle, sign out); ThemeToggle.tsx deleted; monorepo convention documented in CLAUDE.md.
 - [x] Dashboard — hero stats strip, 2×2 layout (Today+Overdue top, Going cold bottom full-width), WoohooCard gets initials avatar + explicit counts ("2 DMs · 4 comments") + overdue variant (red left border + red follow-up text). Polish flows to My Woohoos since WoohooCard is shared.
-- [ ] **Woohoo detail** — next
-- [ ] Extension (content modals + popup)
+- [x] Woohoo detail — header gets 48px peer avatar + meta line (counts · last-interaction timeAgo · Open chat), created-date removed from view; timeline split into Messages | Comments tabs (default opens the tab with content); native datetime-local swapped for a `DateTimePicker` composite (shadcn Popover + Calendar + time input, primitives installed into `packages/ui`); `CommentCard` rewritten as a compact bordered card with `isFromPeer` prop (OP variant has left-edge primary accent + "You replied" header); day divider lifted out of the per-item wrapper.
+- [ ] **Extension (content modals + popup)** — next
 - [ ] Cross-cutting polish (typography, brand color, empty states)
+- [ ] Save-rule enforcement (separate session before MVP ships) — deterministic comment routing by author; remove SaveModal checkbox. Detailed brief in "Deferred / backlog" below.
+
+---
+
+## Deferred / backlog
+
+Detail for the non-obvious items pending across future sessions. Keep this in sync as decisions land.
+
+### 1. Save-rule enforcement (must happen before MVP ships)
+
+**Why.** Comment saves currently merge via ancestor traversal: if the new comment's ancestor chain contains an already-saved comment, the save attaches to that Woohoo. This conflates cross-peer threads (Peer B replying inside Peer A's saved thread ends up in Peer A's Woohoo) and forces the extension to expose a checkbox so the user can override the merge. Neither is right. Rules below make routing deterministic and let us kill the checkbox.
+
+**The rules** (server-side, authoritative):
+
+1. **Peer-authored comments** (author is not the founder):
+   - Always save to that peer's own Woohoo, keyed by `(platform, authorId)`.
+   - Create the Woohoo for that peer on the fly if one doesn't already exist.
+   - Ancestor chain is ignored — even if this comment is a reply inside another already-saved peer's thread, it belongs to its own author's Woohoo, not the parent thread's Woohoo. This is the behavior change from today.
+
+2. **Founder-authored comments** (author is the logged-in founder):
+   - Walk the ancestor chain for a peer-authored comment.
+   - If one exists anywhere in the ancestry → attach this founder comment to that peer's Woohoo. (Supports "save my reply to a lead's thread.")
+   - If no peer ancestor exists → **reject the save.** Founders don't get their own Woohoo, and standalone top-level founder comments aren't captured anywhere.
+
+3. **SaveModal checkbox** (extension): **remove.** Under rules 1 and 2 the destination is deterministic. The modal still shows the user *where* it will land (peer handle + Woohoo it's attaching to), but the user doesn't steer it.
+
+**Open sub-decision: how does the extension know which Reddit username is the founder?**
+- Option A — **scrape from the Reddit page DOM** (account dropdown / `<faceplate-tracker>` near the top-right). Zero-config; breaks if Reddit changes markup.
+- Option B — **ask the user once** in the extension popup and store in `chrome.storage.local`. Robust; costs a first-run step.
+- Option C (recommended) — **hybrid:** auto-detect from DOM, cache, allow edit in popup. Zero-config happy path with a manual override.
+
+**Touches:**
+- `web/app/api/woohoos/.../save/route.ts` (exact path TBD) — server is the source of truth for routing. Reads author identity, peer identity, and ancestor chain from the payload; applies rules 1–2; returns the target Woohoo (or 4xx for the founder-no-peer-ancestor reject).
+- `ext/src/content/reddit/comment.ts` — traversal simplifies. No more "find saved ancestor to merge into." Instead: classify author (founder vs peer), and (only for founders) collect ancestor peer-authored comment IDs so the server can locate the target Woohoo.
+- `ext/src/components/SaveModal.tsx` — drop the checkbox. Update the "saving to" label to reflect the deterministic destination. Surface the reject case ("You can only save your reply when it's inside a lead's thread.") cleanly — disabled save or pre-submit warning, don't fail silently.
+- `ext/src/popup/*` (or new settings surface) — founder-username config with auto-detect + manual override.
+- `web/prisma/schema.prisma` — no schema change required for the rules themselves.
+
+**Verification:**
+- Peer A's comment saved → lands in Peer A's Woohoo. ✓
+- Founder's reply to Peer A's comment → attaches to Peer A's Woohoo. ✓
+- Founder's standalone top-level comment save attempted → rejected with explanatory UX. ✓
+- Peer B's reply inside Peer A's already-saved thread → lands in Peer B's (newly-created) Woohoo, not Peer A's. ✓ (behavior change)
+- Checkbox removed from SaveModal. ✓
+- Founder-username auto-detect works on a fresh install; manual override via popup also works.
+
+### 2. Comment threading (post-MVP)
+
+Add `parentTimelineItemId String?` to `TimelineItem`, migrate, update the extension payload to capture it during ancestor traversal, render the Comments tab as an indented tree. MVP renders flat chronological.
+
+### 3. Extension session (content modals + popup)
+
+From feedback overview below:
+- **Dark/light theme match.** Light modals on dark Reddit read as third-party popups. Detect `prefers-color-scheme` + Reddit's theme class; match.
+- **"Saved" toast placement.** Currently covers the message it confirms. Move to bottom-right of the chat pane, auto-dismiss ~2s.
+- **Popup is unbranded.** Add a small stats line ("12 woohoos · 3 to follow up today") and an "Open dashboard" button. Currently only offers sign-out.
+- **Datetime picker swap.** Replace the extension's native `<input type="datetime-local">` with the `DateTimePicker` composite. Decision point at that time: lift `DateTimePicker` from `web/components/` into `@woohoo/ui` (commits the shared package to `react-day-picker` + `date-fns`, ~75 KB) vs. keep a separate extension copy. Recommend lifting — the cost is bearable and a single picker is worth it.
+
+### 4. Cross-cutting polish session
+
+From feedback overview below:
+- **Typography hierarchy.** Headings heavier, metadata lighter/smaller, tighter letter-spacing on the wordmark.
+- **Brand color.** Coral `woohoo` mark appears only on the logo + follow-up dates. Add one more intentional use — Save CTA accent, active nav pill, or subtle card glow on "Today" items.
+- **Empty-state illustrations.** Replace text-only "Everything looks warm. Keep it up." with a small icon or illustration.
+
+### 5. Smaller deferred items
+
+- **Per-author message grouping** in the Messages tab: show the peer avatar once per author run (iMessage/Slack style) rather than invisible on every bubble.
+- **`peerName` display.** Schema already has `peerName`; we fall back to `peerId` for the header initial. When `peerName` is populated, consider rendering it alongside the handle in the detail header.
+- **Legacy `@woohoo/ui` vs `web/components/ui/` duplication** for `button` and `input`. Clean up once the shared version is strictly better. Flagged in CLAUDE.md.
 
 ---
 
@@ -71,7 +141,7 @@ Reviewed the current MVP surfaces (dashboard, My Woohoos detail view, sidebar, e
 
 ---
 
-## Current session: Sidebar
+## Previous session: Sidebar
 
 ### Direction (locked with user)
 - **Vercel-style full sidebar:** wordmark top, nav middle, account row anchored at bottom. Theme toggle demoted to a menu item or small icon inside the account row.
@@ -154,3 +224,38 @@ Add a short "Monorepo layout" / "UI components" section documenting:
 6. Toggle sidebar to icon mode (⌘/Ctrl+B). Account row collapses to just the avatar; tooltip on hover shows email. Dropdown still opens on click.
 7. Mobile: sidebar opens as Sheet; account row + dropdown still work. Dropdown should position sensibly (may need `align`/`side` tweaks — verify).
 8. `npm run lint` clean.
+
+---
+
+## Previous session: Woohoo detail
+
+### What shipped
+- **Header redesign** (`web/app/(app)/my-woohoos/[id]/page.tsx`): 48px peer Avatar (`@woohoo/ui`) with initial of `peerName ?? peerId`, platform icon + peer handle + external-link-to-Reddit as the title, meta line `N DMs · M comments · Last interaction 2h ago · Open chat`. Created-date dropped from the visible layout. External-link icon on the handle demoted to hover-only. Follow-up control sits directly below the meta line.
+- **`DateTimePicker` composite** (`web/components/DateTimePicker.tsx`): trigger `Button` with `CalendarIcon` + formatted value / "Set follow-up" placeholder, `Popover` content containing shadcn `Calendar` (single mode) + native `<input type="time">` + Clear/Done footer. Internal state is `Date | null`, single source of truth. Date + time reconstructed via `new Date(y,m,d,h,m)` in local tz then serialized with `.toISOString()` by the caller. Stable `defaultMonth` via `useState(() => new Date())` to avoid hydration mismatches.
+- **`FollowUpEditor` rewrite**: thin wrapper — optimistic `setCurrent(next)` + PATCH `/api/woohoos/[id]`, revert on failure. No more pencil/check/cancel edit-mode chrome.
+- **Tabs** (`@woohoo/ui` re-exports from shadcn `tabs`): Messages | Comments with item-count suffix. `defaultTab` opens Comments only when DMs are empty and comments exist; otherwise Messages. Server-side partition of `woohoo.timeline` into `dms` + `comments` arrays.
+- **`CommentCard` rewrite** (`web/app/(app)/my-woohoos/[id]/CommentCard.tsx`): compact bordered card, full width within the content column. New `isFromPeer` prop. Peer variant: header `r/subreddit · timeAgo`. OP variant: left-edge `border-l-2 border-l-primary/60` + "You replied · r/subreddit · timeAgo" header. Body, then "View on Reddit →" footer (right-aligned, always visible). Delete button floats top-right, hover-revealed. Tree-line + per-comment avatar removed.
+- **Day-divider lift** in the Messages view: divider sibling to the `ChatBubble`, not nested inside its per-item flex column. Prevents future alignment inheritance issues.
+- **Empty states**: each tab has a short muted sentence pointing the founder at the extension as the capture path.
+- `ChatBubble` untouched functionally; styling was already consistent with the new comment card.
+- `peerInitial`, `countsLabel`, `timeAgo` exported from `WoohooCard.tsx` for reuse in the detail page.
+
+### Primitives added
+- `packages/ui/src/components/tabs.tsx`, `popover.tsx`, `calendar.tsx` (all via `cd packages/ui && npx shadcn@latest add`). Re-exported from `packages/ui/src/index.ts`. Deps added to `packages/ui/package.json`: `@radix-ui/react-tabs`, `@radix-ui/react-popover`, `react-day-picker`, `date-fns`. Calendar's default shadcn imports used `@woohoo/ui/components/button` which isn't an export subpath — switched to relative imports to match the rest of the package.
+
+### Scope deliberately deferred
+- **Save-rule enforcement.** Locked with user: peer-authored comments save to that peer's Woohoo; OP-authored comments attach to the nearest peer-rooted parent, else blocked; third-party comments route to their own Woohoo (create if needed). Extension's SaveModal checkbox becomes irrelevant and should be removed. Touches `web/app/api/woohoos/...` and `ext/src/content/reddit/comment.ts` + `ext/src/components/SaveModal.tsx`. Owns its own session before MVP ships.
+- Comment threading (`parentTimelineItemId` + tree rendering in the Comments tab). Renders flat chronological today; tree is a follow-up.
+- `DateTimePicker` composite living in `web/components/` rather than `@woohoo/ui` — bundle-weight decision pending the extension session. Lift when the extension actually reuses it.
+
+### Verification
+1. `make dev` (web + db). Sign in.
+2. Open a Woohoo with mixed DMs + comments. Expected: 48px avatar with initial left of the name; meta reads "N DMs · M comments · Last interaction Xh ago · Open chat"; no created-date visible.
+3. Click the follow-up picker button → Popover opens with Calendar + time input. Pick date+time → Done closes, trigger shows formatted value. Refresh persists. Open again → Clear → goes null.
+4. Tabs: both visible with counts. Default opens Messages. If Woohoo has only comments, default opens Comments. Switching tabs is instant.
+5. Messages tab: bubbles unchanged (peer left, OP right). Day dividers render.
+6. Comments tab: bordered cards; peer comments show `r/subreddit · timeAgo`; OP comments (if any) show primary left-edge + "You replied"; hover reveals delete top-right.
+7. Edge cases: comments-only Woohoo opens Comments by default; DMs-only Woohoo has empty Comments tab showing empty-state copy; long comment bodies wrap cleanly.
+8. Dark/light theme: both tabs read well.
+9. `cd web && npx tsc --noEmit` clean (verified).
+10. `cd web && npm run lint`: pre-existing `Math.random` error in `web/components/ui/sidebar.tsx:665` from shadcn primitive — unrelated to this session. No new lint errors introduced.
