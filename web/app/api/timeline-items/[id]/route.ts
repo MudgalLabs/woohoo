@@ -14,13 +14,25 @@ export async function DELETE(
 
     const { id } = await params;
 
-    const result = await prisma.timelineItem.deleteMany({
+    const target = await prisma.timelineItem.findFirst({
         where: { id, woohoo: { userId: session.user.id } },
+        select: { id: true, woohooId: true },
     });
 
-    if (result.count === 0) {
+    if (!target) {
         return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
+
+    await prisma.timelineItem.delete({ where: { id: target.id } });
+
+    const { _max } = await prisma.timelineItem.aggregate({
+        where: { woohooId: target.woohooId },
+        _max: { interactionAt: true },
+    });
+    await prisma.woohoo.update({
+        where: { id: target.woohooId },
+        data: { lastInteractionAt: _max.interactionAt ?? null },
+    });
 
     return NextResponse.json({ ok: true });
 }

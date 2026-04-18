@@ -47,9 +47,7 @@ export function ChatBubble({ item, isFromPeer }: ChatBubbleProps) {
                         <SquareArrowOutUpRight size={11} strokeWidth={2.5} />
                     </a>
                 )}
-                <span className="opacity-0 group-hover:opacity-100 transition">
-                    <DeleteTimelineItemButton itemId={item.id} />
-                </span>
+                <DeleteTimelineItemButton itemId={item.id} />
             </div>
         </div>
     );

@@ -73,7 +73,6 @@ export async function POST(request: Request) {
                         ...(followUpAt !== undefined
                             ? { followUpAt: followUpAt ? new Date(followUpAt) : null }
                             : {}),
-                        lastInteractionAt: interactionAt,
                         lastSavedAt: now,
                     },
                 });
@@ -103,7 +102,6 @@ export async function POST(request: Request) {
             update: {
                 ...(chatUrl ? { chatUrl } : {}),
                 ...(followUpAt !== undefined ? { followUpAt: followUpAt ? new Date(followUpAt) : null } : {}),
-                lastInteractionAt: interactionAt,
                 lastSavedAt: now,
             },
         });
@@ -139,6 +137,20 @@ export async function POST(request: Request) {
             interactionAt,
         },
     });
+
+    const { _max } = await prisma.timelineItem.aggregate({
+        where: { woohooId: woohoo.id },
+        _max: { interactionAt: true },
+    });
+    if (
+        _max.interactionAt &&
+        _max.interactionAt.getTime() !== woohoo.lastInteractionAt?.getTime()
+    ) {
+        woohoo = await prisma.woohoo.update({
+            where: { id: woohoo.id },
+            data: { lastInteractionAt: _max.interactionAt },
+        });
+    }
 
     return NextResponse.json({ woohoo, timelineItem });
 }

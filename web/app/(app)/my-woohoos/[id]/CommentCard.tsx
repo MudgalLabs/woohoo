@@ -75,7 +75,7 @@ export function CommentCard({ item, isFromPeer }: CommentCardProps) {
                 </div>
             )}
 
-            <div className="absolute right-2 top-2 opacity-0 transition group-hover:opacity-100">
+            <div className="absolute right-2 top-2">
                 <DeleteTimelineItemButton itemId={item.id} />
             </div>
         </div>
