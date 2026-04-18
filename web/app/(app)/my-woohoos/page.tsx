@@ -1,6 +1,7 @@
 import { getSession } from "@/lib/get-session";
 import { prisma } from "@/lib/prisma";
 import { WoohooCard } from "./WoohooCard";
+import { getTimelineCountsByWoohoo } from "@/lib/timeline-counts";
 
 export const metadata = { title: "My Woohoos" };
 
@@ -18,6 +19,8 @@ export default async function MyWoohoos() {
         },
     });
 
+    const countsMap = await getTimelineCountsByWoohoo(session!.user.id);
+
     return (
         <div className="p-6 w-full">
             {woohoos.length === 0 ? (
@@ -28,7 +31,11 @@ export default async function MyWoohoos() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3">
                     {woohoos.map((w) => (
-                        <WoohooCard key={w.id} woohoo={w} />
+                        <WoohooCard
+                            key={w.id}
+                            woohoo={w}
+                            counts={countsMap.get(w.id)}
+                        />
                     ))}
                 </div>
             )}

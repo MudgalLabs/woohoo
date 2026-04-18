@@ -11,8 +11,8 @@ Reviewed the current MVP surfaces (dashboard, My Woohoos detail view, sidebar, e
 ## Session tracker
 
 - [x] Sidebar — account row with dropdown (avatar, theme toggle, sign out); ThemeToggle.tsx deleted; monorepo convention documented in CLAUDE.md.
-- [ ] **Dashboard** — next
-- [ ] Woohoo detail
+- [x] Dashboard — hero stats strip, 2×2 layout (Today+Overdue top, Going cold bottom full-width), WoohooCard gets initials avatar + explicit counts ("2 DMs · 4 comments") + overdue variant (red left border + red follow-up text). Polish flows to My Woohoos since WoohooCard is shared.
+- [ ] **Woohoo detail** — next
 - [ ] Extension (content modals + popup)
 - [ ] Cross-cutting polish (typography, brand color, empty states)
 
@@ -44,6 +44,30 @@ Reviewed the current MVP surfaces (dashboard, My Woohoos detail view, sidebar, e
 - **Typography hierarchy is too uniform.** Headings, metadata, body text all feel similar weight. Push headings heavier, metadata lighter/smaller, tighten letter-spacing on the wordmark.
 - **Brand color is underused.** The coral `woohoo` mark is great but only appears as logo + follow-up dates. Use it sparingly for one more thing — Save CTA accent, active nav pill, or subtle card glow on "Today" items.
 - **Empty states are text-only.** "Everything looks warm. Keep it up." would sing with a small illustration or icon above it.
+
+---
+
+## Previous session: Dashboard
+
+### What shipped
+- **Hero stats strip** at top of `web/app/(app)/dashboard/page.tsx`: `N to follow up today · M overdue · K going cold`, with overdue bolded in `text-destructive` when > 0. Falls back to "All caught up" when everything is zero.
+- **2×2 desktop layout:** `grid grid-cols-2 gap-8` for Today (left) + Overdue (right) on top row; Going cold full-width below. Mobile stays single-column stacked (overdue first since most urgent).
+- **WoohooCard polish** (shared by dashboard + My Woohoos):
+  - Initials avatar (`@woohoo/ui` `Avatar` + `AvatarFallback`) — strips `u/` or `@` prefix, uppercases first char.
+  - Explicit counts by type: `2 DMs · 4 comments · Saved 3h ago` (each part only renders when > 0). Pulled from a shared helper `lib/timeline-counts.ts` that does one `prisma.timelineItem.groupBy({ by: ['woohooId', 'type'] })` per page load.
+  - `variant="overdue"` prop: `border-l-4 border-l-destructive/80` on the card and `text-destructive` on the follow-up date (replaces "Follow up" prefix with "Overdue").
+  - Hover state: `hover:border-border/80 hover:bg-accent/30` (subtle lift, not flashy).
+- **Prisma queries** in `dashboard/page.tsx` and `my-woohoos/page.tsx` now include `_count: { select: { timeline: true } }`.
+
+### Relevant files touched
+- `web/app/(app)/dashboard/page.tsx` — hero strip, 2×2 layout, overdue variant wired on the Overdue section only.
+- `web/app/(app)/my-woohoos/WoohooCard.tsx` — avatar, message count, overdue variant, hover polish.
+- `web/app/(app)/my-woohoos/page.tsx` — added `_count` to query.
+
+### Deferred to later sessions
+- Coral brand accent on "Today" cards (cross-cutting polish session).
+- Empty-state illustrations (cross-cutting polish session).
+- Woohoo detail header + timeline — next session.
 
 ---
 

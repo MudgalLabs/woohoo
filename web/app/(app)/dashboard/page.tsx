@@ -3,28 +3,41 @@ import Link from "next/link";
 import { getSession } from "@/lib/get-session";
 import { prisma } from "@/lib/prisma";
 import { WoohooCard } from "@/app/(app)/my-woohoos/WoohooCard";
+import type { WoohooCounts } from "@/app/(app)/my-woohoos/WoohooCard";
+import { getTimelineCountsByWoohoo } from "@/lib/timeline-counts";
 import { Woohoo, TimelineItem } from "@/app/generated/prisma/client";
+import { cn } from "@/lib/utils";
 
 export const metadata = { title: "Dashboard" };
 
-type WoohooWithTimeline = Woohoo & { timeline: TimelineItem[] };
+type WoohooWithTimeline = Woohoo & {
+    timeline: TimelineItem[];
+};
 
 function DashboardSection({
     heading,
     subheading,
     woohoos,
     emptyText,
+    variant = "default",
+    countsMap,
 }: {
     heading: string;
     subheading: string;
     woohoos: WoohooWithTimeline[];
     emptyText: string;
+    variant?: "default" | "overdue";
+    countsMap: Map<string, WoohooCounts>;
 }) {
     return (
-        <div>
+        <section>
             <div className="mb-3">
-                <h2 className="text-sm font-semibold text-foreground">{heading}</h2>
-                <p className="text-xs text-muted-foreground mt-0.5">{subheading}</p>
+                <h2 className="text-sm font-semibold text-foreground">
+                    {heading}
+                </h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                    {subheading}
+                </p>
             </div>
 
             {woohoos.length === 0 ? (
@@ -32,11 +45,62 @@ function DashboardSection({
             ) : (
                 <div className="flex flex-col gap-3">
                     {woohoos.map((w) => (
-                        <WoohooCard key={w.id} woohoo={w} />
+                        <WoohooCard
+                            key={w.id}
+                            woohoo={w}
+                            counts={countsMap.get(w.id)}
+                            variant={variant}
+                        />
                     ))}
                 </div>
             )}
-        </div>
+        </section>
+    );
+}
+
+function HeroStats({
+    today,
+    overdue,
+    goingCold,
+}: {
+    today: number;
+    overdue: number;
+    goingCold: number;
+}) {
+    const parts: { count: number; label: string; emphasis?: boolean }[] = [
+        { count: today, label: "to follow up today" },
+        { count: overdue, label: "overdue", emphasis: overdue > 0 },
+        { count: goingCold, label: "going cold" },
+    ];
+
+    const allZero = today === 0 && overdue === 0 && goingCold === 0;
+    if (allZero) {
+        return (
+            <p className="text-sm text-muted-foreground">
+                All caught up — nothing needs your attention right now.
+            </p>
+        );
+    }
+
+    return (
+        <p className="text-sm text-muted-foreground">
+            {parts.map((part, i) => (
+                <span key={part.label}>
+                    {i > 0 && <span className="mx-2 text-border">·</span>}
+                    <span
+                        className={cn(
+                            "font-semibold",
+                            part.emphasis
+                                ? "text-destructive"
+                                : "text-foreground",
+                        )}
+                    >
+                        {part.count}
+                    </span>{" "}
+                    <span>{part.label}</span>
+                </span>
+            ))}
+        </p>
     );
 }
 
@@ -53,6 +117,8 @@ export default async function DashboardPage() {
         },
         orderBy: { lastSavedAt: "desc" },
     });
+
+    const countsMap = await getTimelineCountsByWoohoo(session!.user.id);
 
     if (allWoohoos.length === 0) {
         return (
@@ -90,55 +156,64 @@ export default async function DashboardPage() {
     );
 
     return (
-        // Mobile: single column, stacked as overdue → today → going cold
-        // Desktop: 2 columns — today fills left, overdue + going cold stacked right
-        // Each column scrolls independently so both are always visible
-        <div className="h-[calc(100vh-3rem)] flex flex-col md:flex-row gap-6 p-6 overflow-hidden">
-            {/* Mobile-only: overdue first */}
-            <div className="md:hidden flex flex-col gap-6 overflow-y-auto">
+        <div className="p-6 space-y-8">
+            <HeroStats
+                today={today.length}
+                overdue={overdue.length}
+                goingCold={goingCold.length}
+            />
+
+            {/* Mobile: stacked — overdue first (most urgent) */}
+            <div className="md:hidden space-y-8">
                 <DashboardSection
                     heading="Overdue"
                     subheading="Follow-up dates that have passed. Don't let these slip."
                     woohoos={overdue}
                     emptyText="You're all caught up. Nice work."
+                    variant="overdue"
+                    countsMap={countsMap}
                 />
                 <DashboardSection
                     heading="Today"
                     subheading="Woohoos you planned to follow up on today."
                     woohoos={today}
                     emptyText="Nothing due today — enjoy the quiet."
+                    countsMap={countsMap}
                 />
                 <DashboardSection
                     heading="Might be going cold"
                     subheading="No follow-up set and no new interaction in the last 7 days."
                     woohoos={goingCold}
                     emptyText="Everything looks warm. Keep it up."
+                    countsMap={countsMap}
                 />
             </div>
 
-            {/* Desktop: left column = Today */}
-            <div className="hidden md:flex flex-col flex-1 overflow-y-auto">
-                <DashboardSection
-                    heading="Today"
-                    subheading="Woohoos you planned to follow up on today."
-                    woohoos={today}
-                    emptyText="Nothing due today — enjoy the quiet."
-                />
-            </div>
-
-            {/* Desktop: right column = Overdue + Going Cold */}
-            <div className="hidden md:flex flex-col flex-1 gap-8 overflow-y-auto">
-                <DashboardSection
-                    heading="Overdue"
-                    subheading="Follow-up dates that have passed. Don't let these slip."
-                    woohoos={overdue}
-                    emptyText="You're all caught up. Nice work."
-                />
+            {/* Desktop: Today + Overdue top row, Going cold full-width below */}
+            <div className="hidden md:block space-y-8">
+                <div className="grid grid-cols-2 gap-8">
+                    <DashboardSection
+                        heading="Today"
+                        subheading="Woohoos you planned to follow up on today."
+                        woohoos={today}
+                        emptyText="Nothing due today — enjoy the quiet."
+                        countsMap={countsMap}
+                    />
+                    <DashboardSection
+                        heading="Overdue"
+                        subheading="Follow-up dates that have passed. Don't let these slip."
+                        woohoos={overdue}
+                        emptyText="You're all caught up. Nice work."
+                        variant="overdue"
+                        countsMap={countsMap}
+                    />
+                </div>
                 <DashboardSection
                     heading="Might be going cold"
                     subheading="No follow-up set and no new interaction in the last 7 days."
                     woohoos={goingCold}
                     emptyText="Everything looks warm. Keep it up."
+                    countsMap={countsMap}
                 />
             </div>
         </div>
