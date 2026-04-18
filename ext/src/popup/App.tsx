@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { AuthSession, StatsResponse } from "@woohoo/api";
 import { Logo } from "@/components/Logo";
 import { normalizeRedditUsername } from "@/content/reddit/founder";
+import { useStoredTheme } from "@/lib/theme";
 import "./App.css";
 
 const BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3000";
@@ -20,6 +21,11 @@ export default function App() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [redditUsername, setRedditUsername] = useState("");
+    const theme = useStoredTheme();
+
+    useEffect(() => {
+        document.documentElement.classList.toggle("dark", theme === "dark");
+    }, [theme]);
 
     useEffect(() => {
         chrome.runtime.sendMessage({ type: "GET_SESSION" }, (res: { session: AuthSession | null }) => {

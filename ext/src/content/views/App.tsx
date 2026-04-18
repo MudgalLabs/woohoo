@@ -13,6 +13,11 @@ import { startFounderScraper } from "@/content/reddit/founder";
 import { SaveButton } from "@/components/SaveButton";
 import { mountWithShadow } from "@/content/lib/react";
 import { setActive } from "@/content/store/activeSaveButton";
+import {
+    getRedditTheme,
+    subscribeToThemeChanges,
+} from "@/content/lib/theme";
+import { persistTheme } from "@/lib/theme";
 
 function App() {
     const [show, setShow] = useState(false);
@@ -24,6 +29,13 @@ function App() {
     // Capture the logged-in Reddit username the first time the user drawer
     // renders. Used server-side to route comment saves deterministically.
     useEffect(() => startFounderScraper(), []);
+
+    // Mirror Reddit's theme into chrome.storage so the popup (which can't see
+    // the Reddit DOM) can render in the same theme as the save modal.
+    useEffect(() => {
+        persistTheme(getRedditTheme());
+        return subscribeToThemeChanges(persistTheme);
+    }, []);
 
     // Keep track of the active chat's username.
     // This will track for both, the pop up and reddit.com/chat/room/...

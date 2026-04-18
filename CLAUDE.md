@@ -22,13 +22,13 @@ A **Woohoo** is a thread of saved interactions between the founder and one perso
 
 **Example flow:** Someone comments "Cool product, DM me the link" on a Reddit post. Founder saves the comment → new Woohoo created. Founder DMs them, they reply "I'll check it out this weekend" → founder saves that DM → added to the same Woohoo's timeline. Founder sets a follow-up for Monday. On Monday, the dashboard shows this Woohoo under "Follow up today". One click opens the Woohoo view; another click opens the Reddit chat room directly.
 
-### MVP Scope (current focus)
+### MVP Scope (shipped)
 
-1. **Extension (wedge):** Inject a "Save" button on Reddit chat DM messages. 1-click opens a save modal, 1 more click confirms. Captures: message content, platform, peer ID, message timestamp, chat room URL. Optional: set a follow-up date-time before saving.
-2. **Backend:** API to receive saved messages, create a Woohoo if none exists for `(platform, peer)`, append to its timeline.
-3. **Dashboard:** Three sections — "Follow up today", "Overdue", "Maybe getting cold" (no interaction saved for N days). Each shows a Woohoo card with platform, peer, last interaction summary, follow-up date.
-4. **Your Woohoos page:** List of all Woohoos with 1-2 filters (e.g., platform, has follow-up) and 1-2 sort options (e.g., last saved, follow-up date).
-5. **Woohoo detail view:** Header (platform, peer, created date), full timeline (comments/replies link to original URL on the platform), "Open Chat" button linking to the original chat room.
+1. **Extension:** Injects a "Save" button on hover for Reddit chat DMs **and** post comments (`shreddit-comment`). 1-click opens a save modal, 1 more click confirms. Captures content, platform, peer ID, timestamp, source URL. Optional follow-up date-time picker.
+2. **Backend:** `POST /api/woohoos/save` upserts a Woohoo by `(userId, platform, peerId)` and appends a `TimelineItem`. See "Save routing rules" below — comment threading is non-trivial.
+3. **Dashboard:** Three sections — "Follow up today", "Overdue", "Maybe getting cold". Cards show platform, peer, last interaction, follow-up date, DM/comment counts.
+4. **My Woohoos page** (`/my-woohoos`): grid of all Woohoos ordered by `lastSavedAt desc`.
+5. **Woohoo detail view** (`/my-woohoos/[id]`): header, inline follow-up editor, timeline tabs split into DMs vs. Comments, delete buttons for the Woohoo and individual timeline items, "Open Chat" link.
 
 ### Post-MVP (ordered)
 
@@ -101,27 +101,68 @@ Copy `.env.example` to `.env` and fill in:
 
 ## Architecture
 
+### Data model (`web/prisma/schema.prisma`)
+
+Three domain models beyond better-auth tables:
+
+- **`Woohoo`** — unique on `(userId, platform, peerId)`. Fields: `peerName`, `chatUrl`, `followUpAt`, `lastInteractionAt`, `lastSavedAt`. Cascades from `User`.
+- **`TimelineItem`** — belongs to a Woohoo. Unique on `(woohooId, externalId)` (prevents duplicate saves). `type: dm | comment`, `contentText`, `contentHtml`, `sourceUrl`, `authorId`, `authorName`, `interactionAt`, `savedAt`.
+- **Enums** — `Platform` (currently `reddit` only), `TimelineItemType` (`dm` | `comment`).
+
+### API routes (`web/app/api/`)
+
+All non-auth routes accept **either** a `Bearer <session.token>` header (used by the extension) **or** a better-auth cookie (used by the web app). See `lib/get-session-from-request.ts`.
+
+- `POST /api/woohoos/save` — upsert Woohoo + create TimelineItem. See routing rules below.
+- `GET /api/woohoos/check` — pre-save check: returns `{ saved, woohooId?, timelineItemId?, ancestorMatch? }`. Powers the extension's "Already saved" state and the "Saving to u/X's Woohoo" preview.
+- `GET /api/woohoos` — list user's Woohoos with most-recent timeline item.
+- `GET/PATCH/DELETE /api/woohoos/[id]` — detail fetch, update `followUpAt`, or delete (cascades to timeline items).
+- `DELETE /api/timeline-items/[id]` — delete one item; recomputes the parent Woohoo's `lastInteractionAt`.
+- `GET /api/stats` — `{ totalWoohoos, followUpToday }` for the header badge.
+
+### Save routing rules (comments)
+
+When a saved item is a comment, routing depends on authorship. The extension sends `founderExternalId` (the logged-in Reddit username) and `ancestorExternalIds` (nearest-first comment ancestors, up to ~10 deep).
+
+- **Peer-authored comment** → always goes to the peer's own Woohoo (`peerId = authorId`).
+- **Founder-authored comment with a saved peer ancestor** → threaded into that peer's Woohoo. This is how "founder replying inside a lead's thread" stays in one timeline.
+- **Founder-authored comment with no saved ancestor** → falls back to the upsert-by-`peerId` path.
+
+Change this logic in `web/app/api/woohoos/save/route.ts` (and keep `api/woohoos/check/route.ts` aligned — it mirrors the same match rules for the UI preview).
+
 ### Web app structure
 
 - `app/` — Next.js App Router pages and API routes
-    - `api/auth/[...all]/` — better-auth catch-all handler (handles all `/auth/*` endpoints)
-    - `dashboard/` — protected area (requires session)
+    - `api/auth/[...all]/` — better-auth catch-all
+    - `(app)/` — protected route group (layout enforces session, renders `AppHeader` + sidebar)
+        - `dashboard/` — three-section dashboard (Follow up today / Overdue / Maybe getting cold)
+        - `my-woohoos/` — list page (`WoohooCard` grid)
+        - `my-woohoos/[id]/` — detail page (`FollowUpEditor`, `ChatBubble`, `CommentCard`, delete buttons)
+    - `(marketing)/extension/` — public extension info page
     - `sign-in/`, `sign-up/` — auth pages
 - `lib/` — shared server/client utilities
     - `auth.ts` — better-auth server config (email+password, Prisma adapter)
     - `auth-client.ts` — client-side better-auth instance
     - `prisma.ts` — Prisma client singleton (use this, don't instantiate a new one)
-    - `get-session.ts` — server-side session helper
-- `components/` — React components (shadcn/ui based)
-- `prisma/` — schema and migrations (PostgreSQL, Prisma 7)
+    - `get-session.ts` — cookie-based session helper (server components)
+    - `get-session-from-request.ts` — Bearer-or-cookie helper (use in API route handlers so the extension can authenticate)
+    - `timeline-counts.ts` — `getTimelineCountsByWoohoo()`; grouped counts of dm vs. comment per Woohoo for card badges
+- `components/` — app-level components (`DateTimePicker`, `PlatformIcon`, `empty-state`, etc.)
+- `prisma/` — schema and migrations (PostgreSQL, Prisma 7). Generated client output is `app/generated/prisma/` — import from `@/app/generated/prisma/client`.
 
 ### Extension structure
 
 - `src/content/` — content script injected on Reddit pages
-- `src/popup/` — extension popup UI
+    - `reddit/dm.ts` — observes the chat popup, scans `.room-message-body`, injects a hover save button on each message. Handles lazy-loaded messages via a MutationObserver.
+    - `reddit/comment.ts` — observes `/r/*/comments/*` post pages, scans `shreddit-comment`, walks ancestors to collect `ancestorExternalIds` for threading.
+    - `reddit/founder.ts` — reads the logged-in Reddit username so the content script can send `founderExternalId` with every save.
+    - `views/`, `store/`, `lib/` — modal UI, extension state, helpers.
+- `src/popup/` — extension popup UI (sign-in, session state)
 - `src/sidepanel/` — side panel UI
 - `src/components/` — shared components (SaveButton, SaveModal, etc.)
-- `manifest.config.ts` — extension manifest (permissions, content script matches)
+- `manifest.config.ts` — MV3 manifest. Content script scope is `https://www.reddit.com/*`. Host permissions also cover `woohoo.to` and localhost for API calls.
+
+The extension talks to the backend through `WoohooApiClient` from `@woohoo/api`, authenticated via Bearer token (stored in extension storage after sign-in).
 
 ### UI components
 
@@ -131,6 +172,12 @@ The shadcn story is split across two directories:
 - **`web/components/ui/`** — app-specific primitives that are unlikely to be reused (sidebar, sheet, separator, skeleton, tooltip). Imported via `@/components/ui/*`.
 
 Rule of thumb: generic primitive → `packages/ui`. Layout/app-specific primitive → `web/components/ui`.
+
+### Shared API client (`packages/api`)
+
+`WoohooApiClient` (in `packages/api/src/client.ts`) is the single HTTP surface consumed by both `web/` and `ext/`. It wraps: `signIn`, `signOut`, `getSession`, `saveItem`, `checkSaved`, `deleteWoohoo`, `deleteTimelineItem`, `getStats`. Accepts an `onUnauthorized` callback so callers can trigger re-auth on 401.
+
+Types shared across apps live in `packages/api/src/types.ts`: `WoohooUser`, `AuthSession`, `RedditMessage`, `SaveItemPayload`, `SaveItemResponse`, `CheckSavedResponse`, `StatsResponse`. **When you add a new API endpoint, add its types here and a method on `WoohooApiClient` — don't call `fetch` directly from `ext/` or feature components.**
 
 ### Auth
 

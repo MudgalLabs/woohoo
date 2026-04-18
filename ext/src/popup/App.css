@@ -1,11 +1,25 @@
 :root {
     --paper: #f5f0e8;
+    --paper-dark: #e3d8c2;
+    --surface: #ffffff;
     --ink: #1a1410;
     --ink-muted: #635a4a;
     --red: #c0392b;
     --red-dark: #962d22;
     --rule: #c8bfb0;
     --border: #ddd8ce;
+}
+
+.dark {
+    --paper: #1b1612;
+    --paper-dark: #25201b;
+    --surface: #25201b;
+    --ink: #f3ede6;
+    --ink-muted: #a89f93;
+    --red: #d25545;
+    --red-dark: #a63f32;
+    --rule: #52473b;
+    --border: #332c26;
 }
 
 * {
@@ -52,7 +66,7 @@ body {
     flex-direction: column;
     gap: 2px;
     padding: 12px;
-    background: white;
+    background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
 }
@@ -119,11 +133,11 @@ body {
     border: 1px solid var(--border);
     border-radius: 6px;
     cursor: pointer;
-    background: white;
+    background: var(--surface);
 }
 
 .btn-signout:hover {
-    background: var(--paper);
+    background: var(--paper-dark);
     color: var(--ink);
 }
 
@@ -142,7 +156,7 @@ body {
     font-family: inherit;
     border: 1px solid var(--border);
     border-radius: 6px;
-    background: white;
+    background: var(--surface);
     color: var(--ink);
     outline: none;
 }
