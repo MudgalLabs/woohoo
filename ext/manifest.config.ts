@@ -18,7 +18,7 @@ export default defineManifest({
         service_worker: "src/background/index.ts",
         type: "module" as const,
     },
-    permissions: ["sidePanel", "storage", "tabs"],
+    permissions: ["storage", "tabs"],
     host_permissions: [
         "https://www.reddit.com/*",
         "https://woohoo.to/*",
@@ -31,7 +31,4 @@ export default defineManifest({
             matches: ["https://www.reddit.com/*"],
         },
     ],
-    side_panel: {
-        default_path: "src/sidepanel/index.html",
-    },
 });
