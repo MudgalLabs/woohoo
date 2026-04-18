@@ -1,5 +1,10 @@
 import { notFound } from "next/navigation";
-import { ExternalLink, SquareArrowOutUpRight } from "lucide-react";
+import {
+    ExternalLink,
+    MessageSquare,
+    MessageSquareText,
+    SquareArrowOutUpRight,
+} from "lucide-react";
 
 import { getSession } from "@/lib/get-session";
 import { prisma } from "@/lib/prisma";
@@ -27,6 +32,7 @@ import { ChatBubble } from "./ChatBubble";
 import { CommentCard } from "./CommentCard";
 import { DeleteWoohooButton } from "./DeleteWoohooButton";
 import { FollowUpEditor } from "./FollowUpEditor";
+import { EmptyState } from "@/components/empty-state";
 
 function dayLabel(date: Date): string {
     const d = new Date(date);
@@ -84,7 +90,7 @@ export default async function WoohooDetailPage({
     );
 
     return (
-        <div className="w-full max-w-3xl mx-auto p-6 border-x border-sidebar-border/50 flex-1">
+        <div className="w-full max-w-3xl mx-auto p-6 flex-1">
             <div className="rounded-lg border border-border bg-card p-5 mb-6">
                 <div className="flex items-start gap-4">
                     <Avatar className="h-12 w-12 shrink-0">
@@ -105,7 +111,7 @@ export default async function WoohooDetailPage({
                                         href={profileUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="group/name flex items-center gap-1.5 min-w-0 text-xl font-semibold hover:underline"
+                                        className="group/name flex items-center gap-1.5 min-w-0 text-2xl font-semibold tracking-tight hover:underline"
                                     >
                                         <span className="truncate">
                                             {handle}
@@ -117,7 +123,7 @@ export default async function WoohooDetailPage({
                                         />
                                     </a>
                                 ) : (
-                                    <h1 className="text-xl font-semibold truncate">
+                                    <h1 className="text-2xl font-semibold tracking-tight truncate">
                                         {handle}
                                     </h1>
                                 )}
@@ -171,7 +177,7 @@ export default async function WoohooDetailPage({
                     <TabsTrigger value="messages">
                         Messages
                         {dms.length > 0 && (
-                            <span className="ml-1.5 text-xs text-muted-foreground">
+                            <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary/20 px-1.5 text-xs font-medium text-secondary-foreground">
                                 {dms.length}
                             </span>
                         )}
@@ -179,7 +185,7 @@ export default async function WoohooDetailPage({
                     <TabsTrigger value="comments">
                         Comments
                         {comments.length > 0 && (
-                            <span className="ml-1.5 text-xs text-muted-foreground">
+                            <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary/20 px-1.5 text-xs font-medium text-secondary-foreground">
                                 {comments.length}
                             </span>
                         )}
@@ -207,10 +213,10 @@ function MessagesView({
 }) {
     if (items.length === 0) {
         return (
-            <p className="text-sm text-muted-foreground py-8 text-center">
+            <EmptyState icon={MessageSquare}>
                 No messages yet. Save a Reddit DM from the extension to start
                 the conversation.
-            </p>
+            </EmptyState>
         );
     }
 
@@ -252,10 +258,10 @@ function CommentsView({
 }) {
     if (items.length === 0) {
         return (
-            <p className="text-sm text-muted-foreground py-8 text-center">
+            <EmptyState icon={MessageSquareText}>
                 No comments saved yet. Save a Reddit comment from this peer
                 using the extension.
-            </p>
+            </EmptyState>
         );
     }
 

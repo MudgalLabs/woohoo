@@ -4,7 +4,10 @@ import { WoohooApiClient } from "@woohoo/api";
 import type { AuthSession } from "@woohoo/api";
 
 import { Message, getActiveRedditChatRoomUrl } from "@/content/reddit/dm";
+import { getFounderUsername } from "@/content/reddit/founder";
 import { Branding } from "@/components/Branding";
+import { emitToast } from "@/content/lib/toast";
+import { DateTimePicker } from "@/components/DateTimePicker";
 
 const BASE_URL =
     (import.meta.env.VITE_API_URL as string | undefined) ??
@@ -16,28 +19,26 @@ interface SaveModalProps {
     peer: string;
     kind: "dm" | "comment";
     onSaved?: () => void;
-    onUnsaved?: () => void;
+    onClose?: () => void;
 }
 
 export function SaveModal(props: SaveModalProps) {
-    const { message, peer, kind, onSaved, onUnsaved } = props;
+    const { message, peer, kind, onSaved, onClose } = props;
 
     const [session, setSession] = useState<AuthSession | null | undefined>(
         undefined,
     );
     const [isSaved, setIsSaved] = useState(props.isSaved);
     const [woohooId, setWoohooId] = useState<string | null>(null);
-    const [timelineItemId, setTimelineItemId] = useState<string | null>(null);
-    const [followUpAt, setFollowUpAt] = useState("");
+    const [followUpAt, setFollowUpAt] = useState<Date | null>(null);
     const [saving, setSaving] = useState(false);
-    const [unsaving, setUnsaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [ancestorMatch, setAncestorMatch] = useState<{
         woohooId: string;
         peerId: string;
         peerName?: string | null;
     } | null>(null);
-    const [forceNewWoohoo, setForceNewWoohoo] = useState(false);
+    const [founderUsername, setFounderUsername] = useState<string | null>(null);
 
     const signOutOnExpiry = () => {
         chrome.runtime.sendMessage({ type: "SIGN_OUT" });
@@ -52,6 +53,9 @@ export function SaveModal(props: SaveModalProps) {
                 setSession(s);
 
                 if (s && peer && message.id) {
+                    const founder = await getFounderUsername();
+                    setFounderUsername(founder);
+
                     const client = new WoohooApiClient(
                         BASE_URL,
                         s.token,
@@ -61,6 +65,9 @@ export function SaveModal(props: SaveModalProps) {
                         platform: "reddit",
                         peerId: peer,
                         externalId: message.id,
+                        authorId:
+                            kind === "comment" ? message.username : undefined,
+                        founderExternalId: founder ?? undefined,
                         ancestorExternalIds:
                             kind === "comment"
                                 ? message.ancestorExternalIds
@@ -68,7 +75,6 @@ export function SaveModal(props: SaveModalProps) {
                     });
                     setIsSaved(result.saved);
                     setWoohooId(result.woohooId ?? null);
-                    setTimelineItemId(result.timelineItemId ?? null);
                     setAncestorMatch(result.ancestorMatch ?? null);
 
                     // Keep the parent SaveButton + local cache in sync with the
@@ -82,7 +88,6 @@ export function SaveModal(props: SaveModalProps) {
                             });
                         }
                     } else {
-                        onUnsaved?.();
                         chrome.storage.local.remove(`saved_${message.id}`);
                     }
                 }
@@ -119,6 +124,51 @@ export function SaveModal(props: SaveModalProps) {
         );
     }
 
+    const woohooUrl = woohooId
+        ? `${BASE_URL}/my-woohoos/${woohooId}`
+        : `${BASE_URL}/my-woohoos`;
+
+    const contentPreview =
+        message.contentText.length > 80
+            ? message.contentText.slice(0, 80) + "…"
+            : message.contentText;
+
+    if (isSaved) {
+        return (
+            <div className="cb-modal">
+                <div
+                    className="flex-x cb-modal-header"
+                    style={{ justifyContent: "space-between", marginBottom: 6 }}
+                >
+                    <h2 className="cb-modal-title">Saved</h2>
+                    <a
+                        href={woohooUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="link flex-x"
+                        style={{
+                            fontWeight: 500,
+                            columnGap: 2,
+                            fontSize: 12,
+                        }}
+                    >
+                        Open
+                        <SquareArrowOutUpRight size={11} strokeWidth={2.5} />
+                    </a>
+                </div>
+                <p
+                    className="cb-modal-text"
+                    style={{
+                        color: "var(--ink-muted)",
+                        fontStyle: "italic",
+                    }}
+                >
+                    &ldquo;{contentPreview}&rdquo;
+                </p>
+            </div>
+        );
+    }
+
     const handleSave = async () => {
         setSaving(true);
         setError(null);
@@ -136,10 +186,10 @@ export function SaveModal(props: SaveModalProps) {
             platform: "reddit",
             peerId: peer,
             chatUrl,
-            followUpAt: followUpAt || undefined,
+            followUpAt: followUpAt ? followUpAt.toISOString() : undefined,
             ancestorExternalIds:
                 kind === "comment" ? message.ancestorExternalIds : undefined,
-            forceNewWoohoo: kind === "comment" ? forceNewWoohoo : undefined,
+            founderExternalId: founderUsername ?? undefined,
             item: {
                 type: kind,
                 externalId: message.id,
@@ -152,93 +202,33 @@ export function SaveModal(props: SaveModalProps) {
             },
         });
 
-        setSaving(false);
-
         if ("error" in result) {
+            setSaving(false);
             setError(result.error);
             return;
         }
-
-        setIsSaved(true);
-        setWoohooId(result.woohoo.id);
-        setTimelineItemId(result.timelineItem.id);
-        onSaved?.();
 
         // Cache saved state locally for quick bookmark icon init.
-        chrome.storage.local.set({ [`saved_${message.id}`]: result.woohoo.id });
+        chrome.storage.local.set({
+            [`saved_${message.id}`]: result.woohoo.id,
+        });
+
+        const savedWoohooUrl = `${BASE_URL}/my-woohoos/${result.woohoo.id}`;
+        emitToast({
+            message: kind === "dm" ? "Saved DM" : "Saved comment",
+            href: savedWoohooUrl,
+        });
+
+        onSaved?.();
+        onClose?.();
     };
-
-    const handleUnsave = async () => {
-        if (!session || !timelineItemId) return;
-        setUnsaving(true);
-        setError(null);
-
-        const client = new WoohooApiClient(
-            BASE_URL,
-            session.token,
-            signOutOnExpiry,
-        );
-        const result = await client.deleteTimelineItem(timelineItemId);
-
-        setUnsaving(false);
-
-        if ("error" in result) {
-            setError(result.error);
-            return;
-        }
-
-        setIsSaved(false);
-        setWoohooId(null);
-        setTimelineItemId(null);
-        onUnsaved?.();
-
-        chrome.storage.local.remove(`saved_${message.id}`);
-    };
-
-    const woohooUrl = woohooId
-        ? `${BASE_URL}/my-woohoos/${woohooId}`
-        : `${BASE_URL}/my-woohoos`;
-
-    const contentPreview =
-        message.contentText.length > 80
-            ? message.contentText.slice(0, 80) + "…"
-            : message.contentText;
 
     return (
         <div className="cb-modal">
             <div className="flex-y cb-modal-header" style={{ rowGap: 0 }}>
-                <div
-                    className="flex-x"
-                    style={{ justifyContent: "space-between" }}
-                >
-                    <h2 className="cb-modal-title">
-                        {isSaved
-                            ? "Saved"
-                            : kind === "dm"
-                              ? "Save DM"
-                              : "Save Comment"}
-                    </h2>
-
-                    {isSaved && (
-                        <a
-                            href={woohooUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="link flex-x"
-                            style={{
-                                fontWeight: 500,
-                                columnGap: 2,
-                                fontSize: 12,
-                            }}
-                        >
-                            Open
-                            <SquareArrowOutUpRight
-                                size={11}
-                                strokeWidth={2.5}
-                            />
-                        </a>
-                    )}
-                </div>
+                <h2 className="cb-modal-title">
+                    {kind === "dm" ? "Save DM" : "Save Comment"}
+                </h2>
             </div>
 
             <p
@@ -253,86 +243,41 @@ export function SaveModal(props: SaveModalProps) {
                 &ldquo;{contentPreview}&rdquo;
             </p>
 
-            {!isSaved && kind === "comment" && ancestorMatch && (
-                <div style={{ marginBottom: 10, whiteSpace: "normal" }}>
-                    <label
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            columnGap: 6,
-                            fontSize: 12,
-                            color: "var(--ink)",
-                            cursor: "pointer",
-                        }}
-                    >
-                        <input
-                            type="checkbox"
-                            checked={forceNewWoohoo}
-                            onChange={(e) =>
-                                setForceNewWoohoo(e.target.checked)
-                            }
-                            style={{ flexShrink: 0 }}
-                        />
-                        <span
-                            style={{
-                                minWidth: 0,
-                                overflowWrap: "break-word",
-                                wordBreak: "break-word",
-                            }}
-                        >
-                            Save in Woohoo for u/{peer}
-                        </span>
-                    </label>
-                    <p
-                        style={{
-                            fontSize: 11,
-                            color: "var(--ink-muted)",
-                            margin: 0,
-                            marginTop: 2,
-                            marginLeft: 22,
-                            overflowWrap: "break-word",
-                            wordBreak: "break-word",
-                        }}
-                    >
-                        Otherwise this reply will be added to u/
-                        {ancestorMatch.peerId}'s Woohoo.
-                    </p>
-                </div>
+            {kind === "comment" && (
+                <p
+                    style={{
+                        fontSize: 11,
+                        color: "var(--ink-muted)",
+                        margin: 0,
+                        marginBottom: 10,
+                        overflowWrap: "break-word",
+                        wordBreak: "break-word",
+                    }}
+                >
+                    Saving to u/{ancestorMatch ? ancestorMatch.peerId : peer}
+                    's Woohoo
+                </p>
             )}
 
-            {!isSaved && (
-                <div style={{ marginBottom: 10 }}>
-                    <label
-                        style={{
-                            display: "block",
-                            fontSize: 11,
-                            color: "var(--ink-muted)",
-                            marginBottom: 4,
-                            fontWeight: 500,
-                            textTransform: "uppercase",
-                            letterSpacing: "0.04em",
-                        }}
-                    >
-                        Follow up (optional)
-                    </label>
-                    <input
-                        type="datetime-local"
-                        value={followUpAt}
-                        onChange={(e) => setFollowUpAt(e.target.value)}
-                        style={{
-                            width: "100%",
-                            boxSizing: "border-box",
-                            fontSize: 12,
-                            padding: "4px 6px",
-                            borderRadius: 4,
-                            border: "1px solid var(--rule)",
-                            background: "var(--paper)",
-                            color: "var(--ink)",
-                            outline: "none",
-                        }}
-                    />
-                </div>
-            )}
+            <div style={{ marginBottom: 10 }}>
+                <label
+                    style={{
+                        display: "block",
+                        fontSize: 11,
+                        color: "var(--ink-muted)",
+                        marginBottom: 4,
+                        fontWeight: 500,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.04em",
+                    }}
+                >
+                    Follow up (optional)
+                </label>
+                <DateTimePicker
+                    value={followUpAt}
+                    onChange={setFollowUpAt}
+                />
+            </div>
 
             {error && (
                 <p
@@ -347,26 +292,14 @@ export function SaveModal(props: SaveModalProps) {
             )}
 
             <div className="cb-modal-footer">
-                {!isSaved && (
-                    <button
-                        className="btn btn-primary"
-                        onClick={handleSave}
-                        disabled={saving}
-                        style={{ width: "100%", textAlign: "center" }}
-                    >
-                        {saving ? "Saving…" : "Save"}
-                    </button>
-                )}
-                {isSaved && (
-                    <button
-                        className="btn btn-secondary"
-                        onClick={handleUnsave}
-                        disabled={unsaving || !timelineItemId}
-                        style={{ width: "100%", textAlign: "center" }}
-                    >
-                        {unsaving ? "Removing…" : "Unsave"}
-                    </button>
-                )}
+                <button
+                    className="btn btn-primary"
+                    onClick={handleSave}
+                    disabled={saving}
+                    style={{ width: "100%", textAlign: "center" }}
+                >
+                    {saving ? "Saving…" : "Save"}
+                </button>
             </div>
         </div>
     );

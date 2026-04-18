@@ -1,17 +1,19 @@
 import { WoohooApiClient } from "@woohoo/api";
-import type { AuthSession } from "@woohoo/api";
+import type { AuthSession, StatsResponse } from "@woohoo/api";
 
 const BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3000";
 
 type IncomingMessage =
     | { type: "GET_SESSION" }
     | { type: "SIGN_IN"; email: string; password: string }
-    | { type: "SIGN_OUT" };
+    | { type: "SIGN_OUT" }
+    | { type: "GET_STATS" };
 
 type Reply =
     | { session: AuthSession | null }
     | { ok: true }
-    | { ok: false; error: string };
+    | { ok: false; error: string }
+    | { stats: StatsResponse | null };
 
 async function handle(msg: IncomingMessage): Promise<Reply> {
     if (msg.type === "GET_SESSION") {
@@ -50,6 +52,16 @@ async function handle(msg: IncomingMessage): Promise<Reply> {
         }
         await chrome.storage.local.remove("session");
         return { ok: true };
+    }
+
+    if (msg.type === "GET_STATS") {
+        const stored = await chrome.storage.local.get("session");
+        const session = stored["session"] as AuthSession | undefined;
+        if (!session) return { stats: null };
+
+        const client = new WoohooApiClient(BASE_URL, session.token);
+        const stats = await client.getStats();
+        return { stats };
     }
 
     return { ok: false, error: "Unknown message type." };

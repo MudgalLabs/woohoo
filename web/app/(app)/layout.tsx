@@ -29,7 +29,7 @@ export default async function AppLayout({
 
     return (
         <SidebarProvider defaultOpen={defaultOpen}>
-            <Sidebar collapsible="icon">
+            <Sidebar collapsible="icon" variant="inset">
                 <SidebarHeader>
                     <Logo
                         href="/dashboard"

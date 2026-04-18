@@ -10,7 +10,7 @@ interface SaveItemBody {
     chatUrl?: string;
     followUpAt?: string;
     ancestorExternalIds?: string[];
-    forceNewWoohoo?: boolean;
+    founderExternalId?: string;
     item: {
         type: string;
         externalId: string;
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     }
 
     const body = (await request.json()) as SaveItemBody;
-    const { platform, peerId, chatUrl, followUpAt, ancestorExternalIds, forceNewWoohoo, item } = body;
+    const { platform, peerId, chatUrl, followUpAt, ancestorExternalIds, founderExternalId, item } = body;
 
     if (!platform || !peerId || !item?.externalId || !item?.contentText) {
         return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -44,13 +44,17 @@ export async function POST(request: Request) {
     const interactionAt = new Date(item.interactionAt);
     const now = new Date();
 
-    // If this comment is a reply to an already-saved ancestor, thread it
-    // into that ancestor's Woohoo instead of creating one for the reply's
-    // author. Iterates nearest-first so the closest saved ancestor wins.
+    // Routing rule for comments: only thread into an ancestor's Woohoo
+    // when this comment is authored by the logged-in founder (i.e. "me
+    // replying inside a lead's thread"). Everything else — peer-authored
+    // comments, and founder comments with no saved peer ancestor — falls
+    // through to the upsert-by-peerId branch below.
     let woohoo = null as Awaited<ReturnType<typeof prisma.woohoo.upsert>> | null;
+    const isFounderAuthored =
+        !!founderExternalId && item.authorId === founderExternalId;
     if (
         item.type === "comment" &&
-        !forceNewWoohoo &&
+        isFounderAuthored &&
         ancestorExternalIds &&
         ancestorExternalIds.length > 0
     ) {

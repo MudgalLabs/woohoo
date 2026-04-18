@@ -23,14 +23,15 @@ export interface SaveItemPayload {
     peerId: string;
     chatUrl?: string;
     followUpAt?: string;
-    // Reddit-only: nearest-first ancestor comment ids. When the backend
-    // finds one already saved for this user, the new item is threaded
-    // into that ancestor's Woohoo instead of the peerId-based one.
+    // Reddit-only: nearest-first ancestor comment ids. The backend only
+    // consults these when the comment is founder-authored — peer-authored
+    // comments always go to their own author's Woohoo.
     ancestorExternalIds?: string[];
-    // If true, the backend ignores ancestorExternalIds and always
-    // upserts the Woohoo by peerId (the user explicitly asked for a
-    // fresh Woohoo for this comment's author).
-    forceNewWoohoo?: boolean;
+    // Logged-in founder's platform handle (e.g. Reddit username). Lets the
+    // backend decide whether this save is "me replying inside a lead's
+    // thread" (merge into that lead's Woohoo) or anything else (route to
+    // the comment author's own Woohoo).
+    founderExternalId?: string;
     item: {
         type: "dm" | "comment";
         externalId: string;
@@ -56,13 +57,18 @@ export interface SaveItemResponse {
     };
 }
 
+export interface StatsResponse {
+    totalWoohoos: number;
+    followUpToday: number;
+}
+
 export interface CheckSavedResponse {
     saved: boolean;
     woohooId?: string;
     timelineItemId?: string;
-    // Set when the item itself isn't saved but one of its ancestors is.
-    // The UI uses this to offer an override ("save as new Woohoo for
-    // u/{author}" vs. thread into the ancestor's Woohoo).
+    // Set only when routing would actually attach the new item to an
+    // ancestor's Woohoo (i.e. founder replying inside a saved peer thread).
+    // The UI uses it to preview "Saving to u/X's Woohoo".
     ancestorMatch?: {
         woohooId: string;
         peerId: string;

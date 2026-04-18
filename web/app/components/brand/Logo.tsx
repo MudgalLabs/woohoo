@@ -33,7 +33,7 @@ export function Logo({
         variant === "full" ? (
             <span
                 className={cn(
-                    "font-medium text-primary font-logo",
+                    "font-medium text-primary font-logo tracking-tight",
                     sizeClass[size],
                     className,
                 )}

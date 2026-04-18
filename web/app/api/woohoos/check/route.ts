@@ -14,6 +14,8 @@ export async function GET(request: Request) {
     const platform = searchParams.get("platform");
     const peerId = searchParams.get("peerId");
     const externalId = searchParams.get("externalId");
+    const authorId = searchParams.get("authorId");
+    const founderExternalId = searchParams.get("founderExternalId");
     const ancestorExternalIds = searchParams.getAll("ancestorExternalIds");
 
     if (!platform || !peerId || !externalId) {
@@ -47,7 +49,17 @@ export async function GET(request: Request) {
         });
     }
 
-    // Not saved — see if an ancestor is, so the UI can offer the override.
+    // Ancestor-merge only applies when this comment is authored by the
+    // logged-in founder (mirrors save/route.ts). For peer-authored comments
+    // the destination is always the author's own Woohoo, so there's no
+    // ancestor preview to show.
+    const isFounderAuthored =
+        !!founderExternalId && !!authorId && authorId === founderExternalId;
+    if (!isFounderAuthored) {
+        return NextResponse.json({ saved: false });
+    }
+
+    // Not saved — see if an ancestor is, so the UI can preview the destination.
     for (const ancestorId of ancestorExternalIds) {
         const ancestorItem = await prisma.timelineItem.findFirst({
             where: {

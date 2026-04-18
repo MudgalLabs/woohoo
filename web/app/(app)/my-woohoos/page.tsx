@@ -2,6 +2,7 @@ import { getSession } from "@/lib/get-session";
 import { prisma } from "@/lib/prisma";
 import { WoohooCard } from "./WoohooCard";
 import { getTimelineCountsByWoohoo } from "@/lib/timeline-counts";
+import { NoWoohoosYet } from "@/components/no-woohoos-yet";
 
 export const metadata = { title: "My Woohoos" };
 
@@ -21,24 +22,21 @@ export default async function MyWoohoos() {
 
     const countsMap = await getTimelineCountsByWoohoo(session!.user.id);
 
+    if (woohoos.length === 0) {
+        return <NoWoohoosYet />;
+    }
+
     return (
         <div className="p-6 w-full">
-            {woohoos.length === 0 ? (
-                <p className="text-muted-foreground text-sm">
-                    No Woohoos yet. Save a Reddit DM with the extension to get
-                    started.
-                </p>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3">
-                    {woohoos.map((w) => (
-                        <WoohooCard
-                            key={w.id}
-                            woohoo={w}
-                            counts={countsMap.get(w.id)}
-                        />
-                    ))}
-                </div>
-            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3">
+                {woohoos.map((w) => (
+                    <WoohooCard
+                        key={w.id}
+                        woohoo={w}
+                        counts={countsMap.get(w.id)}
+                    />
+                ))}
+            </div>
         </div>
     );
 }

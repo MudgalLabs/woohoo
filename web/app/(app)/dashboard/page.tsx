@@ -1,10 +1,12 @@
-import Link from "next/link";
+import { CheckCircle2, Coffee, Flame, type LucideIcon } from "lucide-react";
 
 import { getSession } from "@/lib/get-session";
 import { prisma } from "@/lib/prisma";
 import { WoohooCard } from "@/app/(app)/my-woohoos/WoohooCard";
 import type { WoohooCounts } from "@/app/(app)/my-woohoos/WoohooCard";
 import { getTimelineCountsByWoohoo } from "@/lib/timeline-counts";
+import { EmptyState } from "@/components/empty-state";
+import { NoWoohoosYet } from "@/components/no-woohoos-yet";
 import { Woohoo, TimelineItem } from "@/app/generated/prisma/client";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +21,7 @@ function DashboardSection({
     subheading,
     woohoos,
     emptyText,
+    emptyIcon,
     variant = "default",
     countsMap,
 }: {
@@ -26,6 +29,7 @@ function DashboardSection({
     subheading: string;
     woohoos: WoohooWithTimeline[];
     emptyText: string;
+    emptyIcon: LucideIcon;
     variant?: "default" | "overdue";
     countsMap: Map<string, WoohooCounts>;
 }) {
@@ -41,7 +45,7 @@ function DashboardSection({
             </div>
 
             {woohoos.length === 0 ? (
-                <p className="text-sm text-muted-foreground">{emptyText}</p>
+                <EmptyState icon={emptyIcon}>{emptyText}</EmptyState>
             ) : (
                 <div className="flex flex-col gap-3">
                     {woohoos.map((w) => (
@@ -89,7 +93,7 @@ function HeroStats({
                     {i > 0 && <span className="mx-2 text-border">·</span>}
                     <span
                         className={cn(
-                            "font-semibold",
+                            "text-base font-semibold tracking-tight",
                             part.emphasis
                                 ? "text-destructive"
                                 : "text-foreground",
@@ -121,23 +125,7 @@ export default async function DashboardPage() {
     const countsMap = await getTimelineCountsByWoohoo(session!.user.id);
 
     if (allWoohoos.length === 0) {
-        return (
-            <div className="flex flex-col items-center text-center p-6 pt-16">
-                <h1 className="text-lg font-semibold text-foreground mb-2">
-                    Capture your first Woohoo
-                </h1>
-                <p className="text-sm text-muted-foreground mb-6 max-w-sm">
-                    Save a Reddit DM with the extension and it&apos;ll show up here.
-                    Follow up at the right time, never let a warm lead go cold.
-                </p>
-                <Link
-                    href="/extension"
-                    className="text-sm font-medium text-primary hover:underline"
-                >
-                    Install the extension →
-                </Link>
-            </div>
-        );
+        return <NoWoohoosYet />;
     }
 
     const now = new Date();
@@ -170,6 +158,7 @@ export default async function DashboardPage() {
                     subheading="Follow-up dates that have passed. Don't let these slip."
                     woohoos={overdue}
                     emptyText="You're all caught up. Nice work."
+                    emptyIcon={CheckCircle2}
                     variant="overdue"
                     countsMap={countsMap}
                 />
@@ -178,6 +167,7 @@ export default async function DashboardPage() {
                     subheading="Woohoos you planned to follow up on today."
                     woohoos={today}
                     emptyText="Nothing due today — enjoy the quiet."
+                    emptyIcon={Coffee}
                     countsMap={countsMap}
                 />
                 <DashboardSection
@@ -185,6 +175,7 @@ export default async function DashboardPage() {
                     subheading="No follow-up set and no new interaction in the last 7 days."
                     woohoos={goingCold}
                     emptyText="Everything looks warm. Keep it up."
+                    emptyIcon={Flame}
                     countsMap={countsMap}
                 />
             </div>
@@ -197,6 +188,7 @@ export default async function DashboardPage() {
                         subheading="Woohoos you planned to follow up on today."
                         woohoos={today}
                         emptyText="Nothing due today — enjoy the quiet."
+                        emptyIcon={Coffee}
                         countsMap={countsMap}
                     />
                     <DashboardSection
@@ -204,6 +196,7 @@ export default async function DashboardPage() {
                         subheading="Follow-up dates that have passed. Don't let these slip."
                         woohoos={overdue}
                         emptyText="You're all caught up. Nice work."
+                        emptyIcon={CheckCircle2}
                         variant="overdue"
                         countsMap={countsMap}
                     />
@@ -213,6 +206,7 @@ export default async function DashboardPage() {
                     subheading="No follow-up set and no new interaction in the last 7 days."
                     woohoos={goingCold}
                     emptyText="Everything looks warm. Keep it up."
+                    emptyIcon={Flame}
                     countsMap={countsMap}
                 />
             </div>

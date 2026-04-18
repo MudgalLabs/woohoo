@@ -10,7 +10,7 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-const navItems = [
+export const navItems = [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { label: "My Woohoos", href: "/my-woohoos", icon: BookMarked },
 ];
@@ -27,7 +27,12 @@ export function AppNav() {
 
                 return (
                     <SidebarMenuItem key={item.href}>
-                        <SidebarMenuButton asChild isActive={isActive} tooltip={item.label}>
+                        <SidebarMenuButton
+                            asChild
+                            isActive={isActive}
+                            tooltip={item.label}
+                            className="h-9 gap-3 px-3 font-medium data-[active=true]:font-semibold [&>svg]:size-4"
+                        >
                             <Link href={item.href}>
                                 <item.icon />
                                 <span>{item.label}</span>

@@ -4,18 +4,13 @@ import { usePathname } from "next/navigation";
 
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
-
-const PAGE_TITLES: { prefix: string; label: string }[] = [
-    { prefix: "/dashboard", label: "Dashboard" },
-    { prefix: "/my-woohoos", label: "My Woohoos" },
-];
+import { navItems } from "./AppNav";
 
 export function AppHeader() {
     const pathname = usePathname();
     const title =
-        PAGE_TITLES.find(
-            ({ prefix }) =>
-                pathname === prefix || pathname.startsWith(prefix + "/"),
+        navItems.find(
+            ({ href }) => pathname === href || pathname.startsWith(href + "/"),
         )?.label ?? "";
 
     return (

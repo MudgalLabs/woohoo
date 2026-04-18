@@ -23,7 +23,7 @@ export function CommentCard({ item, isFromPeer }: CommentCardProps) {
     return (
         <div
             className={cn(
-                "group relative rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent/20",
+                "group relative rounded-lg border border-border bg-card p-4",
                 !isFromPeer && "border-l-2 border-l-primary/60",
             )}
         >

@@ -12,9 +12,9 @@ Reviewed the current MVP surfaces (dashboard, My Woohoos detail view, sidebar, e
 
 - [x] Sidebar — account row with dropdown (avatar, theme toggle, sign out); ThemeToggle.tsx deleted; monorepo convention documented in CLAUDE.md.
 - [x] Dashboard — hero stats strip, 2×2 layout (Today+Overdue top, Going cold bottom full-width), WoohooCard gets initials avatar + explicit counts ("2 DMs · 4 comments") + overdue variant (red left border + red follow-up text). Polish flows to My Woohoos since WoohooCard is shared.
-- [x] Woohoo detail — header gets 48px peer avatar + meta line (counts · last-interaction timeAgo · Open chat), created-date removed from view; timeline split into Messages | Comments tabs (default opens the tab with content); native datetime-local swapped for a `DateTimePicker` composite (shadcn Popover + Calendar + time input, primitives installed into `packages/ui`); `CommentCard` rewritten as a compact bordered card with `isFromPeer` prop (OP variant has left-edge primary accent + "You replied" header); day divider lifted out of the per-item wrapper.
-- [ ] **Extension (content modals + popup)** — next
-- [ ] Cross-cutting polish (typography, brand color, empty states)
+- [x] Woohoo detail — header gets 48px peer avatar + meta line (counts · last-interaction timeAgo · Open chat), created-date removed from view; timeline split into Messages | Comments tabs (default opens the tab with content); native datetime-local swapped for a `DateTimePicker` composite (shadcn Popover + Calendar + time input, primitives installed into `packages/ui`); `CommentCard` rewritten as a compact bordered card with `isFromPeer` prop (OP variant has left-edge primary accent + "You replied" header); day divider lifted out of the per-item wrapper. Follow-up polish pass rebuilt `DateTimePicker` from scratch (custom day/month/year views, Today button, custom time input), fixed `lastInteractionAt` to track MAX(timeline_item.interactionAt), killed the save-flicker, and made timeline delete buttons always-visible.
+- [ ] **Extension (content modals + popup)** — in progress: theme matching, SaveModal auto-close + bottom-right toast, standalone ext DateTimePicker, popup stats + Open dashboard. Plan: `~/.claude/plans/wobbly-dazzling-feigenbaum.md`.
+- [x] Cross-cutting polish — wordmark `tracking-tight`; detail h1 bumped to `text-2xl tracking-tight`; zero-state h1 bumped to `text-xl tracking-tight`; HeroStats count numbers promoted to `text-base font-semibold tracking-tight` so they read as data vs. labels. WoohooCard follow-up label switched from absolute date to human-readable (`Follow up today` / `in 5d` / `Overdue yesterday` / `Overdue 4d` — no weeks/months). Shared `EmptyState` primitive at `web/components/empty-state.tsx` replaces five text-only empty states with icon + sentence (Coffee / CheckCircle2 / Flame / Inbox / MessageSquare / MessageSquareText). CommentCard hover background removed (not clickable). Tabs trigger now has a `hover:text-foreground` + `cursor-pointer` for scannable clickability. `variant="today"` was tried but dropped — not earning its weight.
 - [ ] Save-rule enforcement (separate session before MVP ships) — deterministic comment routing by author; remove SaveModal checkbox. Detailed brief in "Deferred / backlog" below.
 
 ---
@@ -71,7 +71,7 @@ From feedback overview below:
 - **Dark/light theme match.** Light modals on dark Reddit read as third-party popups. Detect `prefers-color-scheme` + Reddit's theme class; match.
 - **"Saved" toast placement.** Currently covers the message it confirms. Move to bottom-right of the chat pane, auto-dismiss ~2s.
 - **Popup is unbranded.** Add a small stats line ("12 woohoos · 3 to follow up today") and an "Open dashboard" button. Currently only offers sign-out.
-- **Datetime picker swap.** Replace the extension's native `<input type="datetime-local">` with the `DateTimePicker` composite. Decision point at that time: lift `DateTimePicker` from `web/components/` into `@woohoo/ui` (commits the shared package to `react-day-picker` + `date-fns`, ~75 KB) vs. keep a separate extension copy. Recommend lifting — the cost is bearable and a single picker is worth it.
+- **Datetime picker swap.** Replace the extension's native `<input type="datetime-local">` with the `DateTimePicker` composite. The picker is now dependency-free (after the polish-pass rewrite it no longer pulls `react-day-picker` or `date-fns` — all views hand-rolled). Lift from `web/components/` into `@woohoo/ui` at that time; the cost argument is gone.
 
 ### 4. Cross-cutting polish session
 
@@ -85,6 +85,9 @@ From feedback overview below:
 - **Per-author message grouping** in the Messages tab: show the peer avatar once per author run (iMessage/Slack style) rather than invisible on every bubble.
 - **`peerName` display.** Schema already has `peerName`; we fall back to `peerId` for the header initial. When `peerName` is populated, consider rendering it alongside the handle in the detail header.
 - **Legacy `@woohoo/ui` vs `web/components/ui/` duplication** for `button` and `input`. Clean up once the shared version is strictly better. Flagged in CLAUDE.md.
+- **Remove unused shadcn `Calendar` primitive** from `packages/ui/src/components/calendar.tsx`. No longer consumed after `DateTimePicker` rewrite; `react-day-picker` + the calendar re-export can be dropped.
+- **Tailwind v4 arbitrary-var audit** across `packages/ui`. `dropdown-menu.tsx` and `popover.tsx` still use v3-era `origin-[--radix-...-transform-origin]` syntax. Harmless for layout (only animation origin affected) but the same bug class as the calendar's `[--cell-size]` that collapsed the date grid. Convert to `(--...)` form.
+- **"View original" link in `ChatBubble`** is still hover-gated (`opacity-0 group-hover:opacity-100`). Delete buttons were un-gated in the polish pass for touch-device reasons; this one was left alone but has the same argument.
 
 ---
 
@@ -259,3 +262,59 @@ Add a short "Monorepo layout" / "UI components" section documenting:
 8. Dark/light theme: both tabs read well.
 9. `cd web && npx tsc --noEmit` clean (verified).
 10. `cd web && npm run lint`: pre-existing `Math.random` error in `web/components/ui/sidebar.tsx:665` from shadcn primitive — unrelated to this session. No new lint errors introduced.
+
+---
+
+## Previous session: Woohoo detail — polish pass
+
+Follow-on to the Woohoo detail session. Triggered by user feedback on the date picker, a "last interaction" bug, and a touch-device concern on the delete affordance.
+
+### What shipped
+
+- **Calendar primitive fix** (`packages/ui/src/components/calendar.tsx`). The date grid was collapsing 2-digit days into an unreadable smear. Root cause: shadcn's `calendar.tsx` was copied from a Tailwind v3-era source and used `[--cell-size]` arbitrary-value syntax everywhere. Under Tailwind v4 that no longer auto-wraps in `var()` — it's treated as the literal string `--cell-size`, which evaluates to invalid CSS and silently collapses widths to min-content. Converted all six sites to v4's `(--cell-size)` parentheses form. (See the "Tailwind v4 arbitrary-var audit" bullet in Deferred for follow-ups on `dropdown-menu.tsx` / `popover.tsx`.)
+
+- **`DateTimePicker` rebuilt from scratch** (`web/components/DateTimePicker.tsx`). User wanted: clickable month/year in the header to switch views, a Today shortcut, a non-native time input, and a trigger button that doesn't jitter when the value changes. Rewrite removes `react-day-picker` + `date-fns` as dependencies — the picker is now self-contained.
+  - Three views, swapped via local `view: "day" | "month" | "year"` state. Day view = 7×6 grid built from `new Date(year, month, 1 - startWeekday + i)`. Month view = 3×4 grid of short month names. Year view = scrollable grid (current year ±60/+20), auto-scrolls the selected year into view on mount.
+  - Navigation: day-view header exposes month name and year as separate clickable `HeaderButton`s; clicking month → month view, clicking year → year view. Month view's year label also opens year view. Picking a year returns to month view, picking a month returns to day view (Apple Calendar pattern).
+  - Custom `TimeField` component: text input with `inputMode="numeric"`, arrow-key increment/decrement, Enter-to-commit, focus-scoped edit buffer so external value changes (e.g., AM/PM toggle) flow through without an effect. AM/PM is a separate toggle button next to the fields.
+  - Trigger button: `font-mono` + zero-padded everything (`Apr 05, 09:00 AM`) to prevent width reflow between single- and double-digit hour/day values. Mono only applied when a value is set; placeholder uses the default proportional font.
+  - Today + Clear grouped in the footer left, Done on the right.
+  - `handleOpenChange` resets view + viewMonth when the popover opens — moved out of a `useEffect` to satisfy the `react-hooks/set-state-in-effect` lint rule.
+
+- **`FollowUpEditor` flicker fix** (`web/app/(app)/my-woohoos/[id]/FollowUpEditor.tsx`). Dropped the `saving` state and the `disabled={saving}` prop. The shadcn Button's `disabled:opacity-50` → full-opacity transition was visible as a flash on every date change. Now saves optimistically: `setCurrent(next)` first, fire-and-await the PATCH, revert on failure. (Recorded as a durable feedback memory — see `feedback_optimistic_saves.md`.)
+
+- **`lastInteractionAt` correctness** (`web/app/api/woohoos/save/route.ts`, `web/app/api/timeline-items/[id]/route.ts`). The detail header was showing "Last interaction 19d ago" on a Woohoo whose newest saved message was 4 days old. Root cause: save route unconditionally overwrote `lastInteractionAt` with the just-saved item's `interactionAt`. Saving an older message after a newer one moved the timestamp backwards.
+  - Save route: stopped writing `lastInteractionAt` in the ancestor-match update branch and the upsert's update branch. After `timelineItem.create`, runs `prisma.timelineItem.aggregate({ _max: { interactionAt } })` scoped to the woohoo and writes that. The upsert `create` branch still seeds with `interactionAt` since a brand-new woohoo has no existing items.
+  - Delete route: switched from `deleteMany` to `findFirst + delete` so we know which `woohooId` to recompute. Same aggregate-max pattern after delete; handles both "deleted the newest item" and "deleted the only item" (falls back to `null`).
+  - **Backfill applied to local DB**: ran the same `MAX(interactionAt)` update as a one-shot SQL against `woohoo_db` — 6 rows corrected. Any other environment (prod, teammates' local) will need the same backfill.
+
+- **Always-visible delete buttons** on timeline items (`ChatBubble.tsx`, `CommentCard.tsx`). Were previously gated by `opacity-0 group-hover:opacity-100` which means touch users can't reach them. Removed the gating wrappers. Matches the header's always-visible Woohoo-delete affordance.
+
+### Files touched
+- `packages/ui/src/components/calendar.tsx` — Tailwind v4 syntax fix. (Component itself is now unused; see Deferred.)
+- `web/components/DateTimePicker.tsx` — full rewrite. ~450 lines, one file.
+- `web/app/(app)/my-woohoos/[id]/FollowUpEditor.tsx` — simplified, dropped `saving`.
+- `web/app/api/woohoos/save/route.ts` — aggregate-max recompute; dropped `lastInteractionAt` from update branches.
+- `web/app/api/timeline-items/[id]/route.ts` — aggregate-max recompute; `findFirst + delete` instead of `deleteMany`.
+- `web/app/(app)/my-woohoos/[id]/ChatBubble.tsx` — dropped delete-button opacity wrapper.
+- `web/app/(app)/my-woohoos/[id]/CommentCard.tsx` — dropped delete-button opacity wrapper.
+
+### Scope deliberately deferred
+- Removing the now-unused `Calendar` primitive from `packages/ui` (and its `react-day-picker` dep). Listed in "Smaller deferred items."
+- Tailwind v4 syntax audit on `dropdown-menu.tsx` / `popover.tsx`. Listed in "Smaller deferred items."
+- `ChatBubble`'s "View original" link still hover-gated. Not touched because the user's ask was scoped to the delete button. Listed in "Smaller deferred items."
+- Lifting `DateTimePicker` into `@woohoo/ui`. Still waiting on the extension session as the trigger (noted in extension deferred section, updated to reflect the picker is now dep-free).
+
+### Verification
+1. `cd web && npx tsc --noEmit` — clean.
+2. `cd web && npx eslint <touched files>` — clean (the old `react-hooks/set-state-in-effect` errors are gone after the `onOpenChange` + focus-buffer restructure).
+3. Open any Woohoo, click the follow-up button. Calendar renders with properly spaced days (no more jammed 2-digit columns). Click the month name → month grid. Click year → scrollable year list, selected year centered.
+4. Pick a date — trigger button updates without a flicker or opacity flash. Width stays constant between `9:00 AM` and `10:00 AM`, and between `Apr 5` and `Apr 15`, thanks to mono + zero-padding.
+5. Type in the hour/minute fields, use arrow keys. Toggle AM/PM. Click Today → snaps to current date. Click Clear → follow-up goes null.
+6. Save a message in the extension, then save an older message on the same Woohoo. Refresh the detail page — "Last interaction" reflects the newer of the two, regardless of save order.
+7. Delete a timeline item. `lastInteractionAt` updates to the max of what's left (or disappears if timeline is empty).
+8. On a phone/tablet (or with devtools mobile emulation): delete buttons visible on every message and comment without hovering.
+
+### Post-session housekeeping
+- Memory saved: `project_tailwind_v4_syntax.md` (v4 `(--var)` rule + latent issues in other shadcn primitives), `feedback_optimistic_saves.md` (don't toggle `disabled={saving}` on short autosaves).
+- **No commits yet.** Seven files changed; suggested split: (1) calendar Tailwind v4 fix, (2) DateTimePicker rewrite + FollowUpEditor simplification, (3) `lastInteractionAt` correctness (save + delete routes), (4) always-visible delete buttons.

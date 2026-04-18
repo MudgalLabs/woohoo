@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 
 import "@/content/views/App.css";
 import App from "@/content/views/App.tsx";
+import { mountToast } from "@/content/lib/toastMount";
 
 const container = document.createElement("div");
 container.id = "woohoo-app";
@@ -14,3 +15,5 @@ createRoot(container).render(
         <App />
     </StrictMode>,
 );
+
+mountToast();

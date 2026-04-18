@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
 import {
     Calendar as CalendarIcon,
@@ -7,17 +5,11 @@ import {
     ChevronRight,
 } from "lucide-react";
 
-import { Button, Popover, PopoverContent, PopoverTrigger } from "@woohoo/ui";
-import { cn } from "@/lib/utils";
-
 interface DateTimePickerProps {
     value: Date | null;
     onChange: (value: Date | null) => void;
     placeholder?: string;
     disabled?: boolean;
-    className?: string;
-    autoOpen?: boolean;
-    onOpenChange?: (open: boolean) => void;
 }
 
 type View = "day" | "month" | "year";
@@ -69,22 +61,34 @@ export function DateTimePicker({
     onChange,
     placeholder = "Set follow-up",
     disabled,
-    className,
-    autoOpen = false,
-    onOpenChange,
 }: DateTimePickerProps) {
-    const [open, setOpen] = useState(autoOpen);
+    const [open, setOpen] = useState(false);
     const [view, setView] = useState<View>("day");
     const [viewMonth, setViewMonth] = useState<Date>(() => value ?? new Date());
 
-    const handleOpenChange = (next: boolean) => {
-        if (next) {
-            setView("day");
-            setViewMonth(value ?? new Date());
-        }
-        setOpen(next);
-        onOpenChange?.(next);
+    const rootRef = useRef<HTMLDivElement>(null);
+    const panelRef = useRef<HTMLDivElement>(null);
+
+    const openPanel = () => {
+        setView("day");
+        setViewMonth(value ?? new Date());
+        setOpen(true);
     };
+    const closePanel = () => setOpen(false);
+    const toggle = () => (open ? closePanel() : openPanel());
+
+    useEffect(() => {
+        if (!open) return;
+
+        const handler = (e: MouseEvent) => {
+            const path = e.composedPath();
+            if (rootRef.current && !path.includes(rootRef.current)) {
+                closePanel();
+            }
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, [open]);
 
     const today = new Date();
     const h24 = value ? value.getHours() : 9;
@@ -125,147 +129,157 @@ export function DateTimePicker({
     const toggleAmPm = () => applyTime((h24 + 12) % 24, minute);
 
     return (
-        <Popover open={open} onOpenChange={handleOpenChange}>
-            <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    disabled={disabled}
-                    className={cn(
-                        "justify-start text-left font-normal",
-                        !value && "text-muted-foreground",
-                        className,
-                    )}
-                >
-                    <CalendarIcon className="h-4 w-4" />
-                    <span className={cn(value && "font-mono text-[13px]")}>
-                        {value ? formatTrigger(value) : placeholder}
-                    </span>
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[17rem] p-0" align="start">
-                {view === "day" && (
-                    <DayView
-                        viewMonth={viewMonth}
-                        selected={value}
-                        today={today}
-                        onPrev={() =>
-                            setViewMonth(
-                                new Date(
-                                    viewMonth.getFullYear(),
-                                    viewMonth.getMonth() - 1,
-                                    1,
-                                ),
-                            )
-                        }
-                        onNext={() =>
-                            setViewMonth(
-                                new Date(
-                                    viewMonth.getFullYear(),
-                                    viewMonth.getMonth() + 1,
-                                    1,
-                                ),
-                            )
-                        }
-                        onMonthClick={() => setView("month")}
-                        onYearClick={() => setView("year")}
-                        onDayClick={(d) =>
-                            applyDate(d.getFullYear(), d.getMonth(), d.getDate())
-                        }
-                    />
-                )}
-                {view === "month" && (
-                    <MonthView
-                        year={viewMonth.getFullYear()}
-                        selected={value}
-                        onPrev={() =>
-                            setViewMonth(
-                                new Date(
-                                    viewMonth.getFullYear() - 1,
-                                    viewMonth.getMonth(),
-                                    1,
-                                ),
-                            )
-                        }
-                        onNext={() =>
-                            setViewMonth(
-                                new Date(
-                                    viewMonth.getFullYear() + 1,
-                                    viewMonth.getMonth(),
-                                    1,
-                                ),
-                            )
-                        }
-                        onYearClick={() => setView("year")}
-                        onMonthClick={(m) => {
-                            setViewMonth(
-                                new Date(viewMonth.getFullYear(), m, 1),
-                            );
-                            setView("day");
-                        }}
-                    />
-                )}
-                {view === "year" && (
-                    <YearView
-                        selectedYear={
-                            value?.getFullYear() ?? viewMonth.getFullYear()
-                        }
-                        onYearClick={(y) => {
-                            setViewMonth(new Date(y, viewMonth.getMonth(), 1));
-                            setView("month");
-                        }}
-                    />
-                )}
+        <div className="dtp-root" ref={rootRef}>
+            <button
+                type="button"
+                className={`dtp-trigger ${value ? "dtp-trigger-filled" : ""}`}
+                onClick={toggle}
+                disabled={disabled}
+            >
+                <CalendarIcon size={13} strokeWidth={2.25} />
+                <span className={value ? "dtp-trigger-value" : "dtp-trigger-placeholder"}>
+                    {value ? formatTrigger(value) : placeholder}
+                </span>
+            </button>
 
-                <div className="border-t border-border px-3 py-2 flex items-center gap-2">
-                    <label className="text-sm text-muted-foreground">
-                        Time
-                    </label>
-                    <div className="ml-auto flex items-center gap-1">
-                        <TimeField
-                            value={h12}
-                            min={1}
-                            max={12}
-                            onChange={setHour12}
+            {open && (
+                <div className="dtp-panel" ref={panelRef}>
+                    {view === "day" && (
+                        <DayView
+                            viewMonth={viewMonth}
+                            selected={value}
+                            today={today}
+                            onPrev={() =>
+                                setViewMonth(
+                                    new Date(
+                                        viewMonth.getFullYear(),
+                                        viewMonth.getMonth() - 1,
+                                        1,
+                                    ),
+                                )
+                            }
+                            onNext={() =>
+                                setViewMonth(
+                                    new Date(
+                                        viewMonth.getFullYear(),
+                                        viewMonth.getMonth() + 1,
+                                        1,
+                                    ),
+                                )
+                            }
+                            onMonthClick={() => setView("month")}
+                            onYearClick={() => setView("year")}
+                            onDayClick={(d) =>
+                                applyDate(
+                                    d.getFullYear(),
+                                    d.getMonth(),
+                                    d.getDate(),
+                                )
+                            }
                         />
-                        <span className="text-muted-foreground font-mono">:</span>
-                        <TimeField
-                            value={minute}
-                            min={0}
-                            max={59}
-                            onChange={setMinute}
+                    )}
+                    {view === "month" && (
+                        <MonthView
+                            year={viewMonth.getFullYear()}
+                            selected={value}
+                            onPrev={() =>
+                                setViewMonth(
+                                    new Date(
+                                        viewMonth.getFullYear() - 1,
+                                        viewMonth.getMonth(),
+                                        1,
+                                    ),
+                                )
+                            }
+                            onNext={() =>
+                                setViewMonth(
+                                    new Date(
+                                        viewMonth.getFullYear() + 1,
+                                        viewMonth.getMonth(),
+                                        1,
+                                    ),
+                                )
+                            }
+                            onYearClick={() => setView("year")}
+                            onMonthClick={(m) => {
+                                setViewMonth(
+                                    new Date(viewMonth.getFullYear(), m, 1),
+                                );
+                                setView("day");
+                            }}
                         />
+                    )}
+                    {view === "year" && (
+                        <YearView
+                            selectedYear={
+                                value?.getFullYear() ?? viewMonth.getFullYear()
+                            }
+                            onYearClick={(y) => {
+                                setViewMonth(
+                                    new Date(y, viewMonth.getMonth(), 1),
+                                );
+                                setView("month");
+                            }}
+                        />
+                    )}
+
+                    <div className="dtp-time-row">
+                        <span className="dtp-time-label">Time</span>
+                        <div className="dtp-time-fields">
+                            <TimeField
+                                value={h12}
+                                min={1}
+                                max={12}
+                                onChange={setHour12}
+                            />
+                            <span className="dtp-time-colon">:</span>
+                            <TimeField
+                                value={minute}
+                                min={0}
+                                max={59}
+                                onChange={setMinute}
+                            />
+                            <button
+                                type="button"
+                                onClick={toggleAmPm}
+                                className="dtp-ampm-btn"
+                            >
+                                {ampm}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="dtp-footer">
+                        <div className="dtp-footer-left">
+                            <button
+                                type="button"
+                                className="dtp-ghost-btn"
+                                onClick={() => {
+                                    onChange(null);
+                                    closePanel();
+                                }}
+                            >
+                                Clear
+                            </button>
+                            <button
+                                type="button"
+                                className="dtp-ghost-btn"
+                                onClick={handleToday}
+                            >
+                                Today
+                            </button>
+                        </div>
                         <button
                             type="button"
-                            onClick={toggleAmPm}
-                            className="ml-1 h-9 w-12 rounded-md border border-input bg-background text-sm font-medium hover:bg-accent"
+                            className="dtp-done-btn"
+                            onClick={closePanel}
                         >
-                            {ampm}
+                            Done
                         </button>
                     </div>
                 </div>
-
-                <div className="flex items-center justify-between gap-2 border-t border-border px-3 py-2">
-                    <div className="flex items-center gap-1">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                                onChange(null);
-                                handleOpenChange(false);
-                            }}
-                        >
-                            Clear
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={handleToday}>
-                            Today
-                        </Button>
-                    </div>
-                    <Button size="sm" onClick={() => handleOpenChange(false)}>
-                        Done
-                    </Button>
-                </div>
-            </PopoverContent>
-        </Popover>
+            )}
+        </div>
     );
 }
 
@@ -281,10 +295,10 @@ function NavArrow({
         <button
             type="button"
             onClick={onClick}
-            className="h-8 w-8 rounded-md hover:bg-accent flex items-center justify-center text-muted-foreground"
+            className="dtp-nav-arrow"
             aria-label={dir === "prev" ? "Previous" : "Next"}
         >
-            <Icon className="h-4 w-4" />
+            <Icon size={14} strokeWidth={2} />
         </button>
     );
 }
@@ -302,10 +316,7 @@ function HeaderButton({
         <button
             type="button"
             onClick={onClick}
-            className={cn(
-                "px-2 py-1 rounded-md text-sm font-medium hover:bg-accent",
-                mono && "font-mono",
-            )}
+            className={`dtp-header-btn ${mono ? "dtp-mono" : ""}`}
         >
             {children}
         </button>
@@ -333,10 +344,10 @@ function DayView({
 }) {
     const days = buildDayGrid(viewMonth);
     return (
-        <div className="p-3">
-            <div className="flex items-center justify-between mb-2">
+        <div className="dtp-body">
+            <div className="dtp-header">
                 <NavArrow dir="prev" onClick={onPrev} />
-                <div className="flex items-center gap-1">
+                <div className="dtp-header-center">
                     <HeaderButton onClick={onMonthClick}>
                         {MONTHS_LONG[viewMonth.getMonth()]}
                     </HeaderButton>
@@ -346,35 +357,32 @@ function DayView({
                 </div>
                 <NavArrow dir="next" onClick={onNext} />
             </div>
-            <div className="grid grid-cols-7">
+            <div className="dtp-weekday-row">
                 {WEEKDAYS.map((w) => (
-                    <div
-                        key={w}
-                        className="text-xs text-muted-foreground text-center py-1"
-                    >
+                    <div key={w} className="dtp-weekday">
                         {w}
                     </div>
                 ))}
             </div>
-            <div className="grid grid-cols-7">
+            <div className="dtp-day-grid">
                 {days.map((day) => {
                     const outside = day.getMonth() !== viewMonth.getMonth();
                     const isSel = selected ? isSameDay(day, selected) : false;
                     const isTd = isSameDay(day, today);
+                    const cls = [
+                        "dtp-day",
+                        outside && "dtp-day-outside",
+                        isTd && !isSel && "dtp-day-today",
+                        isSel && "dtp-day-selected",
+                    ]
+                        .filter(Boolean)
+                        .join(" ");
                     return (
                         <button
                             type="button"
                             key={day.toISOString()}
                             onClick={() => onDayClick(day)}
-                            className={cn(
-                                "aspect-square rounded-md text-sm font-mono flex items-center justify-center hover:bg-accent",
-                                outside && "text-muted-foreground/50",
-                                isTd &&
-                                    !isSel &&
-                                    "bg-accent text-accent-foreground",
-                                isSel &&
-                                    "bg-primary text-primary-foreground hover:bg-primary",
-                            )}
+                            className={cls}
                         >
                             {day.getDate()}
                         </button>
@@ -401,15 +409,15 @@ function MonthView({
     onMonthClick: (m: number) => void;
 }) {
     return (
-        <div className="p-3">
-            <div className="flex items-center justify-between mb-2">
+        <div className="dtp-body">
+            <div className="dtp-header">
                 <NavArrow dir="prev" onClick={onPrev} />
                 <HeaderButton onClick={onYearClick} mono>
                     {year}
                 </HeaderButton>
                 <NavArrow dir="next" onClick={onNext} />
             </div>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="dtp-month-grid">
                 {MONTHS_SHORT.map((m, i) => {
                     const isSel =
                         selected?.getFullYear() === year &&
@@ -419,11 +427,7 @@ function MonthView({
                             type="button"
                             key={m}
                             onClick={() => onMonthClick(i)}
-                            className={cn(
-                                "h-12 rounded-md text-sm font-medium hover:bg-accent flex items-center justify-center",
-                                isSel &&
-                                    "bg-primary text-primary-foreground hover:bg-primary",
-                            )}
+                            className={`dtp-month ${isSel ? "dtp-month-selected" : ""}`}
                         >
                             {m}
                         </button>
@@ -456,17 +460,12 @@ function YearView({
     }, []);
 
     return (
-        <div className="p-3">
-            <div className="flex items-center justify-center mb-2 h-8">
-                <span className="text-sm font-medium text-muted-foreground">
-                    Select year
-                </span>
+        <div className="dtp-body">
+            <div className="dtp-header">
+                <span className="dtp-year-title">Select year</span>
             </div>
-            <div
-                ref={containerRef}
-                className="h-[200px] overflow-y-auto"
-            >
-                <div className="grid grid-cols-3 gap-2 pr-1">
+            <div ref={containerRef} className="dtp-year-scroll">
+                <div className="dtp-year-grid">
                     {years.map((y) => {
                         const isSel = y === selectedYear;
                         return (
@@ -475,11 +474,7 @@ function YearView({
                                 key={y}
                                 data-selected={isSel || undefined}
                                 onClick={() => onYearClick(y)}
-                                className={cn(
-                                    "h-10 rounded-md text-sm font-mono hover:bg-accent flex items-center justify-center",
-                                    isSel &&
-                                        "bg-primary text-primary-foreground hover:bg-primary",
-                                )}
+                                className={`dtp-year ${isSel ? "dtp-year-selected" : ""}`}
                             >
                                 {y}
                             </button>
@@ -540,7 +535,7 @@ function TimeField({
                     onChange(value <= min ? max : value - 1);
                 }
             }}
-            className="h-9 w-10 rounded-md border border-input bg-background text-center text-sm font-mono tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="dtp-time-field"
         />
     );
 }

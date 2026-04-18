@@ -8,6 +8,7 @@ import {
     subscribe,
 } from "@/content/store/activeSaveButton";
 import { Message } from "@/content/reddit/dm";
+import { useTheme } from "@/content/lib/useTheme";
 
 interface SaveButtonProps {
     message: Message;
@@ -21,6 +22,7 @@ export function SaveButton(props: SaveButtonProps) {
     const { id } = message;
     const [isActive, setIsActive] = useState(getActive() === id);
     const [isSaved, setIsSaved] = useState(props.isSaved);
+    const theme = useTheme();
 
     useEffect(() => {
         return subscribe((activeId) => {
@@ -36,8 +38,13 @@ export function SaveButton(props: SaveButtonProps) {
         }
     };
 
+    const close = () => {
+        if (getActive() === id) setActive(null);
+    };
+
     return (
         <div
+            className={theme}
             style={{
                 position: "relative",
                 display: "inline-block",
@@ -51,7 +58,7 @@ export function SaveButton(props: SaveButtonProps) {
                         peer={peer}
                         kind={kind}
                         onSaved={() => setIsSaved(true)}
-                        onUnsaved={() => setIsSaved(false)}
+                        onClose={close}
                     />
                 )}
             </div>

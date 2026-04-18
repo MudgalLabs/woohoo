@@ -15,12 +15,19 @@ interface WoohooCardProps {
     variant?: "default" | "overdue";
 }
 
-function formatDate(date: Date | string): string {
-    return new Date(date).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-    });
+export function followUpLabel(date: Date | string): string {
+    const target = new Date(date);
+    target.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diff = Math.round(
+        (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+    );
+    if (diff === 0) return "Follow up today";
+    if (diff === 1) return "Follow up tomorrow";
+    if (diff === -1) return "Overdue yesterday";
+    if (diff > 1) return `Follow up in ${diff}d`;
+    return `Overdue ${-diff}d`;
 }
 
 export function timeAgo(date: Date | string): string {
@@ -102,8 +109,7 @@ export function WoohooCard({
                                         : "text-primary",
                                 )}
                             >
-                                {isOverdue ? "Overdue " : "Follow up "}
-                                {formatDate(woohoo.followUpAt)}
+                                {followUpLabel(woohoo.followUpAt)}
                             </span>
                         )}
                     </div>

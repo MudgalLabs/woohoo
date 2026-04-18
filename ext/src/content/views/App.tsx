@@ -9,6 +9,7 @@ import {
     injectAndReturnCommentSaveButtonContainers,
     observeRedditPostPage,
 } from "@/content/reddit/comment";
+import { startFounderScraper } from "@/content/reddit/founder";
 import { SaveButton } from "@/components/SaveButton";
 import { mountWithShadow } from "@/content/lib/react";
 import { setActive } from "@/content/store/activeSaveButton";
@@ -19,6 +20,10 @@ function App() {
 
     const [peer, setPeer] = useState<null | string>(null);
     const [isReady, setIsReady] = useState(false);
+
+    // Capture the logged-in Reddit username the first time the user drawer
+    // renders. Used server-side to route comment saves deterministically.
+    useEffect(() => startFounderScraper(), []);
 
     // Keep track of the active chat's username.
     // This will track for both, the pop up and reddit.com/chat/room/...

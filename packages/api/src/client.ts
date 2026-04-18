@@ -4,6 +4,7 @@ import type {
     SaveItemPayload,
     SaveItemResponse,
     CheckSavedResponse,
+    StatsResponse,
 } from "./types";
 
 export class WoohooApiClient {
@@ -164,10 +165,14 @@ export class WoohooApiClient {
         platform: string;
         peerId: string;
         externalId: string;
+        authorId?: string;
+        founderExternalId?: string;
         ancestorExternalIds?: string[];
     }): Promise<CheckSavedResponse> {
-        const { ancestorExternalIds, ...rest } = params;
+        const { ancestorExternalIds, authorId, founderExternalId, ...rest } = params;
         const qs = new URLSearchParams(rest);
+        if (authorId) qs.append("authorId", authorId);
+        if (founderExternalId) qs.append("founderExternalId", founderExternalId);
         if (ancestorExternalIds) {
             for (const id of ancestorExternalIds) {
                 qs.append("ancestorExternalIds", id);
@@ -185,6 +190,23 @@ export class WoohooApiClient {
         if (!res.ok) return { saved: false };
 
         return res.json() as Promise<CheckSavedResponse>;
+    }
+
+    async getStats(): Promise<StatsResponse | null> {
+        if (!this.token) return null;
+
+        const res = await fetch(`${this.baseUrl}/api/stats`, {
+            headers: this.authHeaders(),
+        });
+
+        if (res.status === 401) {
+            this.onUnauthorized?.();
+            return null;
+        }
+
+        if (!res.ok) return null;
+
+        return res.json() as Promise<StatsResponse>;
     }
 
     private authHeaders(): Record<string, string> {
