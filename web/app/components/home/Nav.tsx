@@ -27,25 +27,25 @@ export function Nav({
                         <>
                             <Link
                                 href="/#how"
-                                className="text-sm text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
+                                className="text-sm font-medium text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
                             >
                                 How it works
                             </Link>
                             <Link
                                 href="/#product"
-                                className="text-sm text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
+                                className="text-sm font-medium text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
                             >
                                 Product
                             </Link>
                             <Link
                                 href="/#pricing"
-                                className="text-sm text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
+                                className="text-sm font-medium text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
                             >
                                 Pricing
                             </Link>
                             <Link
                                 href="/#faq"
-                                className="text-sm text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
+                                className="text-sm font-medium text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
                             >
                                 FAQ
                             </Link>

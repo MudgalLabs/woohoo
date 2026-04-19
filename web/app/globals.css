@@ -214,9 +214,6 @@
     select {
         cursor: pointer;
     }
-    a {
-        @apply text-primary font-medium hover:underline underline-offset-4;
-    }
 }
 
 /* ===== Global base ===== */

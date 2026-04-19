@@ -16,7 +16,7 @@ export function Footer() {
                             just say hi on{" "}
                             <a
                                 href="mailto:hey@woohoo.to"
-                                className=" transition"
+                                className="text-sm font-medium text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
                             >
                                 hey@woohoo.to
                             </a>
@@ -29,25 +29,34 @@ export function Footer() {
                         </h5>
                         <ul className="space-y-2 text-sm text-muted-foreground">
                             <li>
-                                <Link href="/#how" className=" transition">
+                                <Link
+                                    href="/#how"
+                                    className="text-sm font-medium text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
+                                >
                                     How it works
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/#product" className=" transition">
+                                <Link
+                                    href="/#product"
+                                    className="text-sm font-medium text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
+                                >
                                     The thread
                                 </Link>
                             </li>
                             <li>
                                 <Link
                                     href="/#dashboard"
-                                    className=" transition"
+                                    className="text-sm font-medium text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
                                 >
                                     Dashboard
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/#pricing" className=" transition">
+                                <Link
+                                    href="/#pricing"
+                                    className="text-sm font-medium text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
+                                >
                                     Pricing
                                 </Link>
                             </li>
@@ -60,7 +69,10 @@ export function Footer() {
                         </h5>
                         <ul className="space-y-2 text-sm text-muted-foreground">
                             <li>
-                                <Link href="/extension" className=" transition">
+                                <Link
+                                    href="/extension"
+                                    className="text-sm font-medium text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
+                                >
                                     Extension
                                 </Link>
                             </li>
@@ -69,13 +81,16 @@ export function Footer() {
                                     href="https://github.com/MudgalLabs/woohoo"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className=" transition"
+                                    className="text-sm font-medium text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
                                 >
                                     GitHub
                                 </a>
                             </li>
                             <li>
-                                <Link href="/#faq" className=" transition">
+                                <Link
+                                    href="/#faq"
+                                    className="text-sm font-medium text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
+                                >
                                     FAQ
                                 </Link>
                             </li>
@@ -92,7 +107,7 @@ export function Footer() {
                                     href="https://mudgallabs.com"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className=" transition"
+                                    className="text-sm font-medium text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
                                 >
                                     Mudgal Labs
                                 </a>
@@ -100,7 +115,7 @@ export function Footer() {
                             <li>
                                 <a
                                     href="mailto:hey@woohoo.to"
-                                    className=" transition"
+                                    className="text-sm font-medium text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
                                 >
                                     Contact
                                 </a>
