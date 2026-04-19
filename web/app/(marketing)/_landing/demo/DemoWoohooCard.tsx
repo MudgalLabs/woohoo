@@ -40,7 +40,7 @@ export function DemoWoohooCard({
     return (
         <div
             className={cn(
-                "block rounded-lg border border-border bg-card p-4 hover:bg-chip-bg!",
+                "block rounded-lg border border-border bg-card p-4 hover:bg-secondary-foreground",
                 isOverdue && "border-l-4 border-l-destructive/80",
             )}
         >

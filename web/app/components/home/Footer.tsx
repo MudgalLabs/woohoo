@@ -9,8 +9,7 @@ export function Footer() {
                     <div className="col-span-2 md:col-span-1">
                         <Logo size="sm" />
                         <p className="mt-3 max-w-xs text-sm text-muted-foreground leading-relaxed">
-                            Capture the DMs and comments worth acting on.
-                            Follow up before the moment&rsquo;s gone.
+                            Built with ❤️️️ by Mudgal Labs
                         </p>
                     </div>
 
@@ -20,34 +19,25 @@ export function Footer() {
                         </h5>
                         <ul className="space-y-2 text-sm text-muted-foreground">
                             <li>
-                                <Link
-                                    href="/#how"
-                                    className="hover:text-foreground transition"
-                                >
+                                <Link href="/#how" className=" transition">
                                     How it works
                                 </Link>
                             </li>
                             <li>
-                                <Link
-                                    href="/#product"
-                                    className="hover:text-foreground transition"
-                                >
+                                <Link href="/#product" className=" transition">
                                     The thread
                                 </Link>
                             </li>
                             <li>
                                 <Link
                                     href="/#dashboard"
-                                    className="hover:text-foreground transition"
+                                    className=" transition"
                                 >
                                     Dashboard
                                 </Link>
                             </li>
                             <li>
-                                <Link
-                                    href="/#pricing"
-                                    className="hover:text-foreground transition"
-                                >
+                                <Link href="/#pricing" className=" transition">
                                     Pricing
                                 </Link>
                             </li>
@@ -60,10 +50,7 @@ export function Footer() {
                         </h5>
                         <ul className="space-y-2 text-sm text-muted-foreground">
                             <li>
-                                <Link
-                                    href="/extension"
-                                    className="hover:text-foreground transition"
-                                >
+                                <Link href="/extension" className=" transition">
                                     Extension
                                 </Link>
                             </li>
@@ -72,16 +59,13 @@ export function Footer() {
                                     href="https://github.com/MudgalLabs/woohoo"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="hover:text-foreground transition"
+                                    className=" transition"
                                 >
                                     GitHub
                                 </a>
                             </li>
                             <li>
-                                <Link
-                                    href="/#faq"
-                                    className="hover:text-foreground transition"
-                                >
+                                <Link href="/#faq" className=" transition">
                                     FAQ
                                 </Link>
                             </li>
@@ -98,25 +82,15 @@ export function Footer() {
                                     href="https://mudgallabs.com"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="hover:text-foreground transition"
+                                    className=" transition"
                                 >
                                     Mudgal Labs
                                 </a>
                             </li>
                             <li>
                                 <a
-                                    href="https://x.com/MudgalLabs"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="hover:text-foreground transition"
-                                >
-                                    Twitter / X
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    href="mailto:hi@mudgallabs.com"
-                                    className="hover:text-foreground transition"
+                                    href="mailto:hey@woohoo.to"
+                                    className=" transition"
                                 >
                                     Contact
                                 </a>

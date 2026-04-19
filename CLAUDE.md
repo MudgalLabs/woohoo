@@ -26,7 +26,7 @@ A **Woohoo** is a thread of saved interactions between the founder and one perso
 
 1. **Extension:** Injects a "Save" button on hover for Reddit chat DMs **and** post comments (`shreddit-comment`). 1-click opens a save modal, 1 more click confirms. Captures content, platform, peer ID, timestamp, source URL. Optional follow-up date-time picker.
 2. **Backend:** `POST /api/woohoos/save` upserts a Woohoo by `(userId, platform, peerId)` and appends a `TimelineItem`. See "Save routing rules" below — comment threading is non-trivial.
-3. **Dashboard:** Three sections — "Follow up today", "Overdue", "Maybe getting cold". Cards show platform, peer, last interaction, follow-up date, DM/comment counts.
+3. **Dashboard:** Three sections — "Follow up today", "Overdue", "Going cold". Cards show platform, peer, last interaction, follow-up date, DM/comment counts.
 4. **My Woohoos page** (`/my-woohoos`): grid of all Woohoos ordered by `lastSavedAt desc`.
 5. **Woohoo detail view** (`/my-woohoos/[id]`): header, inline follow-up editor, timeline tabs split into DMs vs. Comments, delete buttons for the Woohoo and individual timeline items, "Open Chat" link.
 
@@ -135,7 +135,7 @@ Change this logic in `web/app/api/woohoos/save/route.ts` (and keep `api/woohoos/
 - `app/` — Next.js App Router pages and API routes
     - `api/auth/[...all]/` — better-auth catch-all
     - `(app)/` — protected route group (layout enforces session, renders `AppHeader` + sidebar)
-        - `dashboard/` — three-section dashboard (Follow up today / Overdue / Maybe getting cold)
+        - `dashboard/` — three-section dashboard (Follow up today / Overdue / Going cold)
         - `my-woohoos/` — list page (`WoohooCard` grid)
         - `my-woohoos/[id]/` — detail page (`FollowUpEditor`, `ChatBubble`, `CommentCard`, delete buttons)
     - `(marketing)/extension/` — public extension info page

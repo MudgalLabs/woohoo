@@ -69,8 +69,8 @@ export function CtaBig() {
                     </span>
                 </h2>
                 <p className="cta-sub">
-                    Install the extension. Save the next DM that matters. Take
-                    it from there.
+                    Install the extension.
+                    <br className="sm:hidden" /> Start saving conversations.
                 </p>
                 <div
                     style={{
@@ -104,11 +104,11 @@ export function CtaBig() {
                     style={{
                         marginTop: 24,
                         color: "var(--accent)",
-                        fontSize: 22,
+                        fontSize: 28,
                         transform: "rotate(-2deg)",
                     }}
                 >
-                    — no credit card, free forever.
+                    Free forever. No credit card.
                 </div>
             </div>
         </section>

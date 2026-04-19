@@ -217,6 +217,11 @@
     padding: 0 4px;
     border-radius: 2px;
 }
+.landing .hero-sub .mark {
+    background: linear-gradient(180deg, transparent 60%, var(--highlight) 60%);
+    padding: 0 4px;
+    border-radius: 2px;
+}
 .landing .hero h1 .punch {
     color: var(--accent);
     font-style: italic;
@@ -284,7 +289,7 @@
     background: var(--card-2);
     border: 1px solid var(--line);
     border-radius: 14px;
-    padding: 16px 18px;
+    padding: 16px 18px 0px;
     position: relative;
 }
 .landing .reddit-top {
@@ -378,13 +383,14 @@
    button's top-left corner so the rotated arrow's tip lands on it. */
 .landing .save-hint {
     position: absolute;
-    right: 44px; /* = button's left edge */
-    bottom: 44px; /* = button's top edge */
+    right: 40px; /* = button's left edge */
+    bottom: 48px; /* = button's top edge */
     display: flex;
     align-items: flex-end;
     gap: 4px;
     color: var(--ink);
     pointer-events: none;
+    transform: rotate(-0deg);
     transition:
         opacity 0.25s ease,
         transform 0.25s ease;
@@ -394,7 +400,7 @@
     font-size: 22px;
     line-height: 1;
     white-space: nowrap;
-    transform: rotate(-3deg);
+    transform: rotate(-0deg);
     transform-origin: left bottom;
 }
 .landing .save-hint-arrow {

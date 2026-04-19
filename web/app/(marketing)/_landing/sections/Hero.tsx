@@ -14,19 +14,20 @@ export function Hero() {
                         and comments
                     </div>
                     <div className="h-8" />
+
                     <h1>
-                        <span className="ink">One click. One thread.</span>
-                        <br />
-                        <span className="italic-serif punch">
-                            One reminder.
+                        <span className="ink">
+                            Don’t let warm conversations{" "}
                         </span>
+                        <span className="italic-serif punch">go cold.</span>
                     </h1>
+
                     <p className="hero-sub">
-                        Woohoo captures <b>DMs and comments </b> from social,
-                        threads them per person, and surfaces them the day you
-                        said you&apos;d reply — so warm conversations don&apos;t
-                        go cold.
+                        Capture <b>messagess and comments</b>, organize them by
+                        person, and{" "}
+                        <span className="mark">follow up when it matters.</span>
                     </p>
+
                     <div className="hero-cta">
                         <Link href="/sign-up">
                             <Button className="group" variant="default">
@@ -34,20 +35,23 @@ export function Hero() {
                                 <ArrowRight className="transition-transform duration-200 group-hover:translate-x-1" />
                             </Button>
                         </Link>
+
                         <Link href="/extension">
                             <Button
                                 variant="outline"
-                                className="hover:bg-secondary/10"
+                                className="hover:bg-secondary/10 group"
                             >
                                 Install the extension
                                 <Zap size={16} strokeWidth={2} />
                             </Button>
                         </Link>
                     </div>
+
                     <div className="hero-note">
                         <span>Free forever. No credit card.</span>
                     </div>
                 </div>
+
                 <HeroDemo woohoo={getHeroWoohoo()} />
             </div>
 

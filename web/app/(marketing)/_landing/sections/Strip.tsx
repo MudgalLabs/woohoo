@@ -1,13 +1,13 @@
 const ITEMS = [
     "Reddit DMs",
-    "comment threads",
-    "warm leads",
-    "feature requests",
+    "Comment threads",
+    "Warm leads",
+    "Feature requests",
     "\u201CI\u2019ll try this weekend\u201D",
-    "bug reports",
-    "partnership pings",
-    "criticism worth reading",
-    "the lead you almost lost",
+    "Bug reports",
+    "Partnership pings",
+    "Criticism worth reading",
+    "The lead you almost lost",
 ];
 
 export function Strip() {

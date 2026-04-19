@@ -70,14 +70,13 @@ export function Dashboard() {
                     </div>
                     <div style={{ height: 14 }} />
                     <h2>
-                        Open Monday.{" "}
                         <span className="italic-serif muted">Know exactly</span>{" "}
                         <span className="mark">who to reply to.</span>
                     </h2>
                     <p>
-                        Three piles — follow up today, overdue, maybe getting
-                        cold. No configuring. No pipeline stages. Just people
-                        you said you&rsquo;d follow up with.
+                        Open your dashboard and see what’s due today, what’s
+                        overdue, and what’s going cold. No setup. No pipeline.
+                        Just people.
                     </p>
                 </div>
 

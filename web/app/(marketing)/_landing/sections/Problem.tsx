@@ -13,10 +13,9 @@ export function Problem() {
                         <span className="mark">Friday.</span>
                     </h2>
                     <p className="problem-lede">
-                        Tracking conversations in your head fails. Spreadsheets
-                        are too slow. Scrolling back through notifications is
-                        painful. Important signals get lost — and warm becomes
-                        cold, quietly.
+                        Mental tracking fails. Spreadsheets need discipline.
+                        Notifications pile up. Important signals get lost — and
+                        warm becomes cold, quietly.
                     </p>
                 </div>
 

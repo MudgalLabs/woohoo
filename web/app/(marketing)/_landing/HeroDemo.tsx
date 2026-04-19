@@ -40,6 +40,7 @@ export function HeroDemo({ woohoo }: HeroDemoProps) {
                     <span className="sub">u/indie_marketer</span>
                     <span>· 2h ago · DM</span>
                 </div>
+
                 <div className="reddit-msg">
                     Hey — saw your comment in r/SaaS.{" "}
                     <span className="highlight">
@@ -72,7 +73,7 @@ export function HeroDemo({ woohoo }: HeroDemoProps) {
                     className={`save-hint ${saved ? "is-gone" : ""}`}
                     aria-hidden={saved}
                 >
-                    <span className="hand">Save this Reddit DM</span>
+                    {/* <span className="hand">Save this Reddit DM</span> */}
                     <svg
                         className="save-hint-arrow"
                         width="48"
@@ -105,7 +106,7 @@ export function HeroDemo({ woohoo }: HeroDemoProps) {
             </div>
 
             <div className="demo-caption">
-                Shown on Reddit. LinkedIn, X, and Instagram next.
+                Works on Reddit today. LinkedIn, X, and more coming.
             </div>
 
             <div className="burst">

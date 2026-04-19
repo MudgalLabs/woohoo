@@ -82,9 +82,9 @@ export function ThreadMock({
                         place.
                     </h2>
                     <p>
-                        Open a Woohoo and you see the whole relationship — DMs
-                        on one tab, comments on another, follow-up front and
-                        center.
+                        Open a Woohoo and you see the whole conversation —
+                        messages on one tab, comments on another, follow-up
+                        front and center.
                     </p>
                 </div>
 

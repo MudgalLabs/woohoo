@@ -31,9 +31,8 @@ export function HowItWorks() {
                         <div className="num">1</div>
                         <h3>Capture</h3>
                         <p>
-                            Hover any Reddit DM or comment. Click Save. The
-                            extension grabs the message, the author, the
-                            permalink — everything.
+                            Save any DM or comment in one click. The extension
+                            captures everything that matters.
                         </p>
                         <div className="illo">
                             <div className="mini-msg">
@@ -56,11 +55,8 @@ export function HowItWorks() {
                         <div className="num">2</div>
                         <h3>Organize</h3>
                         <p>
-                            Every DM and comment from one person rolls into a
-                            single{" "}
-                            <span className="italic-serif text-lg">Woohoo</span>{" "}
-                            — messages on one tab, comments on another, one
-                            person per place.
+                            All messages and comments are grouped by person
+                            automatically.
                         </p>
                         <div className="illo illo-stack">
                             <DemoChatBubble
@@ -78,10 +74,9 @@ export function HowItWorks() {
                         <div className="num">3</div>
                         <h3>Follow up</h3>
                         <p>
-                            Set a date. Your dashboard surfaces{" "}
+                            Set a date. Your dashboard shows{" "}
                             <b>Follow up today</b>, <b>Overdue</b>, and{" "}
-                            <b>Maybe getting cold</b> — so no warm lead goes
-                            stale.
+                            <b>Going cold</b> — nothing slips through.
                         </p>
                         <div className="illo">
                             <div className="illo-followup">

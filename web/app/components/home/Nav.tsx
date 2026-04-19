@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { Button } from "@woohoo/ui";
 import { Logo } from "@/app/components/brand/Logo";
 import { ThemeToggleIcon } from "@/app/components/ThemeToggleIcon";
@@ -28,36 +27,30 @@ export function Nav({
                         <>
                             <Link
                                 href="/#how"
-                                className="text-sm text-muted-foreground hover:text-foreground transition"
+                                className="text-sm text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
                             >
                                 How it works
                             </Link>
                             <Link
                                 href="/#product"
-                                className="text-sm text-muted-foreground hover:text-foreground transition"
+                                className="text-sm text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
                             >
                                 Product
                             </Link>
                             <Link
+                                href="/#pricing"
+                                className="text-sm text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
+                            >
+                                Pricing
+                            </Link>
+                            <Link
                                 href="/#faq"
-                                className="text-sm text-muted-foreground hover:text-foreground transition"
+                                className="text-sm text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
                             >
                                 FAQ
                             </Link>
                         </>
                     )}
-                    <Link
-                        href={showAnchorLinks ? "/#pricing" : "/#pricing"}
-                        className="text-sm text-muted-foreground hover:text-foreground transition"
-                    >
-                        Pricing
-                    </Link>
-                    <Link
-                        href="/extension"
-                        className="text-sm text-muted-foreground hover:text-foreground transition"
-                    >
-                        Extension
-                    </Link>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -68,10 +61,7 @@ export function Nav({
                     )}
                     {isLoggedIn ? (
                         <Link href="/dashboard">
-                            <Button className="group" variant="default">
-                                Dashboard
-                                <ArrowRight className="transition-transform duration-200 group-hover:translate-x-1" />
-                            </Button>
+                            <Button>Dashboard</Button>
                         </Link>
                     ) : (
                         <>
