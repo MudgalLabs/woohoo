@@ -44,18 +44,54 @@ export function HeroDemo() {
                     support LinkedIn?
                 </div>
 
-                <button
-                    type="button"
-                    className={`save-floater ${saved ? "saved" : ""}`}
-                    onClick={handleSave}
-                    aria-label="Save to Woohoo"
+                <div
+                    className={`save-slot ${saved ? "is-saved" : ""}`}
+                    aria-hidden={saved}
                 >
-                    <Bookmark
-                        size={18}
-                        strokeWidth={2.5}
-                        fill={saved ? "currentColor" : "transparent"}
-                    />
-                </button>
+                    {!saved && <span className="save-ping" aria-hidden />}
+                    <button
+                        type="button"
+                        className={`save-floater ${saved ? "saved" : ""}`}
+                        onClick={handleSave}
+                        aria-label="Save to Woohoo"
+                    >
+                        <Bookmark
+                            size={18}
+                            strokeWidth={2.5}
+                            fill={saved ? "currentColor" : "transparent"}
+                        />
+                    </button>
+                </div>
+
+                <div
+                    className={`save-hint ${saved ? "is-gone" : ""}`}
+                    aria-hidden={saved}
+                >
+                    <span className="hand">try it</span>
+                    <svg
+                        width="30"
+                        height="22"
+                        viewBox="0 0 30 22"
+                        fill="none"
+                        aria-hidden
+                    >
+                        <path
+                            d="M2 14 C 10 4, 20 4, 26 12"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            fill="none"
+                        />
+                        <path
+                            d="M22 8 L 26 12 L 22 16"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            fill="none"
+                        />
+                    </svg>
+                </div>
             </div>
 
             <div className="thread-preview" aria-hidden={!saved}>
