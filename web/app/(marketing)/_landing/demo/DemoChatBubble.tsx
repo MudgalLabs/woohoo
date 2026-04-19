@@ -1,3 +1,5 @@
+"use client";
+
 import type { TimelineItem } from "@/app/generated/prisma/client";
 
 /*
@@ -13,6 +15,7 @@ export function DemoChatBubble({ item, isFromPeer }: DemoChatBubbleProps) {
     const time = new Date(item.interactionAt).toLocaleTimeString("en-US", {
         hour: "numeric",
         minute: "2-digit",
+        timeZone: "UTC",
     });
 
     return (

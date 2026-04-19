@@ -1,3 +1,5 @@
+import { Button } from "@woohoo/ui";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 function GithubGlyph({ size = 14 }: { size?: number }) {
@@ -78,19 +80,23 @@ export function CtaBig() {
                         flexWrap: "wrap",
                     }}
                 >
-                    <Link
-                        href="/sign-up"
-                        className="btn btn-primary btn-lg btn-arrow"
-                    >
-                        Start free
+                    <Link href="/sign-up">
+                        <Button className="group" variant="default">
+                            Start for free
+                            <ArrowRight className="transition-transform duration-200 group-hover:translate-x-1" />
+                        </Button>
                     </Link>
                     <a
                         href="https://github.com/MudgalLabs/woohoo"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn btn-ghost btn-lg"
                     >
-                        <GithubGlyph size={14} /> View on GitHub
+                        <Button
+                            variant="outline"
+                            className="hover:bg-secondary/10"
+                        >
+                            <GithubGlyph size={14} /> View on GitHub
+                        </Button>
                     </a>
                 </div>
                 <div
@@ -102,7 +108,7 @@ export function CtaBig() {
                         transform: "rotate(-2deg)",
                     }}
                 >
-                    — no credit card, no onboarding call, no kidding
+                    — no credit card, free forever.
                 </div>
             </div>
         </section>

@@ -20,8 +20,8 @@ function DemoDashboardSection({
 }) {
     return (
         <section className={className}>
-            <div className="mb-3">
-                <h2 className="text-sm font-semibold text-foreground">
+            <div className="mb-4">
+                <h2 className="text-sm font-semibold text-foreground pb-1">
                     {heading}
                 </h2>
                 <p className="text-xs text-muted-foreground mt-0.5">
@@ -103,25 +103,25 @@ export function Dashboard() {
                         ))}
                     </p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-4">
                         <DemoDashboardSection
                             heading="Today"
                             subheading="Woohoos you planned to follow up on today."
                             woohoos={dashboardToday}
-                            className="order-2 lg:order-none"
+                            className="order-2 lg:order-0"
                         />
                         <DemoDashboardSection
                             heading="Overdue"
                             subheading="Follow-up dates that have passed. Don't let these slip."
                             woohoos={dashboardOverdue}
                             variant="overdue"
-                            className="order-1 lg:order-none"
+                            className="order-1 lg:order-0"
                         />
                         <DemoDashboardSection
-                            heading="Might go cold"
+                            heading="Going cold"
                             subheading="No follow-up set and no new interaction in the last 7 days."
                             woohoos={dashboardCold}
-                            className="order-3 md:col-span-2 lg:col-span-1 lg:order-none"
+                            className="order-3 md:col-span-2 lg:col-span-1 lg:order-0"
                         />
                     </div>
                 </div>

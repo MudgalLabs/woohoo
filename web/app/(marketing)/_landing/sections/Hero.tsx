@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, Zap } from "lucide-react";
 import { HeroDemo } from "../HeroDemo";
+import { getHeroWoohoo } from "../demo/mocks";
+import { Button } from "@woohoo/ui";
 
 export function Hero() {
     return (
@@ -8,10 +10,10 @@ export function Hero() {
             <div className="wrap hero-grid">
                 <div className="hero-copy">
                     <div className="eyebrow">
-                        <span className="dot">●</span> a follow-up tool for
-                        social DMs and comments
+                        <span className="dot">●</span> a follow-up tool for DMs
+                        and comments
                     </div>
-                    <div style={{ height: 16 }} />
+                    <div className="h-8" />
                     <h1>
                         <span className="ink">One click. One thread.</span>
                         <br />
@@ -20,37 +22,36 @@ export function Hero() {
                         </span>
                     </h1>
                     <p className="hero-sub">
-                        Woohoo captures <b>DMs and comments</b> from social,
+                        Woohoo captures <b>DMs and comments </b> from social,
                         threads them per person, and surfaces them the day you
-                        said you&apos;d reply — so warm conversations
-                        don&apos;t go cold.
+                        said you&apos;d reply — so warm conversations don&apos;t
+                        go cold.
                     </p>
                     <div className="hero-cta">
-                        <Link
-                            href="/sign-up"
-                            className="btn btn-primary btn-lg"
-                        >
-                            Start free
-                            <ArrowRight
-                                size={16}
-                                strokeWidth={2.5}
-                                className="btn-icon"
-                            />
+                        <Link href="/sign-up">
+                            <Button className="group" variant="default">
+                                Start for free
+                                <ArrowRight className="transition-transform duration-200 group-hover:translate-x-1" />
+                            </Button>
                         </Link>
-                        <Link
-                            href="/extension"
-                            className="btn btn-ghost btn-lg"
-                        >
-                            <Zap size={14} strokeWidth={2} /> Install the
-                            extension
+                        <Link href="/extension">
+                            <Button
+                                variant="outline"
+                                className="hover:bg-secondary/10"
+                            >
+                                Install the extension
+                                <Zap size={16} strokeWidth={2} />
+                            </Button>
                         </Link>
                     </div>
                     <div className="hero-note">
-                        <span>No credit card required · Open source</span>
+                        <span>Free forever. No credit card.</span>
                     </div>
                 </div>
-                <HeroDemo />
+                <HeroDemo woohoo={getHeroWoohoo()} />
             </div>
+
+            <div className="h-16" />
         </section>
     );
 }

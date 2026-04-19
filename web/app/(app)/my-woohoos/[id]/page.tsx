@@ -78,9 +78,8 @@ export default async function WoohooDetailPage({
     const comments = woohoo.timeline.filter((item) => item.type === "comment");
     const counts: WoohooCounts = { dm: dms.length, comment: comments.length };
     const label = countsLabel(counts);
-    const defaultTab = dms.length === 0 && comments.length > 0
-        ? "comments"
-        : "messages";
+    const defaultTab =
+        dms.length === 0 && comments.length > 0 ? "comments" : "messages";
 
     const profileUrl = peerProfileUrl(woohoo.platform, woohoo.peerId);
     const handle = peerHandle(woohoo.platform, woohoo.peerId);
@@ -132,10 +131,6 @@ export default async function WoohooDetailPage({
                         </div>
 
                         <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-                            {label && <span>{label}</span>}
-                            {label && woohoo.lastInteractionAt && (
-                                <span aria-hidden>·</span>
-                            )}
                             {woohoo.lastInteractionAt && (
                                 <span>
                                     Last interaction{" "}

@@ -10,6 +10,11 @@ import { IsIsnt } from "./_landing/sections/IsIsnt";
 import { Pricing } from "./_landing/sections/Pricing";
 import { Faq } from "./_landing/sections/Faq";
 import { CtaBig } from "./_landing/sections/CtaBig";
+import {
+    threadWoohoo,
+    threadDms,
+    threadComments,
+} from "./_landing/demo/mocks";
 
 export default function LandingPage() {
     return (
@@ -19,7 +24,11 @@ export default function LandingPage() {
                 <Strip />
                 <Problem />
                 <HowItWorks />
-                <ThreadMock />
+                <ThreadMock
+                    woohoo={threadWoohoo}
+                    dms={threadDms}
+                    comments={threadComments}
+                />
                 <Dashboard />
                 <IsIsnt />
                 <Pricing />

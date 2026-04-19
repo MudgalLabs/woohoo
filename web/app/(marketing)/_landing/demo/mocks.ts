@@ -69,19 +69,20 @@ export function mockWoohoo(overrides: Partial<MockWoohoo> = {}): MockWoohoo {
 
 /* ============== Hero post-save card ============== */
 
-export const heroWoohoo: MockWoohoo = mockWoohoo({
-    peerId: "indie_marketer",
-    followUpAt: daysFromNow(3),
-    lastSavedAt: new Date(),
-    lastInteractionAt: hoursAgo(2),
-    timeline: [
-        mockTimelineItem({
-            contentText:
-                "I'll try Woohoo this weekend and send feedback, my team's drowning in Reddit leads rn. Also — do you support LinkedIn?",
-            interactionAt: hoursAgo(2),
-        }),
-    ],
-});
+export const getHeroWoohoo = (): MockWoohoo =>
+    mockWoohoo({
+        peerId: "indie_marketer",
+        followUpAt: daysFromNow(3),
+        lastSavedAt: new Date(),
+        lastInteractionAt: hoursAgo(2),
+        timeline: [
+            mockTimelineItem({
+                contentText:
+                    "Hey — saw your comment in r/SaaS. I'll try Woohoo this weekend and send feedback, my team's drowning in Reddit leads rn. Also — do you support LinkedIn?",
+                interactionAt: hoursAgo(2),
+            }),
+        ],
+    });
 
 /* ============== How It Works — step 2 mini-thread ============== */
 
@@ -106,16 +107,6 @@ export const stepTwoMessages: Array<{
     },
 ];
 
-export const stepTwoComment = {
-    item: mockTimelineItem({
-        type: "comment" as const,
-        contentText: "perfect. DMing you about this now.",
-        sourceUrl: "https://reddit.com/r/SaaS/comments/demo/abc",
-        interactionAt: hoursAgo(3),
-    }),
-    isFromPeer: true,
-};
-
 /* ============== How It Works — step 3 follow-up chip ============== */
 
 export const stepThreeFollowUp = daysFromNow(0);
@@ -129,7 +120,8 @@ export const threadWoohoo = {
     peerName: null,
     chatUrl: "https://www.reddit.com/message/messages/demo",
     followUpAt: daysFromNow(3),
-    lastInteractionAt: hoursAgo(2),
+    lastInteractionAt: hoursAgo(13),
+    lastSavedAt: hoursAgo(1),
 };
 
 export const threadDms: TimelineItem[] = [
@@ -181,7 +173,7 @@ export const dashboardToday: MockWoohoo[] = [
         timeline: [
             mockTimelineItem({
                 contentText:
-                    "I'll try Woohoo this weekend and send feedback, my team's drowning in Reddit leads rn.",
+                    "Hey — saw your comment in r/SaaS. I'll try Woohoo this weekend and send feedback, my team's drowning in Reddit leads rn. Also — do you support LinkedIn?",
                 interactionAt: hoursAgo(20),
             }),
         ],

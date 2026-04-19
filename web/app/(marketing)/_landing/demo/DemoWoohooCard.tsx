@@ -40,7 +40,7 @@ export function DemoWoohooCard({
     return (
         <div
             className={cn(
-                "block rounded-lg border border-border bg-card p-4",
+                "block rounded-lg border border-border bg-card p-4 hover:bg-chip-bg!",
                 isOverdue && "border-l-4 border-l-destructive/80",
             )}
         >
@@ -77,7 +77,7 @@ export function DemoWoohooCard({
                         )}
                     </div>
 
-                    <p className="text-sm text-muted-foreground italic mt-1 mb-2 line-clamp-2 min-h-[2.5rem]">
+                    <p className="text-sm text-muted-foreground italic mt-1 mb-2 line-clamp-2 min-h-10">
                         {preview ? <>&ldquo;{preview}&rdquo;</> : null}
                     </p>
 

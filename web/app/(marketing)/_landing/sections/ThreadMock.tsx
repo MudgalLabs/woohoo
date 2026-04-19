@@ -1,7 +1,8 @@
 "use client";
 
-import { ExternalLink, SquareArrowOutUpRight } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 
+import type { TimelineItem } from "@/app/generated/prisma/client";
 import {
     Avatar,
     AvatarFallback,
@@ -16,7 +17,19 @@ import { peerInitial, timeAgo } from "@/app/(app)/my-woohoos/WoohooCard";
 import { DemoChatBubble } from "../demo/DemoChatBubble";
 import { DemoCommentCard } from "../demo/DemoCommentCard";
 import { DemoFollowUpChip } from "../demo/DemoFollowUpChip";
-import { threadWoohoo, threadDms, threadComments } from "../demo/mocks";
+
+interface ThreadMockWoohoo {
+    platform: "reddit";
+    peerId: string;
+    followUpAt: Date;
+    lastInteractionAt: Date;
+}
+
+interface ThreadMockProps {
+    woohoo: ThreadMockWoohoo;
+    dms: TimelineItem[];
+    comments: TimelineItem[];
+}
 
 function dayLabel(date: Date): string {
     const d = new Date(date);
@@ -39,7 +52,11 @@ function sameDay(a: Date, b: Date): boolean {
     );
 }
 
-export function ThreadMock() {
+export function ThreadMock({
+    woohoo: threadWoohoo,
+    dms: threadDms,
+    comments: threadComments,
+}: ThreadMockProps) {
     const handle = peerHandle(threadWoohoo.platform, threadWoohoo.peerId);
     const initial = peerInitial(threadWoohoo.platform, threadWoohoo.peerId);
     const totalInteractions = threadDms.length + threadComments.length;
@@ -61,8 +78,8 @@ export function ThreadMock() {
                     </div>
                     <div style={{ height: 14 }} />
                     <h2>
-                        Every person,{" "}
-                        <span className="italic-serif">one</span> place.
+                        Every person, <span className="italic-serif">one</span>{" "}
+                        place.
                     </h2>
                     <p>
                         Open a Woohoo and you see the whole relationship — DMs
@@ -95,13 +112,10 @@ export function ThreadMock() {
 
                                 <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
                                     <span>
-                                        {threadDms.length} DMs ·{" "}
-                                        {threadComments.length} comments
-                                    </span>
-                                    <span aria-hidden>·</span>
-                                    <span>
                                         Last interaction{" "}
-                                        {timeAgo(threadWoohoo.lastInteractionAt)}
+                                        {timeAgo(
+                                            threadWoohoo.lastInteractionAt,
+                                        )}
                                     </span>
                                     <span aria-hidden>·</span>
                                     <a
@@ -195,10 +209,7 @@ export function ThreadMock() {
 
                     <p className="thread-caption">
                         {totalInteractions} saved interactions with {handle}.
-                        One click back to the original Reddit post or DM.
-                        <span className="inline-flex items-center gap-1 ml-1">
-                            <SquareArrowOutUpRight size={11} strokeWidth={2} />
-                        </span>
+                        One click back to the original comment or DM.
                     </p>
                 </div>
             </div>

@@ -1,12 +1,7 @@
 import { Bookmark } from "lucide-react";
 import { DemoChatBubble } from "../demo/DemoChatBubble";
-import { DemoCommentCard } from "../demo/DemoCommentCard";
 import { DemoFollowUpChip } from "../demo/DemoFollowUpChip";
-import {
-    stepTwoMessages,
-    stepTwoComment,
-    stepThreeFollowUp,
-} from "../demo/mocks";
+import { stepTwoMessages, stepThreeFollowUp } from "../demo/mocks";
 
 export function HowItWorks() {
     return (
@@ -43,8 +38,8 @@ export function HowItWorks() {
                         <div className="illo">
                             <div className="mini-msg">
                                 <div>
-                                    <span className="who">u/ship_it_pls</span>{" "}
-                                    · r/SaaS · 3h
+                                    <span className="who">u/ship_it_pls</span> ·
+                                    r/SaaS · 3h
                                 </div>
                                 <div style={{ marginTop: 6 }}>
                                     ...would kill for a tool like this. does it
@@ -63,8 +58,8 @@ export function HowItWorks() {
                         <p>
                             Every DM and comment from one person rolls into a
                             single{" "}
-                            <span className="italic-serif">Woohoo</span> —
-                            messages on one tab, comments on another, one
+                            <span className="italic-serif text-lg">Woohoo</span>{" "}
+                            — messages on one tab, comments on another, one
                             person per place.
                         </p>
                         <div className="illo illo-stack">
@@ -75,10 +70,6 @@ export function HowItWorks() {
                             <DemoChatBubble
                                 item={stepTwoMessages[1].item}
                                 isFromPeer={stepTwoMessages[1].isFromPeer}
-                            />
-                            <DemoCommentCard
-                                item={stepTwoComment.item}
-                                isFromPeer={stepTwoComment.isFromPeer}
                             />
                         </div>
                     </div>

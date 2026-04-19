@@ -171,7 +171,7 @@ export default async function DashboardPage() {
                     emptyText="Nothing due today — enjoy the quiet."
                     emptyIcon={Coffee}
                     countsMap={countsMap}
-                    className="order-2 lg:order-none"
+                    className="order-2 lg:order-0"
                 />
                 <DashboardSection
                     heading="Overdue"
@@ -181,16 +181,16 @@ export default async function DashboardPage() {
                     emptyIcon={CheckCircle2}
                     variant="overdue"
                     countsMap={countsMap}
-                    className="order-1 lg:order-none"
+                    className="order-1 lg:order-0"
                 />
                 <DashboardSection
-                    heading="Might go cold"
+                    heading="Going cold"
                     subheading="No follow-up set and no new interaction in the last 7 days."
                     woohoos={goingCold}
                     emptyText="Everything looks warm. Keep it up."
                     emptyIcon={Flame}
                     countsMap={countsMap}
-                    className="order-3 md:col-span-2 lg:col-span-1 lg:order-none"
+                    className="order-3 md:col-span-2 lg:col-span-1 lg:order-0"
                 />
             </div>
         </div>

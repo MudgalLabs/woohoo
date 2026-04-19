@@ -27,7 +27,7 @@ export function followUpLabel(date: Date | string): string {
     if (diff === 1) return "Follow up tomorrow";
     if (diff === -1) return "Overdue yesterday";
     if (diff > 1) return `Follow up in ${diff}d`;
-    return `Overdue ${-diff}d`;
+    return `Overdue by ${-diff}d`;
 }
 
 export function timeAgo(date: Date | string): string {
@@ -114,7 +114,7 @@ export function WoohooCard({
                         )}
                     </div>
 
-                    <p className="text-sm text-muted-foreground italic mt-1 mb-2 line-clamp-2 min-h-[2.5rem]">
+                    <p className="text-sm text-muted-foreground italic mt-1 mb-2 line-clamp-2 min-h-10">
                         {preview ? <>&ldquo;{preview}&rdquo;</> : null}
                     </p>
 

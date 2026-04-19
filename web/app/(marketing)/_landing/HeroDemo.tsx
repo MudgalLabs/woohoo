@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { Bookmark } from "lucide-react";
-import { RedditGlyph } from "./RedditGlyph";
+import type { TimelineItem, Woohoo } from "@/app/generated/prisma/client";
 import { DemoWoohooCard } from "./demo/DemoWoohooCard";
-import { heroWoohoo } from "./demo/mocks";
+import { PlatformIcon } from "@/components/PlatformIcon";
 
 const PARTICLES = Array.from({ length: 14 }, (_, i) => {
     const a = (i / 14) * Math.PI * 2;
@@ -19,7 +19,11 @@ const PARTICLES = Array.from({ length: 14 }, (_, i) => {
     };
 });
 
-export function HeroDemo() {
+interface HeroDemoProps {
+    woohoo: Woohoo & { timeline: TimelineItem[] };
+}
+
+export function HeroDemo({ woohoo }: HeroDemoProps) {
     const [saved, setSaved] = useState(false);
 
     function handleSave() {
@@ -32,10 +36,9 @@ export function HeroDemo() {
         <div className={`demo-stage ${saved ? "is-saved" : ""}`}>
             <div className="reddit-panel">
                 <div className="reddit-top">
-                    <RedditGlyph />
-                    <span>u/</span>
-                    <span className="sub">indie_marketer</span>
-                    <span>· 2h · direct message</span>
+                    <PlatformIcon platform="reddit" />
+                    <span className="sub">u/indie_marketer</span>
+                    <span>· 2h ago · DM</span>
                 </div>
                 <div className="reddit-msg">
                     Hey — saw your comment in r/SaaS.{" "}
@@ -96,7 +99,7 @@ export function HeroDemo() {
 
             <div className="thread-preview" aria-hidden={!saved}>
                 <DemoWoohooCard
-                    woohoo={heroWoohoo}
+                    woohoo={woohoo}
                     counts={{ dm: 1, comment: 0 }}
                 />
             </div>
