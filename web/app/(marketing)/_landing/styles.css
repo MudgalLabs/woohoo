@@ -219,7 +219,6 @@
 }
 .landing .hero-sub .mark {
     background: linear-gradient(180deg, transparent 60%, var(--highlight) 60%);
-    padding: 0 4px;
     border-radius: 2px;
 }
 .landing .hero h1 .punch {

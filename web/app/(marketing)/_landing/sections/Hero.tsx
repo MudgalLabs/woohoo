@@ -23,9 +23,9 @@ export function Hero() {
                     </h1>
 
                     <p className="hero-sub">
-                        Capture <b>messagess and comments</b>, organize them by
-                        person, and{" "}
-                        <span className="mark">follow up when it matters.</span>
+                        Capture messages and comments. Organized by person.
+                        <br />
+                        <span className="mark">Follow up</span> when it matters.
                     </p>
 
                     <div className="hero-cta">

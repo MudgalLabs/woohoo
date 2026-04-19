@@ -17,7 +17,7 @@ export function Nav({
 }: NavProps) {
     return (
         <nav className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-md">
-            <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
+            <div className="mx-auto flex max-w-300 items-center justify-between px-4 py-4">
                 <div>
                     <Logo />
                 </div>
