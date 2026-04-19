@@ -16,30 +16,3 @@ export function RedditGlyph({ size = 14 }: { size?: number }) {
     );
 }
 
-export function Flourish() {
-    return (
-        <svg
-            className="flourish"
-            width="120"
-            height="60"
-            viewBox="0 0 120 60"
-            fill="none"
-            aria-hidden
-        >
-            <path
-                d="M4 40 C 20 8, 50 8, 66 30 S 108 50, 116 20"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                fill="none"
-            />
-            <path
-                d="M112 16 L 116 20 L 112 24"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                fill="none"
-            />
-        </svg>
-    );
-}

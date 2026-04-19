@@ -26,10 +26,10 @@
     --radius-md: 12px;
     --radius-lg: 20px;
     --radius-xl: 28px;
-    --shadow-card: 0 1px 0 rgba(0, 0, 0, 0.04),
-        0 12px 30px -12px rgba(20, 14, 8, 0.18);
-    --shadow-pop: 0 4px 0 rgba(0, 0, 0, 0.05),
-        0 24px 60px -20px rgba(20, 14, 8, 0.25);
+    --shadow-card:
+        0 1px 0 rgba(0, 0, 0, 0.04), 0 12px 30px -12px rgba(20, 14, 8, 0.18);
+    --shadow-pop:
+        0 4px 0 rgba(0, 0, 0, 0.05), 0 24px 60px -20px rgba(20, 14, 8, 0.25);
     background: var(--bg);
     color: var(--ink);
     font-size: 16px;
@@ -142,8 +142,12 @@
     font-size: 14px;
     font-weight: 500;
     border: 1px solid transparent;
-    transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease,
-        border-color 0.15s ease, box-shadow 0.15s ease;
+    transition:
+        transform 0.15s ease,
+        background 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
     white-space: nowrap;
     cursor: pointer;
     font-family: var(--font-sans);
@@ -154,7 +158,8 @@
 .landing .btn-primary {
     background: var(--accent);
     color: var(--accent-ink);
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08),
+    box-shadow:
+        0 1px 0 rgba(0, 0, 0, 0.08),
         0 10px 24px -12px color-mix(in srgb, var(--accent) 70%, transparent);
 }
 .landing .btn-primary:hover {
@@ -180,6 +185,12 @@
 .landing .btn-arrow:hover::after {
     transform: translateX(3px);
 }
+.landing .btn-icon {
+    transition: transform 0.2s ease;
+}
+.landing .btn:hover .btn-icon {
+    transform: translateX(3px);
+}
 
 /* ---------- HERO ---------- */
 .landing .hero {
@@ -203,11 +214,7 @@
     color: var(--ink-3);
 }
 .landing .hero h1 .mark {
-    background: linear-gradient(
-        180deg,
-        transparent 60%,
-        var(--highlight) 60%
-    );
+    background: linear-gradient(180deg, transparent 60%, var(--highlight) 60%);
     padding: 0 4px;
     border-radius: 2px;
 }
@@ -299,14 +306,10 @@
     font-size: 15px;
     line-height: 1.5;
     padding-right: 12px;
-    padding-bottom: 56px;
+    padding-bottom: 104px;
 }
 .landing .reddit-msg .highlight {
-    background: linear-gradient(
-        180deg,
-        transparent 62%,
-        var(--highlight) 62%
-    );
+    background: linear-gradient(180deg, transparent 62%, var(--highlight) 62%);
 }
 .landing .reddit-meta {
     margin-top: 10px;
@@ -357,7 +360,9 @@
     border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
     cursor: pointer;
     opacity: 1;
-    transition: background 0.16s ease, transform 0.16s ease,
+    transition:
+        background 0.16s ease,
+        transform 0.16s ease,
         border-color 0.16s ease;
 }
 .landing .save-floater:hover {
@@ -369,31 +374,43 @@
     border-color: transparent;
 }
 
-/* Handwritten affordance "try it →" */
+/* Handwritten affordance: label + hand-drawn curly arrow pointing at the
+   save button. The save-hint's bottom-right corner is anchored to the
+   button's top-left corner so the rotated arrow's tip lands on it. */
 .landing .save-hint {
     position: absolute;
-    right: 54px;
-    bottom: 14px;
+    right: 44px; /* = button's left edge */
+    bottom: 44px; /* = button's top edge */
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     gap: 4px;
-    color: var(--accent);
-    transform: rotate(-4deg);
+    color: var(--ink);
     pointer-events: none;
-    transition: opacity 0.25s ease, transform 0.25s ease;
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
     line-height: 1;
 }
 .landing .save-hint .hand {
     font-size: 22px;
     line-height: 1;
     white-space: nowrap;
+    transform: rotate(-3deg);
+    transform-origin: left bottom;
 }
-.landing .save-hint svg {
-    margin-top: 2px;
+.landing .save-hint-arrow {
+    /* Original SVG points up-left from its bottom-right tail.
+       Rotate 180deg so the arrow head ends at the SVG's bottom-right,
+       which is co-located with the button's top-left corner. */
+    transform: rotate(180deg);
+    flex-shrink: 0;
+    width: 36px;
+    height: 46px;
+    color: var(--ink);
 }
 .landing .save-hint.is-gone {
     opacity: 0;
-    transform: rotate(-4deg) translateX(-6px);
+    transform: translateX(-6px);
 }
 @keyframes landing-save-ping {
     0% {
@@ -436,7 +453,8 @@
     align-items: center;
     transform: translateY(14px);
     opacity: 0;
-    transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transition:
+        transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
         opacity 0.3s ease;
 }
 .landing .demo-stage.is-saved .thread-preview {
@@ -474,8 +492,7 @@
     font-size: 12px;
     font-family: var(--font-mono);
     color: var(--ink);
-    border: 1px solid
-        color-mix(in srgb, var(--highlight) 80%, var(--line));
+    border: 1px solid color-mix(in srgb, var(--highlight) 80%, var(--line));
 }
 
 /* ---------- STRIP ---------- */
@@ -513,11 +530,7 @@
     max-width: 780px;
 }
 .landing .section-head h2 .mark {
-    background: linear-gradient(
-        180deg,
-        transparent 60%,
-        var(--highlight) 60%
-    );
+    background: linear-gradient(180deg, transparent 60%, var(--highlight) 60%);
     padding: 0 4px;
 }
 .landing .section-head h2 .muted {

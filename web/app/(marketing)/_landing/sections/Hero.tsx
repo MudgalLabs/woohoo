@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { Zap } from "lucide-react";
-import { Flourish } from "../RedditGlyph";
+import { ArrowRight, Zap } from "lucide-react";
 import { HeroDemo } from "../HeroDemo";
 
 export function Hero() {
@@ -8,7 +7,6 @@ export function Hero() {
         <section className="hero">
             <div className="wrap hero-grid">
                 <div className="hero-copy">
-                    <Flourish />
                     <div className="eyebrow">
                         <span className="dot">●</span> a social CRM for indie
                         founders
@@ -34,9 +32,14 @@ export function Hero() {
                     <div className="hero-cta">
                         <Link
                             href="/sign-up"
-                            className="btn btn-primary btn-lg btn-arrow"
+                            className="btn btn-primary btn-lg"
                         >
                             Start free
+                            <ArrowRight
+                                size={16}
+                                strokeWidth={2.5}
+                                className="btn-icon"
+                            />
                         </Link>
                         <Link
                             href="/extension"
@@ -47,12 +50,6 @@ export function Hero() {
                         </Link>
                     </div>
                     <div className="hero-note">
-                        <div className="avatars">
-                            <span style={{ background: "#E5463B" }} />
-                            <span style={{ background: "#F6D45B" }} />
-                            <span style={{ background: "#2F7A4B" }} />
-                            <span style={{ background: "#1A1512" }} />
-                        </div>
                         <span>
                             Open source · AGPL · built by a founder, in public
                         </span>

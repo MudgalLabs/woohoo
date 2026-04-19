@@ -67,28 +67,26 @@ export function HeroDemo() {
                     className={`save-hint ${saved ? "is-gone" : ""}`}
                     aria-hidden={saved}
                 >
-                    <span className="hand">try it</span>
+                    <span className="hand">Save this Reddit DM</span>
                     <svg
-                        width="30"
-                        height="22"
-                        viewBox="0 0 30 22"
+                        className="save-hint-arrow"
+                        width="48"
+                        height="60"
+                        viewBox="0 0 114 144"
                         fill="none"
                         aria-hidden
                     >
                         <path
-                            d="M2 14 C 10 4, 20 4, 26 12"
+                            d="M111.3 141.183C98.6856 139.08 62.6293 133.497 61.7 113.983C61.3133 105.863 65.3815 94.4969 72.1 89.2715C86.5279 78.05 110.476 93.0215 90.5889 106.694C79.4361 114.361 63.501 108.142 52.2778 103.583C35.7341 96.8617 27.8565 83.7242 20.9889 68.1159C17.5012 60.1893 9.72805 19.9966 12.1 21.1826"
                             stroke="currentColor"
-                            strokeWidth="2"
+                            strokeWidth="5"
                             strokeLinecap="round"
-                            fill="none"
                         />
                         <path
-                            d="M22 8 L 26 12 L 22 16"
+                            d="M7.30005 6.78264C9.69761 8.08797 27.7313 18.6736 25.7 17.0937C23.0414 15.0259 20.0849 13.1675 17.7 10.7826C14.8785 7.96098 11.3893 5.89418 8.90002 2.78258C6.71568 0.0521464 2.5 17.9588 2.5 21.1827"
                             stroke="currentColor"
-                            strokeWidth="2"
+                            strokeWidth="5"
                             strokeLinecap="round"
-                            strokeLinejoin="round"
-                            fill="none"
                         />
                     </svg>
                 </div>
