@@ -3,5 +3,6 @@ export type {
     AuthSession,
     RedditMessage,
     StatsResponse,
+    ApiError,
 } from "./types";
 export { WoohooApiClient } from "./client";

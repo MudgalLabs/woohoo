@@ -3,6 +3,11 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionFromRequest } from "@/lib/get-session-from-request";
 import { Platform, TimelineItemType } from "@/app/generated/prisma/client";
+import {
+    assertCanActivateWoohoo,
+    PlanLimitError,
+    getUserPlan,
+} from "@/lib/plans";
 
 interface SaveItemBody {
     platform: string;
@@ -52,6 +57,11 @@ export async function POST(request: Request) {
     let woohoo = null as Awaited<ReturnType<typeof prisma.woohoo.upsert>> | null;
     const isFounderAuthored =
         !!founderExternalId && item.authorId === founderExternalId;
+
+    // Pre-resolve the target Woohoo before any writes so we can gate
+    // plan-limit activations (new Woohoos + unarchive-via-save).
+    let ancestorMatchId: string | null = null;
+    let ancestorMatchArchived = false;
     if (
         item.type === "comment" &&
         isFounderAuthored &&
@@ -70,20 +80,63 @@ export async function POST(request: Request) {
                 include: { woohoo: true },
             });
             if (match) {
-                woohoo = await prisma.woohoo.update({
-                    where: { id: match.woohoo.id },
-                    data: {
-                        ...(chatUrl ? { chatUrl } : {}),
-                        ...(followUpAt !== undefined
-                            ? { followUpAt: followUpAt ? new Date(followUpAt) : null }
-                            : {}),
-                        lastSavedAt: now,
-                        archivedAt: null,
-                    },
-                });
+                ancestorMatchId = match.woohoo.id;
+                ancestorMatchArchived = match.woohoo.archivedAt !== null;
                 break;
             }
         }
+    }
+
+    const existingByPeer = ancestorMatchId
+        ? null
+        : await prisma.woohoo.findUnique({
+              where: {
+                  userId_platform_peerId: {
+                      userId: session.user.id,
+                      platform: Platform[platformValue],
+                      peerId,
+                  },
+              },
+          });
+
+    const willActivate = ancestorMatchId
+        ? ancestorMatchArchived
+        : existingByPeer
+          ? existingByPeer.archivedAt !== null
+          : true;
+
+    if (willActivate) {
+        try {
+            await assertCanActivateWoohoo(session.user.id);
+        } catch (err) {
+            if (err instanceof PlanLimitError) {
+                const plan = await getUserPlan(session.user.id);
+                return NextResponse.json(
+                    {
+                        error: err.message,
+                        code: "plan_limit_reached",
+                        limit: err.limit,
+                        planName: plan.name,
+                    },
+                    { status: 403 },
+                );
+            }
+            throw err;
+        }
+    }
+
+    if (ancestorMatchId) {
+        woohoo = await prisma.woohoo.update({
+            where: { id: ancestorMatchId },
+            data: {
+                ...(chatUrl ? { chatUrl } : {}),
+                ...(followUpAt !== undefined
+                    ? { followUpAt: followUpAt ? new Date(followUpAt) : null }
+                    : {}),
+                lastSavedAt: now,
+                archivedAt: null,
+            },
+        });
     }
 
     if (!woohoo) {

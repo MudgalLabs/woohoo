@@ -55,9 +55,9 @@ export function DeleteWoohooButton({ woohooId }: DeleteWoohooButtonProps) {
 
     return (
         <AlertDialog open={open} onOpenChange={setOpen}>
-            <AlertDialogTrigger>
-                <Tooltip>
-                    <TooltipTrigger asChild>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <AlertDialogTrigger asChild>
                         <Button
                             variant="ghost"
                             size="icon"
@@ -65,10 +65,10 @@ export function DeleteWoohooButton({ woohooId }: DeleteWoohooButtonProps) {
                         >
                             <Trash2 size={16} />
                         </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Delete Woohoo</TooltipContent>
-                </Tooltip>
-            </AlertDialogTrigger>
+                    </AlertDialogTrigger>
+                </TooltipTrigger>
+                <TooltipContent>Delete Woohoo</TooltipContent>
+            </Tooltip>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>Delete this Woohoo?</AlertDialogTitle>

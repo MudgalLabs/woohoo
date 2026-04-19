@@ -5,6 +5,7 @@ import type {
     SaveItemResponse,
     CheckSavedResponse,
     StatsResponse,
+    ApiError,
 } from "./types";
 
 export class WoohooApiClient {
@@ -93,7 +94,7 @@ export class WoohooApiClient {
 
     async saveItem(
         payload: SaveItemPayload,
-    ): Promise<SaveItemResponse | { error: string }> {
+    ): Promise<SaveItemResponse | ApiError> {
         const res = await fetch(`${this.baseUrl}/api/woohoos/save`, {
             method: "POST",
             headers: { "Content-Type": "application/json", ...this.authHeaders() },
@@ -108,8 +109,16 @@ export class WoohooApiClient {
         if (!res.ok) {
             const body = (await res.json().catch(() => ({}))) as {
                 error?: string;
+                code?: string;
+                limit?: number;
+                planName?: string;
             };
-            return { error: body.error ?? "Save failed." };
+            return {
+                error: body.error ?? "Save failed.",
+                code: body.code,
+                limit: body.limit,
+                planName: body.planName,
+            };
         }
 
         return res.json() as Promise<SaveItemResponse>;

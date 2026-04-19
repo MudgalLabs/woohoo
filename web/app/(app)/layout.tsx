@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/get-session";
+import { getActiveWoohooCount, getUserPlan } from "@/lib/plans";
 import {
     Sidebar,
     SidebarContent,
@@ -14,6 +15,7 @@ import {
 import { AppNav } from "./AppNav";
 import { AppHeader } from "./AppHeader";
 import { AppSidebarFooter } from "./AppSidebarFooter";
+import { SidebarUsage } from "./SidebarUsage";
 import { Logo } from "@/app/components/brand/Logo";
 
 export default async function AppLayout({
@@ -26,6 +28,11 @@ export default async function AppLayout({
 
     const cookieStore = await cookies();
     const defaultOpen = cookieStore.get("sidebar_state")?.value !== "false";
+
+    const [plan, activeCount] = await Promise.all([
+        getUserPlan(session.user.id),
+        getActiveWoohooCount(session.user.id),
+    ]);
 
     return (
         <SidebarProvider defaultOpen={defaultOpen}>
@@ -50,6 +57,12 @@ export default async function AppLayout({
                         </SidebarGroupContent>
                     </SidebarGroup>
                 </SidebarContent>
+
+                <SidebarUsage
+                    planName={plan.name}
+                    activeCount={activeCount}
+                    limit={plan.activeWoohooLimit}
+                />
 
                 <SidebarRail />
                 <AppSidebarFooter

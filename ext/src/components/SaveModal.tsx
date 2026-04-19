@@ -265,7 +265,11 @@ export function SaveModal(props: SaveModalProps) {
 
         if ("error" in result) {
             setSaving(false);
-            setError(result.error);
+            const msg =
+                result.code === "plan_limit_reached"
+                    ? `You're at the ${result.planName ?? "Free"} plan limit of ${result.limit ?? 100} active Woohoos. Archive one at woohoo.to/my-woohoos or upgrade to Pro.`
+                    : result.error;
+            setError(msg);
             return;
         }
 

@@ -57,6 +57,15 @@ export interface SaveItemResponse {
     };
 }
 
+export interface ApiError {
+    error: string;
+    // "plan_limit_reached" when the save/unarchive was blocked by the user's
+    // active-Woohoo cap. Clients can special-case to nudge toward upgrade.
+    code?: string;
+    limit?: number;
+    planName?: string;
+}
+
 export interface StatsResponse {
     totalWoohoos: number;
     followUpToday: number;

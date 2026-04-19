@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
 import { getSessionFromRequest } from "@/lib/get-session-from-request";
+import {
+    assertCanActivateWoohoo,
+    PlanLimitError,
+    getUserPlan,
+} from "@/lib/plans";
 
 export async function GET(
     request: Request,
@@ -51,6 +56,28 @@ export async function PATCH(
 
     if (!woohoo) {
         return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    // Unarchiving counts as activating — gate on plan limit.
+    const isUnarchiving = body.archived === false && woohoo.archivedAt !== null;
+    if (isUnarchiving) {
+        try {
+            await assertCanActivateWoohoo(session.user.id);
+        } catch (err) {
+            if (err instanceof PlanLimitError) {
+                const plan = await getUserPlan(session.user.id);
+                return NextResponse.json(
+                    {
+                        error: err.message,
+                        code: "plan_limit_reached",
+                        limit: err.limit,
+                        planName: plan.name,
+                    },
+                    { status: 403 },
+                );
+            }
+            throw err;
+        }
     }
 
     const updated = await prisma.woohoo.update({

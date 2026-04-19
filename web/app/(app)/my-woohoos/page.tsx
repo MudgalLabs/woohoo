@@ -35,11 +35,11 @@ function TabLink({
             )}
         >
             {label}
-            {count > 0 && (
+            {
                 <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary/20 px-1.5 text-xs font-medium text-secondary-foreground">
                     {count}
                 </span>
-            )}
+            }
         </Link>
     );
 }

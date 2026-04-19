@@ -50,8 +50,15 @@ export function ArchiveWoohooButton({
         if (!res.ok) {
             const body = (await res.json().catch(() => ({}))) as {
                 error?: string;
+                code?: string;
+                limit?: number;
+                planName?: string;
             };
-            setError(body.error ?? "Failed to update.");
+            const msg =
+                body.code === "plan_limit_reached"
+                    ? `You're at the ${body.planName ?? "Free"} plan limit of ${body.limit ?? 100} active Woohoos. Archive another one or upgrade to Pro.`
+                    : (body.error ?? "Failed to update.");
+            setError(msg);
             setSaving(false);
             return;
         }
@@ -76,9 +83,9 @@ export function ArchiveWoohooButton({
 
     return (
         <AlertDialog open={open} onOpenChange={setOpen}>
-            <AlertDialogTrigger>
-                <Tooltip>
-                    <TooltipTrigger asChild>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <AlertDialogTrigger asChild>
                         <Button
                             variant="ghost"
                             size="icon"
@@ -86,10 +93,10 @@ export function ArchiveWoohooButton({
                         >
                             <Icon size={16} />
                         </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>{title}</TooltipContent>
-                </Tooltip>
-            </AlertDialogTrigger>
+                    </AlertDialogTrigger>
+                </TooltipTrigger>
+                <TooltipContent>{title}</TooltipContent>
+            </Tooltip>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>{dialogTitle}</AlertDialogTitle>
