@@ -11,6 +11,16 @@ export function Footer() {
                         <p className="mt-3 max-w-xs text-sm text-muted-foreground leading-relaxed">
                             Built with ❤️️️ by Mudgal Labs
                         </p>
+                        <p className="mt-3 max-w-xs text-sm text-muted-foreground leading-relaxed">
+                            Give feedback, request a feature, report a bug or
+                            just say hi on{" "}
+                            <a
+                                href="mailto:hey@woohoo.to"
+                                className=" transition"
+                            >
+                                hey@woohoo.to
+                            </a>
+                        </p>
                     </div>
 
                     <div>
@@ -100,10 +110,10 @@ export function Footer() {
                 </div>
 
                 <div className="mt-10 flex flex-col gap-2 border-t border-border pt-6 text-xs text-muted-foreground md:flex-row md:justify-between">
-                    <span>
-                        © {new Date().getFullYear()} Mudgal Labs · AGPL v3
-                    </span>
-                    <span>built by a founder, in public</span>
+                    <div>
+                        <span>© {new Date().getFullYear()} Mudgal Labs</span>
+                    </div>
+                    <span>All we can do is try.</span>
                 </div>
             </div>
         </footer>
