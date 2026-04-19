@@ -1,29 +1,66 @@
-function DashItem({
-    i,
-    name,
-    why,
-    tag,
-    tagLabel,
+import { cn } from "@/lib/utils";
+import { DemoWoohooCard } from "../demo/DemoWoohooCard";
+import type { Woohoo, TimelineItem } from "@/app/generated/prisma/client";
+import { dashboardToday, dashboardOverdue, dashboardCold } from "../demo/mocks";
+
+type MockWoohoo = Woohoo & { timeline: TimelineItem[] };
+
+function DemoDashboardSection({
+    heading,
+    subheading,
+    woohoos,
+    variant = "default",
+    className,
 }: {
-    i: string;
-    name: string;
-    why: string;
-    tag: "hot" | "warm" | "old";
-    tagLabel: string;
+    heading: string;
+    subheading: string;
+    woohoos: MockWoohoo[];
+    variant?: "default" | "overdue";
+    className?: string;
 }) {
     return (
-        <div className="dash-item">
-            <div className="av">{i}</div>
-            <div>
-                <div className="who">{name}</div>
-                <div className="why">{why}</div>
+        <section className={className}>
+            <div className="mb-3">
+                <h2 className="text-sm font-semibold text-foreground">
+                    {heading}
+                </h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                    {subheading}
+                </p>
             </div>
-            <div className={`tag ${tag}`}>{tagLabel}</div>
-        </div>
+            <div className="flex flex-col gap-3">
+                {woohoos.map((w) => (
+                    <DemoWoohooCard
+                        key={w.id}
+                        woohoo={w}
+                        counts={{ dm: w.timeline.length, comment: 0 }}
+                        variant={variant}
+                    />
+                ))}
+            </div>
+        </section>
     );
 }
 
 export function Dashboard() {
+    const stats = [
+        {
+            count: dashboardToday.length,
+            label: "to follow up today",
+            emphasis: false,
+        },
+        {
+            count: dashboardOverdue.length,
+            label: "overdue",
+            emphasis: true,
+        },
+        {
+            count: dashboardCold.length,
+            label: "going cold",
+            emphasis: false,
+        },
+    ];
+
     return (
         <section className="section" id="dashboard">
             <div className="wrap">
@@ -34,113 +71,58 @@ export function Dashboard() {
                     <div style={{ height: 14 }} />
                     <h2>
                         Open Monday.{" "}
-                        <span className="italic-serif muted">
-                            Know exactly
-                        </span>{" "}
+                        <span className="italic-serif muted">Know exactly</span>{" "}
                         <span className="mark">who to reply to.</span>
                     </h2>
                     <p>
-                        Three piles, nothing else. No deals, no pipeline, no
-                        columns to configure. Just people you said you&rsquo;d
-                        follow up with.
+                        Three piles — follow up today, overdue, maybe getting
+                        cold. No configuring. No pipeline stages. Just people
+                        you said you&rsquo;d follow up with.
                     </p>
                 </div>
 
-                <div className="dash">
-                    <div className="dash-top">
-                        <div className="title">
-                            <span>Your Woohoos</span>
-                            <span className="date">Mon, Apr 22</span>
-                        </div>
-                        <div className="meta">42 active · 6 need you today</div>
-                    </div>
-                    <div className="dash-cols">
-                        <div className="dash-col today">
-                            <h5>
-                                Follow up today <span className="count">6</span>
-                            </h5>
-                            <DashItem
-                                i="I"
-                                name="u/indie_marketer"
-                                why="said they&rsquo;d try this weekend"
-                                tag="hot"
-                                tagLabel="hot"
-                            />
-                            <DashItem
-                                i="P"
-                                name="u/product_nerd"
-                                why="asked about team pricing"
-                                tag="hot"
-                                tagLabel="hot"
-                            />
-                            <DashItem
-                                i="S"
-                                name="u/ship_it_pls"
-                                why="waiting on LinkedIn eta"
-                                tag="warm"
-                                tagLabel="warm"
-                            />
-                            <DashItem
-                                i="K"
-                                name="u/kellybuilds"
-                                why="bug repro — DM reply"
-                                tag="warm"
-                                tagLabel="warm"
-                            />
-                        </div>
-                        <div className="dash-col overdue">
-                            <h5>
-                                Overdue <span className="count">3</span>
-                            </h5>
-                            <DashItem
-                                i="R"
-                                name="u/redditlurker42"
-                                why='4 days late · "I&rsquo;ll try Sun"'
-                                tag="hot"
-                                tagLabel="!"
-                            />
-                            <DashItem
-                                i="M"
-                                name="u/marketer_mike"
-                                why="2 days late · partnership"
-                                tag="warm"
-                                tagLabel="!"
-                            />
-                            <DashItem
-                                i="N"
-                                name="u/nothankyou"
-                                why="1 day late · feature req"
-                                tag="warm"
-                                tagLabel="!"
-                            />
-                        </div>
-                        <div className="dash-col cold">
-                            <h5>
-                                Maybe getting cold{" "}
-                                <span className="count">12</span>
-                            </h5>
-                            <DashItem
-                                i="J"
-                                name="u/jane_builds"
-                                why="no reply in 10 days"
-                                tag="old"
-                                tagLabel="cold"
-                            />
-                            <DashItem
-                                i="D"
-                                name="u/devdan"
-                                why="no reply in 14 days"
-                                tag="old"
-                                tagLabel="cold"
-                            />
-                            <DashItem
-                                i="F"
-                                name="u/fromscratch"
-                                why="no reply in 19 days"
-                                tag="old"
-                                tagLabel="cold"
-                            />
-                        </div>
+                <div className="dash-frame">
+                    <p className="text-sm text-muted-foreground mb-6">
+                        {stats.map((part, i) => (
+                            <span key={part.label}>
+                                {i > 0 && (
+                                    <span className="mx-2 text-border">·</span>
+                                )}
+                                <span
+                                    className={cn(
+                                        "text-base font-semibold tracking-tight",
+                                        part.emphasis
+                                            ? "text-destructive"
+                                            : "text-foreground",
+                                    )}
+                                >
+                                    {part.count}
+                                </span>{" "}
+                                <span>{part.label}</span>
+                            </span>
+                        ))}
+                    </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <DemoDashboardSection
+                            heading="Today"
+                            subheading="Woohoos you planned to follow up on today."
+                            woohoos={dashboardToday}
+                            className="order-2 lg:order-none"
+                        />
+                        <DemoDashboardSection
+                            heading="Overdue"
+                            subheading="Follow-up dates that have passed. Don't let these slip."
+                            woohoos={dashboardOverdue}
+                            variant="overdue"
+                            className="order-1 lg:order-none"
+                        />
+                        <DemoDashboardSection
+                            heading="Might go cold"
+                            subheading="No follow-up set and no new interaction in the last 7 days."
+                            woohoos={dashboardCold}
+                            className="order-3 md:col-span-2 lg:col-span-1 lg:order-none"
+                        />
                     </div>
                 </div>
             </div>

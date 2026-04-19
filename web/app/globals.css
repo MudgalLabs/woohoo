@@ -228,30 +228,34 @@
 }
 
 /* ===== Marketing scope — force-light tokens so Nav/Footer match Paper theme
-   regardless of the root .dark class. The landing body has its own palette. */
-.marketing-scope {
-    --background: oklch(0.9568 0.0119 79.7842);
-    --foreground: oklch(0.1972 0.0126 55.5458);
-    --card: oklch(0.9448 0.012 79.7837);
-    --card-foreground: oklch(0.1972 0.0126 55.5458);
-    --popover: oklch(0.9568 0.0119 79.7842);
-    --popover-foreground: oklch(0.1972 0.0126 55.5458);
-    --primary: oklch(0.5433 0.174 29.6967);
-    --primary-foreground: oklch(0.9568 0.0119 79.7842);
-    --secondary: oklch(0.4143 0.0474 63.439);
-    --secondary-foreground: oklch(0.9568 0.0119 79.7842);
-    --muted: oklch(0.9147 0.0149 80.7054);
-    --muted-foreground: oklch(0.4715 0.0274 81.982);
-    --accent: oklch(0.8369 0.0309 73.8461);
-    --accent-foreground: oklch(0.1972 0.0126 55.5458);
-    --destructive: oklch(0.5433 0.174 29.6967);
-    --destructive-foreground: oklch(0.9568 0.0119 79.7842);
-    --border: oklch(0.8079 0.023 80.6699);
-    --input: oklch(0.6575 0.026 79.6708);
-    --ring: oklch(0.5433 0.174 29.6967);
-    background: var(--background);
-    color: var(--foreground);
-    color-scheme: light;
+   regardless of the root .dark class. The landing body has its own palette.
+   Wrapped in @layer base so Tailwind utilities (@layer utilities, higher
+   priority) can override `color` on specific elements. */
+@layer base {
+    .marketing-scope {
+        --background: oklch(0.9568 0.0119 79.7842);
+        --foreground: oklch(0.1972 0.0126 55.5458);
+        --card: oklch(0.9448 0.012 79.7837);
+        --card-foreground: oklch(0.1972 0.0126 55.5458);
+        --popover: oklch(0.9568 0.0119 79.7842);
+        --popover-foreground: oklch(0.1972 0.0126 55.5458);
+        --primary: oklch(0.5433 0.174 29.6967);
+        --primary-foreground: oklch(0.9568 0.0119 79.7842);
+        --secondary: oklch(0.4143 0.0474 63.439);
+        --secondary-foreground: oklch(0.9568 0.0119 79.7842);
+        --muted: oklch(0.9147 0.0149 80.7054);
+        --muted-foreground: oklch(0.4715 0.0274 81.982);
+        --accent: oklch(0.8369 0.0309 73.8461);
+        --accent-foreground: oklch(0.1972 0.0126 55.5458);
+        --destructive: oklch(0.5433 0.174 29.6967);
+        --destructive-foreground: oklch(0.9568 0.0119 79.7842);
+        --border: oklch(0.8079 0.023 80.6699);
+        --input: oklch(0.6575 0.026 79.6708);
+        --ring: oklch(0.5433 0.174 29.6967);
+        background: var(--background);
+        color: var(--foreground);
+        color-scheme: light;
+    }
 }
 
 /* ===== Landing-page keyframes (used by (marketing)/_landing/styles.css) ===== */

@@ -24,6 +24,7 @@ function DashboardSection({
     emptyIcon,
     variant = "default",
     countsMap,
+    className,
 }: {
     heading: string;
     subheading: string;
@@ -32,9 +33,10 @@ function DashboardSection({
     emptyIcon: LucideIcon;
     variant?: "default" | "overdue";
     countsMap: Map<string, WoohooCounts>;
+    className?: string;
 }) {
     return (
-        <section>
+        <section className={className}>
             <div className="mb-3">
                 <h2 className="text-sm font-semibold text-foreground">
                     {heading}
@@ -129,18 +131,28 @@ export default async function DashboardPage() {
     }
 
     const now = new Date();
-    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const endOfToday = new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000 - 1);
+    const startOfToday = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+    );
+    const endOfToday = new Date(
+        startOfToday.getTime() + 24 * 60 * 60 * 1000 - 1,
+    );
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
     const today = allWoohoos.filter(
-        (w) => w.followUpAt && w.followUpAt >= startOfToday && w.followUpAt <= endOfToday,
+        (w) =>
+            w.followUpAt &&
+            w.followUpAt >= startOfToday &&
+            w.followUpAt <= endOfToday,
     );
     const overdue = allWoohoos.filter(
         (w) => w.followUpAt && w.followUpAt < startOfToday,
     );
     const goingCold = allWoohoos.filter(
-        (w) => !w.followUpAt && (!w.lastSavedAt || w.lastSavedAt < sevenDaysAgo),
+        (w) =>
+            !w.followUpAt && (!w.lastSavedAt || w.lastSavedAt < sevenDaysAgo),
     );
 
     return (
@@ -151,8 +163,16 @@ export default async function DashboardPage() {
                 goingCold={goingCold.length}
             />
 
-            {/* Mobile: stacked — overdue first (most urgent) */}
-            <div className="md:hidden space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <DashboardSection
+                    heading="Today"
+                    subheading="Woohoos you planned to follow up on today."
+                    woohoos={today}
+                    emptyText="Nothing due today — enjoy the quiet."
+                    emptyIcon={Coffee}
+                    countsMap={countsMap}
+                    className="order-2 lg:order-none"
+                />
                 <DashboardSection
                     heading="Overdue"
                     subheading="Follow-up dates that have passed. Don't let these slip."
@@ -161,53 +181,16 @@ export default async function DashboardPage() {
                     emptyIcon={CheckCircle2}
                     variant="overdue"
                     countsMap={countsMap}
+                    className="order-1 lg:order-none"
                 />
                 <DashboardSection
-                    heading="Today"
-                    subheading="Woohoos you planned to follow up on today."
-                    woohoos={today}
-                    emptyText="Nothing due today — enjoy the quiet."
-                    emptyIcon={Coffee}
-                    countsMap={countsMap}
-                />
-                <DashboardSection
-                    heading="Might be going cold"
+                    heading="Might go cold"
                     subheading="No follow-up set and no new interaction in the last 7 days."
                     woohoos={goingCold}
                     emptyText="Everything looks warm. Keep it up."
                     emptyIcon={Flame}
                     countsMap={countsMap}
-                />
-            </div>
-
-            {/* Desktop: Today + Overdue top row, Going cold full-width below */}
-            <div className="hidden md:block space-y-8">
-                <div className="grid grid-cols-2 gap-8">
-                    <DashboardSection
-                        heading="Today"
-                        subheading="Woohoos you planned to follow up on today."
-                        woohoos={today}
-                        emptyText="Nothing due today — enjoy the quiet."
-                        emptyIcon={Coffee}
-                        countsMap={countsMap}
-                    />
-                    <DashboardSection
-                        heading="Overdue"
-                        subheading="Follow-up dates that have passed. Don't let these slip."
-                        woohoos={overdue}
-                        emptyText="You're all caught up. Nice work."
-                        emptyIcon={CheckCircle2}
-                        variant="overdue"
-                        countsMap={countsMap}
-                    />
-                </div>
-                <DashboardSection
-                    heading="Might be going cold"
-                    subheading="No follow-up set and no new interaction in the last 7 days."
-                    woohoos={goingCold}
-                    emptyText="Everything looks warm. Keep it up."
-                    emptyIcon={Flame}
-                    countsMap={countsMap}
+                    className="order-3 md:col-span-2 lg:col-span-1 lg:order-none"
                 />
             </div>
         </div>

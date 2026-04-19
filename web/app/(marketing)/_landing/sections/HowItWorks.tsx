@@ -1,4 +1,12 @@
-import { Bell, Bookmark } from "lucide-react";
+import { Bookmark } from "lucide-react";
+import { DemoChatBubble } from "../demo/DemoChatBubble";
+import { DemoCommentCard } from "../demo/DemoCommentCard";
+import { DemoFollowUpChip } from "../demo/DemoFollowUpChip";
+import {
+    stepTwoMessages,
+    stepTwoComment,
+    stepThreeFollowUp,
+} from "../demo/mocks";
 
 export function HowItWorks() {
     return (
@@ -53,33 +61,25 @@ export function HowItWorks() {
                         <div className="num">2</div>
                         <h3>Organize</h3>
                         <p>
-                            All interactions with one person on one platform
-                            roll into a single{" "}
-                            <span className="italic-serif">Woohoo</span> — DMs
-                            and comments threaded together, even nested
-                            replies.
+                            Every DM and comment from one person rolls into a
+                            single{" "}
+                            <span className="italic-serif">Woohoo</span> —
+                            messages on one tab, comments on another, one
+                            person per place.
                         </p>
-                        <div className="illo">
-                            <div className="mini-thread">
-                                <div className="bubble them">
-                                    does it do X?
-                                    <span className="caption">
-                                        comment · r/SaaS
-                                    </span>
-                                </div>
-                                <div className="bubble you">
-                                    yes — shipping this weekend
-                                    <span className="caption">
-                                        you, in-thread
-                                    </span>
-                                </div>
-                                <div className="bubble them">
-                                    perfect. DMing you
-                                    <span className="caption">
-                                        DM · 2h later
-                                    </span>
-                                </div>
-                            </div>
+                        <div className="illo illo-stack">
+                            <DemoChatBubble
+                                item={stepTwoMessages[0].item}
+                                isFromPeer={stepTwoMessages[0].isFromPeer}
+                            />
+                            <DemoChatBubble
+                                item={stepTwoMessages[1].item}
+                                isFromPeer={stepTwoMessages[1].isFromPeer}
+                            />
+                            <DemoCommentCard
+                                item={stepTwoComment.item}
+                                isFromPeer={stepTwoComment.isFromPeer}
+                            />
                         </div>
                     </div>
 
@@ -93,11 +93,12 @@ export function HowItWorks() {
                             stale.
                         </p>
                         <div className="illo">
-                            <div className="mini-date">
-                                <Bell size={14} strokeWidth={2} />
-                                <span>
-                                    remind me <b>Sun, Apr 21</b> — &ldquo;check
-                                    if they tried it&rdquo;
+                            <div className="illo-followup">
+                                <DemoFollowUpChip
+                                    followUpAt={stepThreeFollowUp}
+                                />
+                                <span className="illo-followup-caption">
+                                    nudged in your dashboard on the day.
                                 </span>
                             </div>
                         </div>

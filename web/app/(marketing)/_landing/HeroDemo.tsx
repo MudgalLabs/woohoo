@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Bookmark } from "lucide-react";
 import { RedditGlyph } from "./RedditGlyph";
+import { DemoWoohooCard } from "./demo/DemoWoohooCard";
+import { heroWoohoo } from "./demo/mocks";
 
 const PARTICLES = Array.from({ length: 14 }, (_, i) => {
     const a = (i / 14) * Math.PI * 2;
@@ -93,14 +95,14 @@ export function HeroDemo() {
             </div>
 
             <div className="thread-preview" aria-hidden={!saved}>
-                <div className="avatar">i</div>
-                <div className="meta">
-                    <div className="name">u/indie_marketer</div>
-                    <div className="caption">
-                        reddit · new Woohoo · opened just now
-                    </div>
-                </div>
-                <div className="pill">Remind Sun</div>
+                <DemoWoohooCard
+                    woohoo={heroWoohoo}
+                    counts={{ dm: 1, comment: 0 }}
+                />
+            </div>
+
+            <div className="demo-caption">
+                Shown on Reddit. LinkedIn, X, and Instagram next.
             </div>
 
             <div className="burst">
