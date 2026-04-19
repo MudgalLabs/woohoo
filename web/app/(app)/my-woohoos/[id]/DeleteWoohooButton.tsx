@@ -15,6 +15,11 @@ import {
     AlertDialogTrigger,
     Button,
 } from "@woohoo/ui";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface DeleteWoohooButtonProps {
     woohooId: string;
@@ -35,7 +40,9 @@ export function DeleteWoohooButton({ woohooId }: DeleteWoohooButtonProps) {
         });
 
         if (!res.ok) {
-            const body = (await res.json().catch(() => ({}))) as { error?: string };
+            const body = (await res.json().catch(() => ({}))) as {
+                error?: string;
+            };
             setError(body.error ?? "Failed to delete.");
             setDeleting(false);
             return;
@@ -48,15 +55,19 @@ export function DeleteWoohooButton({ woohooId }: DeleteWoohooButtonProps) {
 
     return (
         <AlertDialog open={open} onOpenChange={setOpen}>
-            <AlertDialogTrigger asChild>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-muted-foreground hover:text-destructive"
-                    title="Delete Woohoo"
-                >
-                    <Trash2 size={16} />
-                </Button>
+            <AlertDialogTrigger>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-muted-foreground hover:text-destructive"
+                        >
+                            <Trash2 size={16} />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Delete Woohoo</TooltipContent>
+                </Tooltip>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
@@ -66,9 +77,7 @@ export function DeleteWoohooButton({ woohooId }: DeleteWoohooButtonProps) {
                         timeline. This action cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                {error && (
-                    <p className="text-sm text-destructive">{error}</p>
-                )}
+                {error && <p className="text-sm text-destructive">{error}</p>}
                 <AlertDialogFooter>
                     <AlertDialogCancel disabled={deleting}>
                         Cancel

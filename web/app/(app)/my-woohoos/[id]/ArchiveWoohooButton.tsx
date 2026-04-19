@@ -15,6 +15,11 @@ import {
     AlertDialogTrigger,
     Button,
 } from "@woohoo/ui";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface ArchiveWoohooButtonProps {
     woohooId: string;
@@ -65,21 +70,25 @@ export function ArchiveWoohooButton({
         : "Archive this Woohoo?";
     const dialogDescription = archived
         ? "It'll show up in your active Woohoos again."
-        : "It'll be hidden from your dashboard and active list. You can unarchive it anytime from the Archived tab.";
+        : "It'll be hidden from your dashboard and active list. You can unarchive it anytime from the Archived tab. It will become active again if you save a new message or comment from this person.";
     const actionLabel = archived ? "Unarchive" : "Archive";
     const loadingLabel = archived ? "Unarchiving…" : "Archiving…";
 
     return (
         <AlertDialog open={open} onOpenChange={setOpen}>
-            <AlertDialogTrigger asChild>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-muted-foreground hover:text-foreground"
-                    title={title}
-                >
-                    <Icon size={16} />
-                </Button>
+            <AlertDialogTrigger>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-muted-foreground hover:text-foreground"
+                        >
+                            <Icon size={16} />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{title}</TooltipContent>
+                </Tooltip>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
