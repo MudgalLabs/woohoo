@@ -78,6 +78,7 @@ export async function POST(request: Request) {
                             ? { followUpAt: followUpAt ? new Date(followUpAt) : null }
                             : {}),
                         lastSavedAt: now,
+                        archivedAt: null,
                     },
                 });
                 break;
@@ -107,6 +108,7 @@ export async function POST(request: Request) {
                 ...(chatUrl ? { chatUrl } : {}),
                 ...(followUpAt !== undefined ? { followUpAt: followUpAt ? new Date(followUpAt) : null } : {}),
                 lastSavedAt: now,
+                archivedAt: null,
             },
         });
     }

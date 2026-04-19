@@ -40,7 +40,10 @@ export async function PATCH(
     }
 
     const { id } = await params;
-    const body = (await request.json()) as { followUpAt?: string | null };
+    const body = (await request.json()) as {
+        followUpAt?: string | null;
+        archived?: boolean;
+    };
 
     const woohoo = await prisma.woohoo.findFirst({
         where: { id, userId: session.user.id },
@@ -59,6 +62,12 @@ export async function PATCH(
                     : body.followUpAt
                       ? new Date(body.followUpAt)
                       : undefined,
+            archivedAt:
+                body.archived === undefined
+                    ? undefined
+                    : body.archived
+                      ? new Date()
+                      : null,
         },
     });
 

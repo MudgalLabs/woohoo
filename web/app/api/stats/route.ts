@@ -22,10 +22,11 @@ export async function GET(request: Request) {
     );
 
     const [totalWoohoos, followUpToday] = await Promise.all([
-        prisma.woohoo.count({ where: { userId } }),
+        prisma.woohoo.count({ where: { userId, archivedAt: null } }),
         prisma.woohoo.count({
             where: {
                 userId,
+                archivedAt: null,
                 followUpAt: { gte: startOfToday, lte: endOfToday },
             },
         }),

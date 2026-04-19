@@ -114,7 +114,7 @@ export default async function DashboardPage() {
     const session = await getSession();
 
     const allWoohoos = await prisma.woohoo.findMany({
-        where: { userId: session!.user.id },
+        where: { userId: session!.user.id, archivedAt: null },
         include: {
             timeline: {
                 orderBy: { interactionAt: "desc" },

@@ -60,6 +60,7 @@ export function mockWoohoo(overrides: Partial<MockWoohoo> = {}): MockWoohoo {
         followUpAt: null,
         lastInteractionAt: hoursAgo(2),
         lastSavedAt: hoursAgo(2),
+        archivedAt: null,
         createdAt: now,
         updatedAt: now,
         timeline: [],

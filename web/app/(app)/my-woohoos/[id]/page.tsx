@@ -28,6 +28,7 @@ import {
     type WoohooCounts,
 } from "../WoohooCard";
 import type { TimelineItem } from "@/app/generated/prisma/client";
+import { ArchiveWoohooButton } from "./ArchiveWoohooButton";
 import { ChatBubble } from "./ChatBubble";
 import { CommentCard } from "./CommentCard";
 import { DeleteWoohooButton } from "./DeleteWoohooButton";
@@ -127,7 +128,13 @@ export default async function WoohooDetailPage({
                                     </h1>
                                 )}
                             </div>
-                            <DeleteWoohooButton woohooId={woohoo.id} />
+                            <div className="flex items-center gap-0.5 shrink-0">
+                                <ArchiveWoohooButton
+                                    woohooId={woohoo.id}
+                                    archived={woohoo.archivedAt !== null}
+                                />
+                                <DeleteWoohooButton woohooId={woohoo.id} />
+                            </div>
                         </div>
 
                         <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">

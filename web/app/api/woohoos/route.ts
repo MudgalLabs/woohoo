@@ -9,8 +9,17 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { searchParams } = new URL(request.url);
+    const archivedParam = searchParams.get("archived");
+    const archivedFilter =
+        archivedParam === "true"
+            ? { not: null }
+            : archivedParam === "all"
+              ? undefined
+              : null;
+
     const woohoos = await prisma.woohoo.findMany({
-        where: { userId: session.user.id },
+        where: { userId: session.user.id, archivedAt: archivedFilter },
         orderBy: { lastSavedAt: "desc" },
         include: {
             timeline: {
