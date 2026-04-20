@@ -25,7 +25,7 @@ export function Hero() {
                     <p className="hero-sub">
                         Capture messages and comments.
                         <br />
-                        Organized by person.
+                        Automatically organized by person.
                         <br />
                         <span className="mark">Follow up</span> when it matters.
                     </p>

@@ -13,11 +13,11 @@ export function HowItWorks() {
                     </div>
                     <div style={{ height: 14 }} />
                     <h2>
-                        Three clicks from{" "}
+                        From{" "}
                         <span className="italic-serif">
                             &ldquo;oh interesting&rdquo;
                         </span>{" "}
-                        to <span className="mark">follow up Sunday.</span>
+                        to followed up <span className="mark">in seconds.</span>
                     </h2>
                     <p>
                         No tab switching. No copy-paste. No &ldquo;I&rsquo;ll

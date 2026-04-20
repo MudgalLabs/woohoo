@@ -10,7 +10,7 @@ import {
     Caveat,
 } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { APP_DESCRIPTION } from "@/lib/constants";
+import { APP_DESCRIPTION, APP_TITLE } from "@/lib/constants";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const sans = IBM_Plex_Sans({ subsets: ["latin"], variable: "--font-sans" });
@@ -42,24 +42,23 @@ const hand = Caveat({
 
 export const metadata: Metadata = {
     title: {
-        default: "Woohoo — You saw it. It's gone.",
+        default: APP_TITLE,
         template: "%s | Woohoo",
     },
     description: APP_DESCRIPTION,
     keywords: [
-        "social CRM",
-        "follow-up tool",
-        "lead tracking",
-        "DM tracker",
-        "social media leads",
-        "Reddit leads",
-        "LinkedIn leads",
-        "inbox organizer",
-        "follow up reminder",
+        "follow up reminders for DMs",
+        "track conversations Reddit",
+        "manage social media leads",
+        "remember to reply messages",
+        "DM follow up tool",
+        "conversation tracker",
+        "indie hacker leads",
+        "reddit lead management",
     ],
     metadataBase: new URL("https://woohoo.to"),
     openGraph: {
-        title: "Woohoo — Follow up before the moment goes cold",
+        title: APP_TITLE,
         description: APP_DESCRIPTION,
         url: "https://woohoo.to",
         siteName: "Woohoo",
@@ -67,12 +66,8 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "Woohoo — Follow up before the moment goes cold",
+        title: APP_TITLE,
         description: APP_DESCRIPTION,
-    },
-    robots: {
-        index: true,
-        follow: true,
     },
     icons: {
         icon: "/logo.svg",

@@ -106,7 +106,7 @@ export function HeroDemo({ woohoo }: HeroDemoProps) {
             </div>
 
             <div className="demo-caption">
-                Works on Reddit today. LinkedIn, X, and more coming soon.
+                Works on Reddit today. LinkedIn and X coming next.
             </div>
 
             <div className="burst">
