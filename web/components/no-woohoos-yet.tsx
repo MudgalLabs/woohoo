@@ -14,12 +14,14 @@ export function NoWoohoosYet() {
             </h1>
             <p className="text-sm text-muted-foreground mb-6 max-w-sm">
                 Save messages and comments with the extension and they&apos;ll
-                show up here. Follow up at the right time, never let a warm
-                lead go cold.
+                show up here. Follow up at the right time, never let a warm lead
+                go cold.
             </p>
             <Link
                 href="/extension"
                 className="text-sm font-medium text-primary hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
             >
                 Install the extension →
             </Link>

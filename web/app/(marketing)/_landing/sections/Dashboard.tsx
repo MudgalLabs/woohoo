@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { DemoWoohooCard } from "../demo/DemoWoohooCard";
 import type { Woohoo, TimelineItem } from "@/app/generated/prisma/client";
 import { dashboardToday, dashboardOverdue, dashboardCold } from "../demo/mocks";
+import Link from "next/link";
 
 type MockWoohoo = Woohoo & { timeline: TimelineItem[] };
 
@@ -19,7 +20,7 @@ function DemoDashboardSection({
     className?: string;
 }) {
     return (
-        <section className={className}>
+        <section id="#dashboard" className={className}>
             <div className="mb-4">
                 <h2 className="text-sm font-semibold text-foreground pb-1">
                     {heading}
@@ -30,12 +31,13 @@ function DemoDashboardSection({
             </div>
             <div className="flex flex-col gap-3">
                 {woohoos.map((w) => (
-                    <DemoWoohooCard
-                        key={w.id}
-                        woohoo={w}
-                        counts={{ dm: w.timeline.length, comment: 0 }}
-                        variant={variant}
-                    />
+                    <Link key={w.id} href="#dashboard">
+                        <DemoWoohooCard
+                            woohoo={w}
+                            counts={{ dm: w.timeline.length, comment: 0 }}
+                            variant={variant}
+                        />
+                    </Link>
                 ))}
             </div>
         </section>

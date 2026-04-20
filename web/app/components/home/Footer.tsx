@@ -7,7 +7,7 @@ export function Footer() {
             <div className="mx-auto max-w-5xl px-4 py-12">
                 <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
                     <div className="col-span-2 md:col-span-1">
-                        <Logo size="sm" />
+                        <Logo size="md" variant="mark" />
                         <p className="mt-3 max-w-xs text-sm text-muted-foreground leading-relaxed">
                             Built with ❤️️️ by Mudgal Labs
                         </p>

@@ -119,7 +119,7 @@ export function ThreadMock({
                                     </span>
                                     <span aria-hidden>·</span>
                                     <a
-                                        href="#"
+                                        href="#product"
                                         className="flex items-center gap-1 text-primary hover:underline"
                                     >
                                         Open chat

@@ -30,7 +30,7 @@ export function Pricing() {
                         <ul className="price-list">
                             <li>Up to 100 active conversations</li>
                             <li>1 platform</li>
-                            <li>Unlimited DMs and comments per conversation</li>
+                            <li>Unlimited messages and comments</li>
                             <li>Self-host if you want to</li>
                         </ul>
                         <Link
