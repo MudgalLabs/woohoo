@@ -8,7 +8,11 @@ interface SidebarUsageProps {
     limit: number | null;
 }
 
-export function SidebarUsage({ planName, activeCount, limit }: SidebarUsageProps) {
+export function SidebarUsage({
+    planName,
+    activeCount,
+    limit,
+}: SidebarUsageProps) {
     if (limit == null) return null;
 
     const pct = Math.min(100, Math.round((activeCount / limit) * 100));

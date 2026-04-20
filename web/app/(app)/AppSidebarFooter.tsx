@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useSyncExternalStore } from "react";
-import { ChevronsUpDown, LogOut, Moon, Sun } from "lucide-react";
+import { ChevronsUpDown, CreditCard, LogOut, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { authClient } from "@/lib/auth-client";
@@ -24,6 +24,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@woohoo/ui";
+import Link from "next/link";
 
 type AppSidebarFooterUser = {
     name: string;
@@ -99,6 +100,7 @@ export function AppSidebarFooter({ user }: { user: AppSidebarFooterUser }) {
                                 <ChevronsUpDown className="ml-auto size-4 opacity-60" />
                             </SidebarMenuButton>
                         </DropdownMenuTrigger>
+
                         <DropdownMenuContent
                             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
                             side={isMobile ? "bottom" : "right"}
@@ -128,7 +130,16 @@ export function AppSidebarFooter({ user }: { user: AppSidebarFooterUser }) {
                                     </div>
                                 </div>
                             </DropdownMenuLabel>
+
                             <DropdownMenuSeparator />
+
+                            <Link href="/settings/plan">
+                                <DropdownMenuItem>
+                                    <CreditCard />
+                                    Plan
+                                </DropdownMenuItem>
+                            </Link>
+
                             <DropdownMenuItem
                                 onSelect={(e) => {
                                     e.preventDefault();
@@ -138,7 +149,9 @@ export function AppSidebarFooter({ user }: { user: AppSidebarFooterUser }) {
                                 {isDark ? <Sun /> : <Moon />}
                                 <span>{themeLabel}</span>
                             </DropdownMenuItem>
+
                             <DropdownMenuSeparator />
+
                             <DropdownMenuItem onSelect={handleSignOut}>
                                 <LogOut />
                                 <span>Sign out</span>

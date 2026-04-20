@@ -73,7 +73,6 @@ export function HeroDemo({ woohoo }: HeroDemoProps) {
                     className={`save-hint ${saved ? "is-gone" : ""}`}
                     aria-hidden={saved}
                 >
-                    {/* <span className="hand">Save this Reddit DM</span> */}
                     <svg
                         className="save-hint-arrow"
                         width="48"
@@ -95,6 +94,7 @@ export function HeroDemo({ woohoo }: HeroDemoProps) {
                             strokeLinecap="round"
                         />
                     </svg>
+                    <span className="hand">Save this Reddit DM</span>
                 </div>
             </div>
 
@@ -106,7 +106,7 @@ export function HeroDemo({ woohoo }: HeroDemoProps) {
             </div>
 
             <div className="demo-caption">
-                Works on Reddit today. LinkedIn, X, and more coming.
+                Works on Reddit today. LinkedIn, X, and more coming soon.
             </div>
 
             <div className="burst">

@@ -31,7 +31,6 @@ export default async function PlanSettingsPage() {
     return (
         <div className="p-6 w-full max-w-2xl">
             <div className="mb-6">
-                <h1 className="text-2xl font-semibold">Plan & usage</h1>
                 <p className="text-sm text-muted-foreground mt-1">
                     Your current plan and how close you are to its limits.
                 </p>

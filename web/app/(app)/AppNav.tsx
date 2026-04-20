@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookMarked, CreditCard, LayoutDashboard } from "lucide-react";
+import { BookMarked, LayoutDashboard } from "lucide-react";
 
 import {
     SidebarMenu,
@@ -13,7 +13,6 @@ import {
 export const navItems = [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { label: "My Woohoos", href: "/my-woohoos", icon: BookMarked },
-    { label: "Plan", href: "/settings/plan", icon: CreditCard },
 ];
 
 export function AppNav() {

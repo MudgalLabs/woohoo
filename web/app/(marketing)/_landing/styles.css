@@ -309,7 +309,7 @@
     font-size: 15px;
     line-height: 1.5;
     padding-right: 12px;
-    padding-bottom: 104px;
+    padding-bottom: 36px;
 }
 .landing .reddit-msg .highlight {
     background: linear-gradient(180deg, transparent 62%, var(--highlight) 62%);
@@ -382,14 +382,14 @@
    button's top-left corner so the rotated arrow's tip lands on it. */
 .landing .save-hint {
     position: absolute;
-    right: 40px; /* = button's left edge */
-    bottom: 48px; /* = button's top edge */
+    right: -16px; /* = button's left edge */
+    bottom: -42px; /* = button's top edge */
     display: flex;
     align-items: flex-end;
     gap: 4px;
     color: var(--ink);
     pointer-events: none;
-    transform: rotate(-0deg);
+    transform: rotate(-180deg);
     transition:
         opacity 0.25s ease,
         transform 0.25s ease;
@@ -399,8 +399,11 @@
     font-size: 22px;
     line-height: 1;
     white-space: nowrap;
-    transform: rotate(-0deg);
-    transform-origin: left bottom;
+    transform: rotate(-180deg);
+    /* transform-origin: right bottom; */
+    position: absolute;
+    left: 40px; /* = button's left edge */
+    bottom: 10px; /* = button's top edge */
 }
 .landing .save-hint-arrow {
     /* Original SVG points up-left from its bottom-right tail.
