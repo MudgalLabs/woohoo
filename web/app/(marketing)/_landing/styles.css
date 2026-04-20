@@ -221,6 +221,10 @@
     background: linear-gradient(180deg, transparent 60%, var(--highlight) 60%);
     border-radius: 2px;
 }
+.landing .cta-big .mark {
+    background: linear-gradient(180deg, transparent 60%, var(--highlight) 60%);
+    border-radius: 2px;
+}
 .landing .hero h1 .punch {
     color: var(--accent);
     font-style: italic;

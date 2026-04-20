@@ -1,5 +1,5 @@
 import { Button } from "@woohoo/ui";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Zap } from "lucide-react";
 import Link from "next/link";
 
 function GithubGlyph({ size = 14 }: { size?: number }) {
@@ -64,7 +64,7 @@ export function CtaBig() {
             <div className="wrap">
                 <h2>
                     The lead you&rsquo;ll remember is the one you{" "}
-                    <span className="italic-serif punch">
+                    <span className="italic-serif punch mark">
                         followed up with.
                     </span>
                 </h2>
@@ -86,7 +86,7 @@ export function CtaBig() {
                             <ArrowRight className="transition-transform duration-200 group-hover:translate-x-1" />
                         </Button>
                     </Link>
-                    <a
+                    {/* <a
                         href="https://github.com/MudgalLabs/woohoo"
                         target="_blank"
                         rel="noopener noreferrer"
@@ -97,14 +97,23 @@ export function CtaBig() {
                         >
                             <GithubGlyph size={14} /> View on GitHub
                         </Button>
-                    </a>
+                    </a> */}
+                    <Link href="/extension">
+                        <Button
+                            variant="outline"
+                            className="hover:bg-secondary/10 group"
+                        >
+                            Install the extension
+                            <Zap size={16} strokeWidth={2} />
+                        </Button>
+                    </Link>
                 </div>
                 <div
                     className="hand"
                     style={{
                         marginTop: 24,
                         color: "var(--accent)",
-                        fontSize: 28,
+                        fontSize: 24,
                         transform: "rotate(-2deg)",
                     }}
                 >
