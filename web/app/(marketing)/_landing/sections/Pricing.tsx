@@ -29,8 +29,8 @@ export function Pricing() {
                         </p>
                         <ul className="price-list">
                             <li>Up to 100 active conversations</li>
+                            <li>1 platform</li>
                             <li>Unlimited DMs and comments per conversation</li>
-                            <li>Follow-up dashboard</li>
                             <li>Self-host if you want to</li>
                         </ul>
                         <Link
@@ -57,9 +57,12 @@ export function Pricing() {
                             <li>Everything in free</li>
                             <li>Unlimited active conversations</li>
                             <li>
+                                All platforms as they ship — X, LinkedIn, and
+                                more
+                            </li>
+                            <li>
                                 Daily follow-up digest — morning &amp; evening
                             </li>
-                            <li>Platforms as they ship — X, LinkedIn, etc</li>
                             <li>Help shape what gets built next</li>
                         </ul>
                         <a
@@ -75,7 +78,7 @@ export function Pricing() {
                     </div>
                 </div>
                 <p className="pricing-foot">
-                    Early pricing. Goes up as platforms and features ship.
+                    Early pricing. Goes up as more platforms and features ship.
                 </p>
             </div>
         </section>

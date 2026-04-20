@@ -613,6 +613,12 @@
     display: flex;
     flex-direction: column;
 }
+.landing .step .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
 .landing .step .num {
     font-family: var(--font-display);
     font-style: italic;

@@ -28,8 +28,10 @@ export function HowItWorks() {
 
                 <div className="steps">
                     <div className="step">
-                        <div className="num">1</div>
-                        <h3>Capture</h3>
+                        <div className="header">
+                            <div className="num">1</div>
+                            <h3>Capture</h3>
+                        </div>
                         <p>
                             Save any DM or comment in one click. The extension
                             captures everything that matters.
@@ -52,8 +54,10 @@ export function HowItWorks() {
                     </div>
 
                     <div className="step">
-                        <div className="num">2</div>
-                        <h3>Organize</h3>
+                        <div className="header">
+                            <div className="num">2</div>
+                            <h3>Organize</h3>
+                        </div>
                         <p>
                             All messages and comments are grouped by person
                             automatically.
@@ -71,8 +75,10 @@ export function HowItWorks() {
                     </div>
 
                     <div className="step">
-                        <div className="num">3</div>
-                        <h3>Follow up</h3>
+                        <div className="header">
+                            <div className="num">3</div>
+                            <h3>Follow up</h3>
+                        </div>
                         <p>
                             Set a date. Your dashboard shows{" "}
                             <b>Follow up today</b>, <b>Overdue</b>, and{" "}
