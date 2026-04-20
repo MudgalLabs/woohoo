@@ -64,9 +64,8 @@ export function CtaBig() {
             <div className="wrap">
                 <h2>
                     The lead you&rsquo;ll remember is the one you{" "}
-                    <span className="italic-serif punch mark">
-                        followed up with.
-                    </span>
+                    <span className="italic-serif punch mark">followed up</span>{" "}
+                    with.
                 </h2>
                 <p className="cta-sub">
                     Install the extension.

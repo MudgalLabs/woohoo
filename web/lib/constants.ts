@@ -1,7 +1,7 @@
 export const APP_TITLE =
-    "Woohoo — A follow-up tool for DMs, comments, and social leads";
+    "Woohoo — Follow-up tool for social media DMs and comments";
 export const APP_DESCRIPTION =
-    "Capture what matters in one click. Get reminded to follow up before the moment goes cold.";
+    "Save the Reddit DMs and comments that matter in one click, organized by person, with follow-up reminders. Never let a warm lead go cold.";
 
 interface Route {
     title: string;

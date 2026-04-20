@@ -23,11 +23,9 @@ export function Hero() {
                     </h1>
 
                     <p className="hero-sub">
-                        Capture messages and comments.
-                        <br />
-                        Automatically organized by person.
-                        <br />
-                        <span className="mark">Follow up</span> when it matters.
+                        Capture the DMs and comments that matter. Organized by
+                        person. <span className="mark">Follow up</span> before
+                        they forget about you.
                     </p>
 
                     <div className="hero-cta">
