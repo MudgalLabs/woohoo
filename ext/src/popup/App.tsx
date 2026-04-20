@@ -3,9 +3,9 @@ import type { AuthSession, StatsResponse } from "@woohoo/api";
 import { Logo } from "@/components/Logo";
 import { normalizeRedditUsername } from "@/content/reddit/founder";
 import { useStoredTheme } from "@/lib/theme";
+import { API_BASE_URL as BASE_URL } from "@/lib/api-base-url";
 import "./App.css";
 
-const BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3000";
 const SIGN_UP_URL = `${BASE_URL}/sign-up`;
 const DASHBOARD_URL = `${BASE_URL}/dashboard`;
 

@@ -1,7 +1,6 @@
 import { WoohooApiClient } from "@woohoo/api";
 import type { AuthSession, StatsResponse } from "@woohoo/api";
-
-const BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3000";
+import { API_BASE_URL as BASE_URL } from "@/lib/api-base-url";
 
 type IncomingMessage =
     | { type: "GET_SESSION" }

@@ -8,10 +8,7 @@ import { getFounderUsername } from "@/content/reddit/founder";
 import { Branding } from "@/components/Branding";
 import { emitToast } from "@/content/lib/toast";
 import { DateTimePicker } from "@/components/DateTimePicker";
-
-const BASE_URL =
-    (import.meta.env.VITE_API_URL as string | undefined) ??
-    "http://localhost:3000";
+import { API_BASE_URL as BASE_URL } from "@/lib/api-base-url";
 
 interface SaveModalProps {
     message: Message;

@@ -13,16 +13,11 @@ import { startFounderScraper } from "@/content/reddit/founder";
 import { SaveButton } from "@/components/SaveButton";
 import { mountWithShadow } from "@/content/lib/react";
 import { setActive } from "@/content/store/activeSaveButton";
-import {
-    getRedditTheme,
-    subscribeToThemeChanges,
-} from "@/content/lib/theme";
+import { getRedditTheme, subscribeToThemeChanges } from "@/content/lib/theme";
 import { persistTheme } from "@/lib/theme";
+import { DebugButton } from "./DebugButton";
 
 function App() {
-    const [show, setShow] = useState(false);
-    const toggle = () => setShow(!show);
-
     const [peer, setPeer] = useState<null | string>(null);
     const [isReady, setIsReady] = useState(false);
 
@@ -105,22 +100,14 @@ function App() {
         return cleanup;
     }, []);
 
-    return (
-        <div className="popup-container">
-            {show && (
-                <div
-                    className={`popup-content ${show ? "opacity-100" : "opacity-0"}`}
-                >
-                    {!peer ? "Open any chat" : `Current chat: ${peer}`}
-                </div>
-            )}
+    // Keep DebugButton + isReady referenced so flipping the debug return on
+    // below remains a one-line change.
+    void DebugButton;
+    void isReady;
 
-            <button
-                className={`toggle-button ${isReady ? "btn-primary" : ""}`}
-                onClick={toggle}
-            ></button>
-        </div>
-    );
+    return null;
+
+    // return <DebugButton peer={peer ?? ""} isReady={isReady} />;
 }
 
 export default App;
