@@ -46,7 +46,7 @@ function BrowserCard({
     href: string;
 }) {
     return (
-        <div className="flex flex-col items-center gap-4 rounded-xl border border-border bg-card p-8 w-50">
+        <div className="flex flex-col items-center gap-4 rounded-xl border border-border bg-card p-8 w-56 hover:shadow-sm transition">
             {icon}
             <span className="text-sm font-medium text-foreground">
                 {browser}
@@ -65,10 +65,13 @@ export default function ExtensionPage() {
     return (
         <div className="flex flex-col items-center justify-center flex-1 p-6 py-24 text-center">
             <h1 className="text-2xl font-semibold text-foreground mb-2">
-                Install the Woohoo extension
+                Install Woohoo
             </h1>
+
             <p className="text-sm text-muted-foreground mb-10 max-w-lg">
-                Save Reddit DMs in one click. Available for Chrome and Firefox.
+                Save DMs and comments in one click — with the Woohoo extension.
+                <br />
+                Works on Reddit today. LinkedIn and X coming next.
             </p>
 
             <div className="flex gap-6 flex-wrap justify-center">

@@ -269,15 +269,41 @@ function CommentsView({
         );
     }
 
+    const repliesByParent = new Map<string, TimelineItem[]>();
+    for (const item of items) {
+        if (item.parentId) {
+            const arr = repliesByParent.get(item.parentId) ?? [];
+            arr.push(item);
+            repliesByParent.set(item.parentId, arr);
+        }
+    }
+    const roots = items.filter((item) => !item.parentId);
+
     return (
         <div className="flex flex-col gap-3">
-            {items.map((item) => (
-                <CommentCard
-                    key={item.id}
-                    item={item}
-                    isFromPeer={item.authorId === peerId}
-                />
-            ))}
+            {roots.map((root) => {
+                const replies = (repliesByParent.get(root.id) ?? []).sort(
+                    (a, b) =>
+                        new Date(a.interactionAt).getTime() -
+                        new Date(b.interactionAt).getTime(),
+                );
+                return (
+                    <div key={root.id} className="flex flex-col gap-3">
+                        <CommentCard
+                            item={root}
+                            isFromPeer={root.authorId === peerId}
+                        />
+                        {replies.map((reply) => (
+                            <CommentCard
+                                key={reply.id}
+                                item={reply}
+                                isFromPeer={reply.authorId === peerId}
+                                isNested
+                            />
+                        ))}
+                    </div>
+                );
+            })}
         </div>
     );
 }

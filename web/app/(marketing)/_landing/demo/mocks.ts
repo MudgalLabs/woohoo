@@ -44,6 +44,7 @@ export function mockTimelineItem(
         authorName: null,
         interactionAt: now,
         savedAt: now,
+        parentId: null,
         ...overrides,
     };
 }

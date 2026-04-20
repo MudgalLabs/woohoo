@@ -62,6 +62,9 @@ export async function POST(request: Request) {
     // plan-limit activations (new Woohoos + unarchive-via-save).
     let ancestorMatchId: string | null = null;
     let ancestorMatchArchived = false;
+    // Roll up to the root peer comment so nesting stays 1 level deep,
+    // regardless of how deep the Reddit tree actually is.
+    let parentTimelineItemId: string | null = null;
     if (
         item.type === "comment" &&
         isFounderAuthored &&
@@ -82,6 +85,7 @@ export async function POST(request: Request) {
             if (match) {
                 ancestorMatchId = match.woohoo.id;
                 ancestorMatchArchived = match.woohoo.archivedAt !== null;
+                parentTimelineItemId = match.parentId ?? match.id;
                 break;
             }
         }
@@ -194,6 +198,7 @@ export async function POST(request: Request) {
             authorId: item.authorId,
             authorName: item.authorName ?? null,
             interactionAt,
+            parentId: parentTimelineItemId,
         },
     });
 

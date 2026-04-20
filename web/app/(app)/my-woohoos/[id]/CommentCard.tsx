@@ -8,6 +8,7 @@ import { DeleteTimelineItemButton } from "./DeleteTimelineItemButton";
 interface CommentCardProps {
     item: TimelineItem;
     isFromPeer: boolean;
+    isNested?: boolean;
 }
 
 function extractSubreddit(sourceUrl: string | null): string | null {
@@ -16,7 +17,7 @@ function extractSubreddit(sourceUrl: string | null): string | null {
     return match?.[1] ?? null;
 }
 
-export function CommentCard({ item, isFromPeer }: CommentCardProps) {
+export function CommentCard({ item, isFromPeer, isNested }: CommentCardProps) {
     const subreddit = extractSubreddit(item.sourceUrl);
     const ago = timeAgo(item.interactionAt);
 
@@ -25,6 +26,7 @@ export function CommentCard({ item, isFromPeer }: CommentCardProps) {
             className={cn(
                 "group relative rounded-lg border border-border bg-card p-4",
                 !isFromPeer && "border-l-2 border-l-primary/60",
+                isNested && "ml-6",
             )}
         >
             <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">

@@ -120,6 +120,14 @@ export function Footer() {
                                     Contact
                                 </a>
                             </li>
+                            <li>
+                                <Link
+                                    href="/privacy"
+                                    className="text-sm font-medium text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
+                                >
+                                    Privacy
+                                </Link>
+                            </li>
                         </ul>
                     </div>
                 </div>

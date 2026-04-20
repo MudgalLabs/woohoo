@@ -108,10 +108,14 @@ model TimelineItem {
   authorName    String?
   interactionAt DateTime
   savedAt       DateTime         @default(now())
+  parentId      String?
 
   woohoo        Woohoo           @relation(fields: [woohooId], references: [id], onDelete: Cascade)
+  parent        TimelineItem?    @relation("TimelineItemReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies       TimelineItem[]   @relation("TimelineItemReplies")
 
   @@unique([woohooId, externalId])
+  @@index([woohooId, parentId])
   @@map("timeline_item")
 }
 
