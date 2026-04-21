@@ -46,6 +46,7 @@ export const metadata: Metadata = {
         template: "%s | Woohoo",
     },
     description: APP_DESCRIPTION,
+    applicationName: "Woohoo",
     keywords: [
         "follow up reminders for DMs",
         "track conversations Reddit",
@@ -57,12 +58,16 @@ export const metadata: Metadata = {
         "reddit lead management",
     ],
     metadataBase: new URL("https://woohoo.to"),
+    alternates: {
+        canonical: "/",
+    },
     openGraph: {
         title: APP_TITLE,
         description: APP_DESCRIPTION,
         url: "https://woohoo.to",
         siteName: "Woohoo",
         type: "website",
+        locale: "en_US",
     },
     twitter: {
         card: "summary_large_image",
