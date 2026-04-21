@@ -43,10 +43,12 @@ export default function PrivacyPage() {
                     </p>
                     <ul className="mt-3 list-disc space-y-2 pl-6">
                         <li>
-                            <strong>Account information.</strong> Your email
-                            address, name, and a hashed password when you sign
-                            up. Used to authenticate you and send essential
-                            account email.
+                            <strong>Account information.</strong> Woohoo uses
+                            Google sign-in — we do not manage passwords. When
+                            you sign in, Google shares your name, email
+                            address, and profile picture with us. We use these
+                            to create your account, authenticate you, and send
+                            essential account email.
                         </li>
                         <li>
                             <strong>Saved interactions.</strong> When you click
