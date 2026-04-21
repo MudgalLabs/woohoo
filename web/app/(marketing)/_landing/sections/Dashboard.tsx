@@ -30,15 +30,19 @@ function DemoDashboardSection({
                 </p>
             </div>
             <div className="flex flex-col gap-3">
-                {woohoos.map((w) => (
-                    <Link key={w.id} href="#dashboard">
-                        <DemoWoohooCard
-                            woohoo={w}
-                            counts={{ dm: w.timeline.length, comment: 0 }}
-                            variant={variant}
-                        />
-                    </Link>
-                ))}
+                {woohoos.map((w) => {
+                    const dm = w.timeline.filter((i) => i.type === "dm").length;
+                    const comment = w.timeline.length - dm;
+                    return (
+                        <Link key={w.id} href="#dashboard">
+                            <DemoWoohooCard
+                                woohoo={w}
+                                counts={{ dm, comment }}
+                                variant={variant}
+                            />
+                        </Link>
+                    );
+                })}
             </div>
         </section>
     );

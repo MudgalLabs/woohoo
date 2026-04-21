@@ -6,6 +6,7 @@ import type { TimelineItem } from "@/app/generated/prisma/client";
 import {
     Avatar,
     AvatarFallback,
+    CountBadge,
     Tabs,
     TabsContent,
     TabsList,
@@ -141,17 +142,19 @@ export function ThreadMock({
                             <TabsTrigger value="messages">
                                 DMs
                                 {threadDms.length > 0 && (
-                                    <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary/20 px-1.5 text-xs font-medium text-secondary-foreground">
-                                        {threadDms.length}
-                                    </span>
+                                    <CountBadge
+                                        className="ml-2"
+                                        count={threadDms.length}
+                                    />
                                 )}
                             </TabsTrigger>
                             <TabsTrigger value="comments">
                                 Comments
                                 {threadComments.length > 0 && (
-                                    <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary/20 px-1.5 text-xs font-medium text-secondary-foreground">
-                                        {threadComments.length}
-                                    </span>
+                                    <CountBadge
+                                        className="ml-2"
+                                        count={threadComments.length}
+                                    />
                                 )}
                             </TabsTrigger>
                         </TabsList>

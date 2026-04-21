@@ -166,6 +166,35 @@ export const threadComments: TimelineItem[] = [
 
 /* ============== Landing dashboard — three piles ============== */
 
+function fillTimeline(
+    dmCount: number,
+    commentCount: number,
+    anchor: Date,
+): TimelineItem[] {
+    const items: TimelineItem[] = [];
+    for (let i = 0; i < dmCount; i++) {
+        items.push(
+            mockTimelineItem({
+                type: "dm",
+                contentText: "…",
+                interactionAt: new Date(anchor.getTime() - (i + 1) * 3600_000),
+            }),
+        );
+    }
+    for (let i = 0; i < commentCount; i++) {
+        items.push(
+            mockTimelineItem({
+                type: "comment",
+                contentText: "…",
+                interactionAt: new Date(
+                    anchor.getTime() - (dmCount + i + 1) * 3600_000,
+                ),
+            }),
+        );
+    }
+    return items;
+}
+
 export const dashboardToday: MockWoohoo[] = [
     mockWoohoo({
         peerId: "indie_marketer",
@@ -178,6 +207,7 @@ export const dashboardToday: MockWoohoo[] = [
                     "Hey — saw your comment in r/SaaS. I'll try Woohoo this weekend and send feedback, my team's drowning in Reddit leads rn. Also — do you support LinkedIn?",
                 interactionAt: hoursAgo(20),
             }),
+            ...fillTimeline(2, 5, hoursAgo(20)),
         ],
     }),
     mockWoohoo({
@@ -191,6 +221,7 @@ export const dashboardToday: MockWoohoo[] = [
                     "what's the pricing for teams? we'd be 4 seats to start.",
                 interactionAt: hoursAgo(30),
             }),
+            ...fillTimeline(1, 3, hoursAgo(30)),
         ],
     }),
     mockWoohoo({
@@ -200,8 +231,11 @@ export const dashboardToday: MockWoohoo[] = [
         lastInteractionAt: hoursAgo(48),
         timeline: [
             mockTimelineItem({
+                type: "comment",
                 contentText:
                     "when does the LinkedIn integration ship? asking bc that's my main channel.",
+                sourceUrl:
+                    "https://reddit.com/r/SaaS/comments/demo/linkedin_eta",
                 interactionAt: hoursAgo(48),
             }),
         ],
@@ -232,6 +266,7 @@ export const dashboardOverdue: MockWoohoo[] = [
                     "interested in a cross-promo swap — we have ~2k weekly active users.",
                 interactionAt: daysAgo(4),
             }),
+            ...fillTimeline(1, 4, daysAgo(4)),
         ],
     }),
     mockWoohoo({
@@ -245,6 +280,7 @@ export const dashboardOverdue: MockWoohoo[] = [
                     "feature req: can we tag people with custom labels? e.g. 'beta-user', 'press'.",
                 interactionAt: daysAgo(3),
             }),
+            ...fillTimeline(3, 1, daysAgo(3)),
         ],
     }),
 ];
@@ -260,6 +296,7 @@ export const dashboardCold: MockWoohoo[] = [
                 contentText: "cool product. will check it out later this week.",
                 interactionAt: daysAgo(10),
             }),
+            ...fillTimeline(1, 3, daysAgo(10)),
         ],
     }),
     mockWoohoo({
@@ -273,6 +310,7 @@ export const dashboardCold: MockWoohoo[] = [
                     "we're evaluating a few tools. I'll DM if we need more info.",
                 interactionAt: daysAgo(14),
             }),
+            ...fillTimeline(2, 2, daysAgo(14)),
         ],
     }),
     mockWoohoo({
@@ -286,6 +324,7 @@ export const dashboardCold: MockWoohoo[] = [
                     "your extension looks great — does it support self-host?",
                 interactionAt: daysAgo(19),
             }),
+            ...fillTimeline(0, 6, daysAgo(19)),
         ],
     }),
 ];

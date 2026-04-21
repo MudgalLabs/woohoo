@@ -29,7 +29,7 @@ export function Hero() {
                     </p>
 
                     <div className="hero-cta">
-                        <Link href="/sign-up">
+                        <Link href="/auth">
                             <Button className="group" variant="default">
                                 Start for free
                                 <ArrowRight className="transition-transform duration-200 group-hover:translate-x-1" />

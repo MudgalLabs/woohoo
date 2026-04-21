@@ -34,7 +34,7 @@ export function Pricing() {
                             <li>Self-host if you want to</li>
                         </ul>
                         <Link
-                            href="/sign-up"
+                            href="/auth"
                             className="btn btn-ghost btn-lg btn-arrow"
                         >
                             Start free

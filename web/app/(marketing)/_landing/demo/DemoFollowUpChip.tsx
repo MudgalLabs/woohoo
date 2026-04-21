@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { followUpLabel } from "@/app/(app)/my-woohoos/WoohooCard";
+import { dayDiffInTz } from "@/lib/date-tz";
 
 /*
  * Visual mirror of the readonly state of FollowUpEditor
@@ -9,15 +10,10 @@ interface DemoFollowUpChipProps {
     followUpAt: Date;
 }
 
-function startOfDay(d: Date): Date {
-    const x = new Date(d);
-    x.setHours(0, 0, 0, 0);
-    return x;
-}
+const DEMO_TZ = "UTC";
 
 export function DemoFollowUpChip({ followUpAt }: DemoFollowUpChipProps) {
-    const isOverdue =
-        startOfDay(followUpAt).getTime() < startOfDay(new Date()).getTime();
+    const isOverdue = dayDiffInTz(followUpAt, new Date(), DEMO_TZ) < 0;
 
     return (
         <span
@@ -26,7 +22,7 @@ export function DemoFollowUpChip({ followUpAt }: DemoFollowUpChipProps) {
                 isOverdue ? "text-destructive" : "text-primary",
             )}
         >
-            {followUpLabel(followUpAt)}
+            {followUpLabel(followUpAt, DEMO_TZ)}
         </span>
     );
 }

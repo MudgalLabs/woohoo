@@ -72,7 +72,7 @@ export function DemoWoohooCard({
                                         : "text-primary",
                                 )}
                             >
-                                {followUpLabel(woohoo.followUpAt)}
+                                {followUpLabel(woohoo.followUpAt, "UTC")}
                             </span>
                         )}
                     </div>
