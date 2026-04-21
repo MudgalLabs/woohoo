@@ -1,18 +1,34 @@
 "use client";
 
-import { ExternalLink } from "lucide-react";
+import {
+    Archive,
+    ExternalLink,
+    SquareArrowOutUpRight,
+    Trash2,
+} from "lucide-react";
 
 import type { TimelineItem } from "@/app/generated/prisma/client";
 import {
     Avatar,
     AvatarFallback,
+    Button,
     CountBadge,
     Tabs,
     TabsContent,
     TabsList,
     TabsTrigger,
 } from "@woohoo/ui";
-import { PlatformIcon, peerHandle } from "@/components/PlatformIcon";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+    PlatformIcon,
+    peerHandle,
+    peerProfileUrl,
+} from "@/components/PlatformIcon";
 import { peerInitial, timeAgo } from "@/app/(app)/my-woohoos/WoohooCard";
 
 import { DemoChatBubble } from "../demo/DemoChatBubble";
@@ -60,7 +76,21 @@ export function ThreadMock({
 }: ThreadMockProps) {
     const handle = peerHandle(threadWoohoo.platform, threadWoohoo.peerId);
     const initial = peerInitial(threadWoohoo.platform, threadWoohoo.peerId);
+    const profileUrl = peerProfileUrl(
+        threadWoohoo.platform,
+        threadWoohoo.peerId,
+    );
     const totalInteractions = threadDms.length + threadComments.length;
+
+    const commentRepliesByParent = new Map<string, TimelineItem[]>();
+    for (const item of threadComments) {
+        if (item.parentId) {
+            const arr = commentRepliesByParent.get(item.parentId) ?? [];
+            arr.push(item);
+            commentRepliesByParent.set(item.parentId, arr);
+        }
+    }
+    const commentRoots = threadComments.filter((item) => !item.parentId);
 
     return (
         <section
@@ -89,7 +119,8 @@ export function ThreadMock({
                     </p>
                 </div>
 
-                <div className="thread-frame">
+                <TooltipProvider delayDuration={0}>
+                <div className="thread-frame app-island">
                     <div className="rounded-lg border border-border bg-card p-5 mb-6">
                         <div className="flex items-start gap-4">
                             <Avatar className="h-12 w-12 shrink-0">
@@ -105,9 +136,59 @@ export function ThreadMock({
                                             platform={threadWoohoo.platform}
                                             size={16}
                                         />
-                                        <span className="text-2xl font-semibold tracking-tight truncate">
-                                            {handle}
-                                        </span>
+                                        {profileUrl ? (
+                                            <a
+                                                href={profileUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="group/name flex items-center gap-1.5 min-w-0 text-2xl font-semibold tracking-tight hover:underline"
+                                            >
+                                                <span className="truncate">
+                                                    {handle}
+                                                </span>
+                                                <SquareArrowOutUpRight
+                                                    size={13}
+                                                    strokeWidth={2.5}
+                                                    className="shrink-0 text-muted-foreground opacity-0 transition group-hover/name:opacity-100"
+                                                />
+                                            </a>
+                                        ) : (
+                                            <span className="text-2xl font-semibold tracking-tight truncate">
+                                                {handle}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="flex items-center gap-0.5 shrink-0">
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    aria-label="Archive Woohoo"
+                                                    className="text-muted-foreground hover:text-foreground"
+                                                >
+                                                    <Archive size={16} />
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                Archive Woohoo
+                                            </TooltipContent>
+                                        </Tooltip>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    aria-label="Delete Woohoo"
+                                                    className="text-muted-foreground hover:text-destructive"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                Delete Woohoo
+                                            </TooltipContent>
+                                        </Tooltip>
                                     </div>
                                 </div>
 
@@ -196,16 +277,41 @@ export function ThreadMock({
 
                         <TabsContent value="comments" className="mt-4">
                             <div className="flex flex-col gap-3">
-                                {threadComments.map((item) => (
-                                    <DemoCommentCard
-                                        key={item.id}
-                                        item={item}
-                                        isFromPeer={
-                                            item.authorId ===
-                                            threadWoohoo.peerId
-                                        }
-                                    />
-                                ))}
+                                {commentRoots.map((root) => {
+                                    const replies = (
+                                        commentRepliesByParent.get(root.id) ??
+                                        []
+                                    ).sort(
+                                        (a, b) =>
+                                            new Date(a.interactionAt).getTime() -
+                                            new Date(b.interactionAt).getTime(),
+                                    );
+                                    return (
+                                        <div
+                                            key={root.id}
+                                            className="flex flex-col gap-3"
+                                        >
+                                            <DemoCommentCard
+                                                item={root}
+                                                isFromPeer={
+                                                    root.authorId ===
+                                                    threadWoohoo.peerId
+                                                }
+                                            />
+                                            {replies.map((reply) => (
+                                                <DemoCommentCard
+                                                    key={reply.id}
+                                                    item={reply}
+                                                    isFromPeer={
+                                                        reply.authorId ===
+                                                        threadWoohoo.peerId
+                                                    }
+                                                    isNested
+                                                />
+                                            ))}
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </TabsContent>
                     </Tabs>
@@ -215,6 +321,7 @@ export function ThreadMock({
                         One click back to the original comment or DM.
                     </p>
                 </div>
+                </TooltipProvider>
             </div>
         </section>
     );

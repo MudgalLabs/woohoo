@@ -693,6 +693,29 @@
     color: var(--ink-3);
 }
 
+/* ---------- APP-THEME ISLAND ----------
+   Landing remaps --accent to coral and forces display serif on h1–h4.
+   Real app components embedded in marketing mocks (Button ghost hover,
+   section h2 titles) need the app's actual accent and IBM Plex. This
+   class restores them for its subtree. */
+.landing .app-island {
+    /* app's default --accent / --accent-foreground (see globals.css :root) */
+    --accent: oklch(0.8369 0.0309 73.8461);
+    --accent-foreground: oklch(0.1972 0.0126 55.5458);
+    font-family: var(--font-sans);
+}
+.landing .app-island h1,
+.landing .app-island h2,
+.landing .app-island h3,
+.landing .app-island h4 {
+    font-family: var(--font-sans);
+    font-weight: unset;
+    font-size: unset;
+    line-height: unset;
+    letter-spacing: unset;
+    color: unset;
+}
+
 /* ---------- WOOHOO DETAIL MOCK ----------
    Thread mock now uses real app components (Avatar, Tabs, ChatBubble,
    CommentCard) inside a bounded frame. Styles here are just the frame. */
@@ -716,14 +739,15 @@
 }
 
 /* ---------- DASHBOARD ----------
-   Mirrors real /dashboard: HeroStats line + 3/2/1-col responsive grid of
-   DemoWoohooCard lists. Framed in a bordered card. */
+   Mirrors real /dashboard: AppHeader strip + 3/2/1-col responsive grid of
+   WoohooCard lists. Framed in a bordered card. No outer padding so the
+   header can span flush to the rounded frame edges. */
 .landing .dash-frame {
     background: var(--card);
     border: 1px solid var(--line);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-pop);
-    padding: 28px;
+    overflow: hidden;
 }
 
 /* ---------- IS / ISN'T ---------- */

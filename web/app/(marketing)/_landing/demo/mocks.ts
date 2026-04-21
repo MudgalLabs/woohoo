@@ -144,15 +144,16 @@ export const threadDms: TimelineItem[] = [
     }),
 ];
 
+const threadCommentRoot = mockTimelineItem({
+    type: "comment",
+    contentText:
+        "this is exactly the thing I've been looking for, does it handle LinkedIn?",
+    sourceUrl: "https://reddit.com/r/SaaS/comments/demo/how_do_you_track_dms",
+    interactionAt: daysAgo(5),
+});
+
 export const threadComments: TimelineItem[] = [
-    mockTimelineItem({
-        type: "comment",
-        contentText:
-            "this is exactly the thing I've been looking for, does it handle LinkedIn?",
-        sourceUrl:
-            "https://reddit.com/r/SaaS/comments/demo/how_do_you_track_dms",
-        interactionAt: daysAgo(5),
-    }),
+    threadCommentRoot,
     mockTimelineItem({
         type: "comment",
         contentText:
@@ -161,6 +162,7 @@ export const threadComments: TimelineItem[] = [
             "https://reddit.com/r/SaaS/comments/demo/how_do_you_track_dms",
         interactionAt: daysAgo(5),
         authorId: "you",
+        parentId: threadCommentRoot.id,
     }),
 ];
 

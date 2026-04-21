@@ -11,6 +11,7 @@ import { timeAgo } from "@/app/(app)/my-woohoos/WoohooCard";
 interface DemoCommentCardProps {
     item: TimelineItem;
     isFromPeer: boolean;
+    isNested?: boolean;
 }
 
 function extractSubreddit(sourceUrl: string | null): string | null {
@@ -19,7 +20,11 @@ function extractSubreddit(sourceUrl: string | null): string | null {
     return match?.[1] ?? null;
 }
 
-export function DemoCommentCard({ item, isFromPeer }: DemoCommentCardProps) {
+export function DemoCommentCard({
+    item,
+    isFromPeer,
+    isNested,
+}: DemoCommentCardProps) {
     const subreddit = extractSubreddit(item.sourceUrl);
     const ago = timeAgo(item.interactionAt);
 
@@ -28,6 +33,7 @@ export function DemoCommentCard({ item, isFromPeer }: DemoCommentCardProps) {
             className={cn(
                 "relative rounded-lg border border-border bg-card p-4",
                 !isFromPeer && "border-l-2 border-l-primary/60",
+                isNested && "ml-6",
             )}
         >
             <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
