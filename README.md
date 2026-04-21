@@ -1,15 +1,67 @@
 <div align="center">
-  <img src="./.github/screenshots/Banner.png" alt="woohoo banner" />
+  <img src="./.github/screenshots/dashboard-landing.png" alt="woohoo banner" height="500px" />
 
 Capture the DMs and comments worth acting on. Follow up before the moment's gone.
 
-[Website](https://woohoo.to) | [App](https://woohoo.to/dashboard)
+**Supported today:** Reddit · **Coming soon:** X, LinkedIn, and more
+
+[Website](https://woohoo.to) · [Open App](https://woohoo.to/dashboard) · [Install Extension](https://woohoo.to/extension)
 
 </div>
 
 # woohoo
 
-Woohoo is a lightweight follow-up tool for social media conversations. Save the messages and comments that matter in one click, and get reminded to follow up before the moment's gone.
+A lightweight follow-up tool for DMs and comments.
+
+Save any DM or comment in one click from the browser extension. Everything from one person on one platform gets grouped into a thread (a **Woohoo**) with links back to the source. Set a follow-up date, and the dashboard nudges you on the day — **Follow up today**, **Overdue**, **Going cold**.
+
+You still reply on the platform, like a human. Woohoo just makes sure nothing slips.
+
+## Who it's for
+
+Anyone whose leads, feedback, ideas, or criticism live inside DMs and comment threads.
+
+- **Indie founders & solopreneurs** launching products and fielding "does it do X?" from commenters.
+- **Freelancers & agencies** (web dev studios, designers, consultants) chasing inbound from posts or doing light outbound in communities.
+- **Small clinics, coaches, and service businesses** — e.g. a mental health clinic running education content on LinkedIn or X, replying to DMs from potential clients.
+- **Marketers, community managers, and growth folks** working warm channels where the signal lives in replies.
+- **Sales** running community-led or social-first plays.
+- **Researchers** collecting feedback, feature requests, and bug reports from users in the wild.
+- **Developers** — it's open source (AGPL), self-hostable, and the web + extension share one API you can poke at.
+
+If you find yourself scrolling back through notifications three days later trying to remember who said what, this is for you.
+
+## How it works
+
+1. **Capture** — hover any DM or comment, click **Save**. Set an optional follow-up date. No tab switch, no copy-paste.
+2. **Organize** — DMs and comments from the same person on the same platform are grouped into one thread, automatically.
+3. **Follow up** — the dashboard surfaces who's due today, who's overdue, and who's going cold. One click opens the conversation back on the platform.
+
+## What it is. And what it isn't.
+
+**It is:** a capture tool, a person-first timeline, a follow-up dashboard, and open source.
+
+**It isn't:** an outbound tool (you reply manually), a full CRM (no deals, no pipeline, no forecast), a scheduler, or an analytics suite.
+
+## Tech stack
+
+npm workspace monorepo sharing one PostgreSQL database.
+
+- **`web/`** — Next.js 16 (App Router, React 19), Tailwind v4, shadcn/ui, Prisma, better-auth. Deploys to Cloudflare Workers via `opennextjs-cloudflare`.
+- **`ext/`** — MV3 browser extension (React 19, Vite, `@crxjs/vite-plugin`). Builds both Chrome and Firefox artifacts.
+- **`packages/ui`** — shared shadcn primitives.
+- **`packages/api`** — shared API client and types consumed by both web and extension.
+
+## Run it locally
+
+```bash
+cp .env.example .env   # fill in DATABASE_URL, BETTER_AUTH_SECRET, GOOGLE_CLIENT_ID/SECRET
+make dev               # starts Postgres + tmux session with web and ext dev servers
+```
+
+Then load `ext/dist/chrome` as an unpacked extension in Chrome and visit `http://localhost:3000`.
+
+See [`CLAUDE.md`](./CLAUDE.md) for the full architecture tour — data model, save routing rules, auth flow, and directory layout.
 
 ## 📜 License
 

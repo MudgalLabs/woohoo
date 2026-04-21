@@ -1,0 +1,117 @@
+# Woohoo — Launch TODO
+
+Live list of what still needs to happen to call v1 shipped, and the ordered roadmap after.
+
+---
+
+## 1. Pre-launch blockers (won't ship without these)
+
+- [ ] **Publish Chrome Web Store listing.** Upload `ext/release/woohoo.zip` (Chrome build). Store listing needs: screenshots (DM save, comment save, dashboard, detail view), short + long description, privacy-policy URL (`https://woohoo.to/privacy`), permission justifications (`storage`, `tabs`, `reddit.com` host, `woohoo.to` host).
+- [ ] **Publish Firefox AMO listing.** Same assets. Firefox MV3 reviewers are stricter about `host_permissions` scope — be ready to justify each.
+- [ ] **Replace `href="#"` on `/extension` page** (`web/app/(marketing)/extension/page.tsx:43-50`) with real Chrome Web Store + Firefox AMO URLs once approved.
+- [ ] **Seed `Plan` rows in prod DB** (`free` + `pro`). Without the Free row the `databaseHooks.user.create.after` in `lib/auth.ts` silently no-ops for new signups — `getUserPlan()` fallback keeps them working but `Subscription` rows will be missing when Pro goes live.
+- [ ] **Verify prod env vars.** `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL=https://woohoo.to`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`. Confirm Cloudflare Worker is deployed with the current build.
+- [ ] **Verify Firefox build works end-to-end.** `npm run build:firefox` → load `ext/dist/` as a temporary add-on → save a DM and a comment. MV3 on Firefox has quirks around service workers.
+- [ ] **Smoke test on a brand-new Google account.**
+  1. Sign in via `/auth` → land on empty dashboard (`NoWoohoosYet`)
+  2. Install extension → sign in from popup → tab should auto-close on success
+  3. Save a peer DM in a Reddit chat
+  4. Save a peer-authored comment on a post
+  5. Reply to that comment as the founder → save your own reply → confirm it merges into the peer's Woohoo as a 1-level-nested child
+  6. Set a follow-up for today → appears under **Today** on the dashboard
+  7. Set one for yesterday → appears under **Overdue**
+  8. Archive a Woohoo → falls out of active list, does not count toward limit
+  9. Unarchive → counts again; if at 100/100, blocks with plan-limit 403
+  10. Delete a Woohoo and a single timeline item — both cascade correctly
+
+## 2. Launch polish (soft blockers — noticeable if missed)
+
+- [ ] **Plan-limit error UX.** Extension `SaveModal.tsx:266-269` shows a blocking paragraph but no action. Add a link/button to `/my-woohoos?view=archived` so the user can free up a slot without leaving the flow.
+- [ ] **Save modal — network failure state.** `handleSave` currently shows `result.error` but doesn't distinguish offline/timeout from server errors. Cheap to improve.
+- [ ] **Founder username UX.** Popup shows the Reddit username field as an override, but nothing signals to the user *why* it matters. One-line hint: "Only used to detect when you reply inside a saved thread."
+- [ ] **Marketing mobile pass.** Spot-check Hero, Pricing, Dashboard sections at ~375px. The dashboard demo especially is dense on small screens.
+- [ ] **Verify OG image generation** on all marketing pages post-deploy (OG images are generated at build time per recent commit `b2864db`).
+
+## 3. Post-launch — ordered roadmap
+
+### v1.1 — Platform expansion (the 90% of your audience)
+
+Both X and LinkedIn are pure additions — extend the `Platform` enum, add content scripts, reuse the entire save/routing/dashboard stack unchanged. Per-platform checklist:
+
+- Add enum value + migration (`Platform.x`, `Platform.linkedin`)
+- Content script: `ext/src/content/<platform>/dm.ts` + `comment.ts` + `founder.ts`
+- `peerHandle` / `peerProfileUrl` / `PlatformIcon` branches in `web/components/PlatformIcon.tsx`
+- Manifest: add `matches` + `host_permissions` (browser will prompt user — expected)
+- Update privacy policy (extension permissions section lists supported platforms)
+- Update FAQ + pricing + `/extension` page copy
+- Store listing update (new screenshots, new permission justification)
+
+**X / Twitter**
+- Comment surface = tweet replies (conversation tree). Ancestor IDs are tweet status IDs — cleanly scrape-able from DOM.
+- DM surface = `/messages/<conv_id>`. Separate from feed.
+- `peerId` = handle (without `@`). Stable enough for MVP.
+- Open chat URL = `https://x.com/messages/<conv_id>`.
+- Watch for: X's DOM is heavily minified and reshuffles; prefer ARIA/role selectors over class names. Also `twitter.com` and `x.com` both serve — add both to host matches.
+- Founder identity: available from `/i/api/1.1/account/verify_credentials.json` (needs cookie auth) or scraped from the sidebar profile link. Match Reddit's strategy (API first, DOM fallback).
+
+**LinkedIn**
+- Comment surface = post comments on feed posts, articles, and Pulse. Comments do nest (replies), so ancestor walking works.
+- DM surface = `/messaging/thread/<urn>`.
+- `peerId` = LinkedIn URN (`urn:li:fsd_profile:xxx`). URNs are stable; vanity slugs are not — use the URN.
+- Open chat URL = `https://linkedin.com/messaging/thread/<urn>`.
+- Watch for: LinkedIn injects extra modals for "sales-restricted" / "premium" gates; save button must handle being hidden/unhidden gracefully. Also LinkedIn has been aggressive about DOM-based extensions historically — keep the footprint small.
+- Founder identity: fetch `/voyager/api/me` (cookie-auth JSON) or scrape the "Me" menu.
+
+### v1.2 — Pricing → revenue
+
+- [ ] Stripe integration (checkout session + customer portal)
+- [ ] Webhook route that upserts `Subscription.status` from Stripe events
+- [ ] Replace mailto on Pricing section + `/settings/plan` upgrade button with real checkout
+- [ ] Dunning: `past_due` status should block unarchive/new-save with a friendly "update card" message
+- [ ] Revisit: annual discount (`$50/yr` already advertised) — one-click switch between monthly/annual
+
+### v1.3 — Deliver the Pro promise
+
+- [ ] **Daily follow-up digest** (morning + evening email). Pro-only. Promised on the Pricing section (`sections/Pricing.tsx`).
+- [ ] Email infra: Resend is the path of least resistance on Cloudflare Workers (native fetch API). Postmark as an alternative.
+- [ ] Unsubscribe + per-user cadence preference (morning-only, evening-only, both).
+
+### v1.4 — Power user quality-of-life
+
+- [ ] Per-Woohoo private **notes** (one text field on the detail page; bumps `Woohoo.updatedAt`).
+- [ ] Per-Woohoo **tags** (free-form; for "warm lead" / "feedback" / "partnership" labeling).
+- [ ] **Search** across Woohoos and timeline items (Postgres full-text is enough for v1).
+- [ ] **CSV export** from `/settings` — lives up to the open-source, "your data" ethos.
+
+### v1.5 — Discovery & AI (the 10x plays)
+
+- [ ] **Auto-discovery (Reddit).** Use the official Reddit API to scan subreddits/posts for keyword matches and suggest Woohoos. Opt-in, rate-limited, keyword list per user.
+- [ ] **AI lead scoring.** Rank Woohoos by likelihood to convert based on content signals (length of reply, question marks, "I'll try", "DM me", etc.). Start with a heuristic score, graduate to an LLM call if the heuristic correlates with real outcomes.
+- [ ] **AI reply suggestions.** In the Woohoo detail view, a "Draft reply" button that generates a short, on-tone response using the saved context. User still copies + sends on-platform (stays true to "not an outbound tool").
+
+---
+
+## 4. Other platforms — quick take
+
+Short answer: **Reddit + X + LinkedIn is the indie-founder / B2B-sales 95%.** The rest are worth knowing but rarely worth the dev cost.
+
+- **Product Hunt** — high ROI, narrow window. Launch-day comments are gold warm leads. Simple DOM, stable permalinks. Worth a shot after LinkedIn if you see a cohort of PH-launching users. **Recommended.**
+- **Discord** — community-driven SaaS (dev tools, crypto, creators) lives here. Technically feasible via Discord web, but ToS on automation is strict — frame it as *capture only* (which Woohoo already is). **Moderate priority** if your user interviews surface it.
+- **Indie Hackers** — extremely on-nose for your target user, tiny audience. Low dev cost (simple DOM). **Good "delight" bet**, not a growth lever.
+- **YouTube** — comments on videos + Community tab. Relevant for course-selling YouTubers, tech creators running a SaaS on the side. Narrow but high-ROI for that cohort. **Moderate** — revisit if you see YouTuber signups.
+- **Instagram** — mostly B2C creators/lifestyle brands; comments are short and noisy, DMs are where the signal lives. Meta's stance on third-party extensions is hostile. **Low priority** for founders/sales users.
+- **TikTok** — comments + DMs. Young audience, B2C app launchers. DOM is notoriously hard to scrape (obfuscated class names, heavy SPA state). **Low priority.**
+- **Facebook** — Messenger + group comments. Older demographic, mostly B2C. Few indie founders rely on it. **Skip** unless a user-interview surprise.
+- **Hacker News** — comments are gold for feedback, but mostly anonymous handles = no "follow-up" surface. Use case is *feedback capture*, not *lead management*. Could be a "Save to notes" lightweight integration — different flow from Woohoos. **Defer / different product.**
+
+**Recommendation:** after X + LinkedIn, do a user-survey check-in before picking platform #4. The correct answer is probably one of **Product Hunt** (launch-centric founders) or **Discord** (community-led SaaS), depending on who actually signs up in v1.1.
+
+---
+
+## 5. Ideas pool (not scheduled)
+
+- Browser extension side panel for a faster glance at today's follow-ups
+- Slack integration: daily digest into a personal Slack DM instead of email
+- Team plan: share a Woohoo with a co-founder (rare ask, but consistent with "small team" pitch)
+- Calendar: auto-create Google Calendar event when follow-up is set
+- Self-host docs + one-command `docker compose` setup (AGPL promise from the landing page — worth formalizing a `SELF_HOSTING.md`)
