@@ -3,6 +3,7 @@ import { Woohoo, TimelineItem } from "@/app/generated/prisma/client";
 import { PlatformIcon, peerHandle } from "@/components/PlatformIcon";
 import { Avatar, AvatarFallback } from "@woohoo/ui";
 import { cn } from "@/lib/utils";
+import { dayDiffInTz } from "@/lib/date-tz";
 
 export interface WoohooCounts {
     dm: number;
@@ -13,16 +14,12 @@ interface WoohooCardProps {
     woohoo: Woohoo & { timeline: TimelineItem[] };
     counts?: WoohooCounts;
     variant?: "default" | "overdue";
+    timezone: string;
 }
 
-export function followUpLabel(date: Date | string): string {
-    const target = new Date(date);
-    target.setHours(0, 0, 0, 0);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const diff = Math.round(
-        (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
-    );
+export function followUpLabel(date: Date | string, tz: string): string {
+    const target = typeof date === "string" ? new Date(date) : date;
+    const diff = dayDiffInTz(target, new Date(), tz);
     if (diff === 0) return "Follow up today";
     if (diff === 1) return "Follow up tomorrow";
     if (diff === -1) return "Overdue yesterday";
@@ -61,6 +58,7 @@ export function WoohooCard({
     woohoo,
     counts,
     variant = "default",
+    timezone,
 }: WoohooCardProps) {
     const latestItem = woohoo.timeline[0];
     const preview = latestItem?.contentText
@@ -109,7 +107,7 @@ export function WoohooCard({
                                         : "text-primary",
                                 )}
                             >
-                                {followUpLabel(woohoo.followUpAt)}
+                                {followUpLabel(woohoo.followUpAt, timezone)}
                             </span>
                         )}
                     </div>

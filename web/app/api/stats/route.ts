@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { prisma } from "@/lib/prisma";
 import { getSessionFromRequest } from "@/lib/get-session-from-request";
+import { endOfDayInTz, startOfDayInTz } from "@/lib/date-tz";
 
 export async function GET(request: Request) {
     const session = await getSessionFromRequest(request);
@@ -10,16 +11,12 @@ export async function GET(request: Request) {
     }
 
     const userId = session.user.id;
+    const timezone =
+        (session.user as { timezone?: string | null }).timezone ?? "UTC";
 
     const now = new Date();
-    const startOfToday = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate(),
-    );
-    const endOfToday = new Date(
-        startOfToday.getTime() + 24 * 60 * 60 * 1000 - 1,
-    );
+    const startOfToday = startOfDayInTz(now, timezone);
+    const endOfToday = endOfDayInTz(now, timezone);
 
     const [totalWoohoos, followUpToday] = await Promise.all([
         prisma.woohoo.count({ where: { userId, archivedAt: null } }),

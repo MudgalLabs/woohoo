@@ -6,12 +6,35 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "@/lib/prisma";
 import { PlanTier } from "@/app/generated/prisma/client";
 
+export const emailPasswordAuthEnabled =
+    process.env.ENABLE_EMAIL_PASSWORD_AUTH === "true";
+
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider: "postgresql",
     }),
-    emailAndPassword: {
-        enabled: true,
+    socialProviders: {
+        google: {
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+        },
+    },
+    ...(emailPasswordAuthEnabled
+        ? { emailAndPassword: { enabled: true as const } }
+        : {}),
+    account: {
+        accountLinking: {
+            enabled: true,
+        },
+    },
+    user: {
+        additionalFields: {
+            timezone: {
+                type: "string",
+                required: false,
+                input: false,
+            },
+        },
     },
     trustedOrigins: ["chrome-extension://*"],
     // bearer() allows Authorization: Bearer <token> auth (used by the extension).

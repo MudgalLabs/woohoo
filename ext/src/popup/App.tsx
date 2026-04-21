@@ -6,7 +6,7 @@ import { useStoredTheme } from "@/lib/theme";
 import { API_BASE_URL as BASE_URL } from "@/lib/api-base-url";
 import "./App.css";
 
-const SIGN_UP_URL = `${BASE_URL}/sign-up`;
+const AUTH_URL = `${BASE_URL}/auth?from=ext&extId=${chrome.runtime.id}`;
 const DASHBOARD_URL = `${BASE_URL}/dashboard`;
 
 const FOUNDER_KEY = "founder_reddit_username";
@@ -16,10 +16,6 @@ export default function App() {
         undefined,
     );
     const [stats, setStats] = useState<StatsResponse | null>(null);
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
     const [redditUsername, setRedditUsername] = useState("");
     const theme = useStoredTheme();
 
@@ -47,6 +43,29 @@ export default function App() {
         });
     }, []);
 
+    useEffect(() => {
+        const onChange = (
+            changes: Record<string, chrome.storage.StorageChange>,
+            area: string,
+        ) => {
+            if (area !== "local") return;
+            if (changes.session) {
+                const next = changes.session.newValue as AuthSession | undefined;
+                setSession(next ?? null);
+            }
+            if (changes[FOUNDER_KEY]) {
+                const next = changes[FOUNDER_KEY].newValue;
+                if (typeof next === "string") {
+                    setRedditUsername(normalizeRedditUsername(next));
+                } else if (next === undefined) {
+                    setRedditUsername("");
+                }
+            }
+        };
+        chrome.storage.onChanged.addListener(onChange);
+        return () => chrome.storage.onChanged.removeListener(onChange);
+    }, []);
+
     function handleRedditUsernameBlur() {
         const normalized = normalizeRedditUsername(redditUsername);
         setRedditUsername(normalized);
@@ -70,24 +89,8 @@ export default function App() {
         );
     }, [session]);
 
-    function handleSignIn(e: React.FormEvent) {
-        e.preventDefault();
-        setError(null);
-        setLoading(true);
-        chrome.runtime.sendMessage(
-            { type: "SIGN_IN", email, password },
-            (res: { ok: boolean; error?: string }) => {
-                setLoading(false);
-                if (res.ok) {
-                    chrome.runtime.sendMessage(
-                        { type: "GET_SESSION" },
-                        (r: { session: AuthSession | null }) => setSession(r.session),
-                    );
-                } else {
-                    setError(res.error ?? "Something went wrong.");
-                }
-            },
-        );
+    function handleSignIn() {
+        chrome.tabs.create({ url: AUTH_URL });
     }
 
     function handleSignOut() {
@@ -160,44 +163,13 @@ export default function App() {
                 <span className="popup-brand">Woohoo</span>
             </header>
 
-            <form onSubmit={handleSignIn} className="signin-form">
-                <input
-                    className="input"
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    autoFocus
-                />
-                <input
-                    className="input"
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-
-                {error && <p className="error">{error}</p>}
-
-                <button className="btn-primary" type="submit" disabled={loading}>
-                    {loading ? "Signing in…" : "Sign in"}
-                </button>
-            </form>
-
-            <p className="signup-hint">
-                No account?{" "}
-                <a
-                    href={SIGN_UP_URL}
-                    onClick={(e) => {
-                        e.preventDefault();
-                        chrome.tabs.create({ url: SIGN_UP_URL });
-                    }}
-                >
-                    Create one on Woohoo
-                </a>
+            <p className="signin-intro">
+                Sign in to start saving DMs and comments.
             </p>
+
+            <button className="btn-signin" onClick={handleSignIn}>
+                Sign in
+            </button>
         </div>
     );
 }

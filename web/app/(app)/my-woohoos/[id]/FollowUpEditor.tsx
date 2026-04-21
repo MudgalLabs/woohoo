@@ -6,19 +6,19 @@ import { Plus } from "lucide-react";
 import { DateTimePicker } from "@/components/DateTimePicker";
 import { cn } from "@/lib/utils";
 import { followUpLabel } from "../WoohooCard";
+import { dayDiffInTz } from "@/lib/date-tz";
 
 interface FollowUpEditorProps {
     woohooId: string;
     followUpAt: string | null;
+    timezone: string;
 }
 
-function startOfDay(d: Date): Date {
-    const x = new Date(d);
-    x.setHours(0, 0, 0, 0);
-    return x;
-}
-
-export function FollowUpEditor({ woohooId, followUpAt }: FollowUpEditorProps) {
+export function FollowUpEditor({
+    woohooId,
+    followUpAt,
+    timezone,
+}: FollowUpEditorProps) {
     const [current, setCurrent] = useState<Date | null>(
         followUpAt ? new Date(followUpAt) : null,
     );
@@ -55,8 +55,7 @@ export function FollowUpEditor({ woohooId, followUpAt }: FollowUpEditorProps) {
     }
 
     if (current) {
-        const isOverdue =
-            startOfDay(current).getTime() < startOfDay(new Date()).getTime();
+        const isOverdue = dayDiffInTz(current, new Date(), timezone) < 0;
         return (
             <button
                 type="button"
@@ -66,7 +65,7 @@ export function FollowUpEditor({ woohooId, followUpAt }: FollowUpEditorProps) {
                     isOverdue ? "text-destructive" : "text-primary",
                 )}
             >
-                {followUpLabel(current)}
+                {followUpLabel(current, timezone)}
             </button>
         );
     }

@@ -10,6 +10,11 @@ const hostPermissions = [
     ...(isProd ? [] : ["http://localhost:3000/*"]),
 ];
 
+const externallyConnectableMatches = [
+    "https://woohoo.to/*",
+    ...(isProd ? [] : ["http://localhost:3000/*"]),
+];
+
 const background =
     browser === "firefox"
         ? { scripts: ["src/background/index.ts"], type: "module" as const }
@@ -75,6 +80,9 @@ export default defineManifest({
             matches: ["https://www.reddit.com/*"],
         },
     ],
+    externally_connectable: {
+        matches: externallyConnectableMatches,
+    },
     ...geckoSettings,
     ...chromeOnly,
 });

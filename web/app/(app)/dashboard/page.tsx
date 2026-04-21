@@ -9,6 +9,7 @@ import { EmptyState } from "@/components/empty-state";
 import { NoWoohoosYet } from "@/components/no-woohoos-yet";
 import { Woohoo, TimelineItem } from "@/app/generated/prisma/client";
 import { cn } from "@/lib/utils";
+import { endOfDayInTz, startOfDayInTz } from "@/lib/date-tz";
 
 export const metadata = { title: "Dashboard" };
 
@@ -24,6 +25,7 @@ function DashboardSection({
     emptyIcon,
     variant = "default",
     countsMap,
+    timezone,
     className,
 }: {
     heading: string;
@@ -33,6 +35,7 @@ function DashboardSection({
     emptyIcon: LucideIcon;
     variant?: "default" | "overdue";
     countsMap: Map<string, WoohooCounts>;
+    timezone: string;
     className?: string;
 }) {
     return (
@@ -56,6 +59,7 @@ function DashboardSection({
                             woohoo={w}
                             counts={countsMap.get(w.id)}
                             variant={variant}
+                            timezone={timezone}
                         />
                     ))}
                 </div>
@@ -130,15 +134,10 @@ export default async function DashboardPage() {
         return <NoWoohoosYet />;
     }
 
+    const timezone = session!.user.timezone ?? "UTC";
     const now = new Date();
-    const startOfToday = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate(),
-    );
-    const endOfToday = new Date(
-        startOfToday.getTime() + 24 * 60 * 60 * 1000 - 1,
-    );
+    const startOfToday = startOfDayInTz(now, timezone);
+    const endOfToday = endOfDayInTz(now, timezone);
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
     const today = allWoohoos.filter(
@@ -171,6 +170,7 @@ export default async function DashboardPage() {
                     emptyText="Nothing due today — enjoy the quiet."
                     emptyIcon={Coffee}
                     countsMap={countsMap}
+                    timezone={timezone}
                     className="order-2 lg:order-0"
                 />
                 <DashboardSection
@@ -181,6 +181,7 @@ export default async function DashboardPage() {
                     emptyIcon={CheckCircle2}
                     variant="overdue"
                     countsMap={countsMap}
+                    timezone={timezone}
                     className="order-1 lg:order-0"
                 />
                 <DashboardSection
@@ -190,6 +191,7 @@ export default async function DashboardPage() {
                     emptyText="Everything looks warm. Keep it up."
                     emptyIcon={Flame}
                     countsMap={countsMap}
+                    timezone={timezone}
                     className="order-3 md:col-span-2 lg:col-span-1 lg:order-0"
                 />
             </div>

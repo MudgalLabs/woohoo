@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma";
 import {
     Avatar,
     AvatarFallback,
+    CountBadge,
     Tabs,
     TabsContent,
     TabsList,
@@ -34,26 +35,21 @@ import { CommentCard } from "./CommentCard";
 import { DeleteWoohooButton } from "./DeleteWoohooButton";
 import { FollowUpEditor } from "./FollowUpEditor";
 import { EmptyState } from "@/components/empty-state";
+import { dayDiffInTz } from "@/lib/date-tz";
 
-function dayLabel(date: Date): string {
-    const d = new Date(date);
-    d.setHours(0, 0, 0, 0);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const diffDays = Math.round(
-        (today.getTime() - d.getTime()) / (1000 * 60 * 60 * 24),
-    );
+function dayLabel(date: Date, tz: string): string {
+    const diffDays = dayDiffInTz(new Date(), date, tz);
     if (diffDays === 0) return "Today";
     if (diffDays === 1) return "Yesterday";
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        timeZone: tz,
+    });
 }
 
-function sameDay(a: Date, b: Date): boolean {
-    return (
-        a.getFullYear() === b.getFullYear() &&
-        a.getMonth() === b.getMonth() &&
-        a.getDate() === b.getDate()
-    );
+function sameDayInTz(a: Date, b: Date, tz: string): boolean {
+    return dayDiffInTz(a, b, tz) === 0;
 }
 
 export const metadata = { title: "Woohoo" };
@@ -75,6 +71,7 @@ export default async function WoohooDetailPage({
 
     if (!woohoo) notFound();
 
+    const timezone = session!.user.timezone ?? "UTC";
     const dms = woohoo.timeline.filter((item) => item.type === "dm");
     const comments = woohoo.timeline.filter((item) => item.type === "comment");
     const counts: WoohooCounts = { dm: dms.length, comment: comments.length };
@@ -170,6 +167,7 @@ export default async function WoohooDetailPage({
                                         ? woohoo.followUpAt.toISOString()
                                         : null
                                 }
+                                timezone={timezone}
                             />
                         </div>
                     </div>
@@ -181,23 +179,26 @@ export default async function WoohooDetailPage({
                     <TabsTrigger value="messages">
                         DMs
                         {dms.length > 0 && (
-                            <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary/20 px-1.5 text-xs font-medium text-secondary-foreground">
-                                {dms.length}
-                            </span>
+                            <CountBadge className="ml-2" count={dms.length} />
                         )}
                     </TabsTrigger>
                     <TabsTrigger value="comments">
                         Comments
                         {comments.length > 0 && (
-                            <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary/20 px-1.5 text-xs font-medium text-secondary-foreground">
-                                {comments.length}
-                            </span>
+                            <CountBadge
+                                className="ml-2"
+                                count={comments.length}
+                            />
                         )}
                     </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="messages" className="mt-4">
-                    <MessagesView items={dms} peerId={woohoo.peerId} />
+                    <MessagesView
+                        items={dms}
+                        peerId={woohoo.peerId}
+                        timezone={timezone}
+                    />
                 </TabsContent>
 
                 <TabsContent value="comments" className="mt-4">
@@ -211,9 +212,11 @@ export default async function WoohooDetailPage({
 function MessagesView({
     items,
     peerId,
+    timezone,
 }: {
     items: TimelineItem[];
     peerId: string;
+    timezone: string;
 }) {
     if (items.length === 0) {
         return (
@@ -230,9 +233,10 @@ function MessagesView({
                 const prev = items[idx - 1];
                 const showDayDivider =
                     !prev ||
-                    !sameDay(
+                    !sameDayInTz(
                         new Date(prev.interactionAt),
                         new Date(item.interactionAt),
+                        timezone,
                     );
                 const isFromPeer = item.authorId === peerId;
 
@@ -241,7 +245,10 @@ function MessagesView({
                         {showDayDivider && (
                             <div className="flex justify-center my-2">
                                 <span className="text-xs text-muted-foreground px-2">
-                                    {dayLabel(new Date(item.interactionAt))}
+                                    {dayLabel(
+                                        new Date(item.interactionAt),
+                                        timezone,
+                                    )}
                                 </span>
                             </div>
                         )}

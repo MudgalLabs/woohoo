@@ -22,6 +22,7 @@ export {
     CardDescription,
     CardContent,
 } from "./components/card"
+export { CountBadge } from "./components/count-badge"
 export {
     DropdownMenu,
     DropdownMenuTrigger,

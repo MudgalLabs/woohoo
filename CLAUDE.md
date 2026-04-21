@@ -139,9 +139,9 @@ Change this logic in `web/app/api/woohoos/save/route.ts` (and keep `api/woohoos/
         - `my-woohoos/` — list page (`WoohooCard` grid)
         - `my-woohoos/[id]/` — detail page (`FollowUpEditor`, `ChatBubble`, `CommentCard`, delete buttons)
     - `(marketing)/extension/` — public extension info page
-    - `sign-in/`, `sign-up/` — auth pages
+    - `auth/` — unified sign-in/sign-up page (Google OAuth). `auth/ext-return` posts the session token back to the extension via `chrome.runtime.sendMessage` after OAuth.
 - `lib/` — shared server/client utilities
-    - `auth.ts` — better-auth server config (email+password, Prisma adapter)
+    - `auth.ts` — better-auth server config (Google social sign-in only, Prisma adapter, bearer plugin for extension)
     - `auth-client.ts` — client-side better-auth instance
     - `prisma.ts` — Prisma client singleton (use this, don't instantiate a new one)
     - `get-session.ts` — cookie-based session helper (server components)

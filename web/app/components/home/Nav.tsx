@@ -65,10 +65,10 @@ export function Nav({
                         </Link>
                     ) : (
                         <>
-                            <Link href="/sign-in">
+                            <Link href="/auth">
                                 <Button variant="ghost">Sign In</Button>
                             </Link>
-                            <Link href="/sign-up">
+                            <Link href="/auth">
                                 <Button>Start for free</Button>
                             </Link>
                         </>

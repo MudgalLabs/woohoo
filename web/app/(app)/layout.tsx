@@ -16,6 +16,7 @@ import { AppNav } from "./AppNav";
 import { AppHeader } from "./AppHeader";
 import { AppSidebarFooter } from "./AppSidebarFooter";
 import { SidebarUsage } from "./SidebarUsage";
+import { TimezoneBackfill } from "./TimezoneBackfill";
 import { Logo } from "@/app/components/brand/Logo";
 
 export default async function AppLayout({
@@ -24,7 +25,7 @@ export default async function AppLayout({
     children: React.ReactNode;
 }) {
     const session = await getSession();
-    if (!session) redirect("/sign-in");
+    if (!session) redirect("/auth");
 
     const cookieStore = await cookies();
     const defaultOpen = cookieStore.get("sidebar_state")?.value !== "false";
@@ -78,6 +79,9 @@ export default async function AppLayout({
                 <AppHeader />
                 {children}
             </SidebarInset>
+            <TimezoneBackfill
+                currentTimezone={session.user.timezone ?? null}
+            />
         </SidebarProvider>
     );
 }

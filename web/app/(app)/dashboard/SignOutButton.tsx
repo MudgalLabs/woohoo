@@ -10,7 +10,7 @@ export default function SignOutButton() {
 
     const handleOnClick = async () => {
         await authClient.signOut();
-        router.push("/sign-in");
+        router.push("/auth");
     };
 
     return <Button onClick={handleOnClick}>Sign Out</Button>;

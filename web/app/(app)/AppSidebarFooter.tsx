@@ -2,7 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { useSyncExternalStore } from "react";
-import { ChevronsUpDown, CreditCard, LogOut, Moon, Sun } from "lucide-react";
+import {
+    ChevronsUpDown,
+    CreditCard,
+    LogOut,
+    Moon,
+    Settings,
+    Sun,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { authClient } from "@/lib/auth-client";
@@ -62,7 +69,7 @@ export function AppSidebarFooter({ user }: { user: AppSidebarFooterUser }) {
 
     const handleSignOut = async () => {
         await authClient.signOut();
-        router.push("/sign-in");
+        router.push("/auth");
     };
 
     const initials = getInitials(user.name, user.email);
@@ -132,6 +139,13 @@ export function AppSidebarFooter({ user }: { user: AppSidebarFooterUser }) {
                             </DropdownMenuLabel>
 
                             <DropdownMenuSeparator />
+
+                            <Link href="/settings">
+                                <DropdownMenuItem>
+                                    <Settings />
+                                    Settings
+                                </DropdownMenuItem>
+                            </Link>
 
                             <Link href="/settings/plan">
                                 <DropdownMenuItem>

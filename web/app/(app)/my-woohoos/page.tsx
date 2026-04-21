@@ -7,6 +7,7 @@ import { getTimelineCountsByWoohoo } from "@/lib/timeline-counts";
 import { NoWoohoosYet } from "@/components/no-woohoos-yet";
 import { EmptyState } from "@/components/empty-state";
 import { Archive } from "lucide-react";
+import { CountBadge } from "@woohoo/ui";
 import { cn } from "@/lib/utils";
 
 export const metadata = { title: "My Woohoos" };
@@ -35,11 +36,7 @@ function TabLink({
             )}
         >
             {label}
-            {
-                <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary/20 px-1.5 text-xs font-medium text-secondary-foreground">
-                    {count}
-                </span>
-            }
+            <CountBadge className="ml-2" count={count} active={active} />
         </Link>
     );
 }
@@ -54,6 +51,7 @@ export default async function MyWoohoos({
 
     const session = await getSession();
     const userId = session!.user.id;
+    const timezone = session!.user.timezone ?? "UTC";
 
     const [activeCount, archivedCount, woohoos, countsMap] = await Promise.all([
         prisma.woohoo.count({ where: { userId, archivedAt: null } }),
@@ -110,6 +108,7 @@ export default async function MyWoohoos({
                             key={w.id}
                             woohoo={w}
                             counts={countsMap.get(w.id)}
+                            timezone={timezone}
                         />
                     ))}
                 </div>
