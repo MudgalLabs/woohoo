@@ -1,4 +1,5 @@
 import { CheckCircle2, Coffee, Flame, type LucideIcon } from "lucide-react";
+import { CountBadge } from "@woohoo/ui";
 
 import { getSession } from "@/lib/get-session";
 import { prisma } from "@/lib/prisma";
@@ -8,7 +9,6 @@ import { getTimelineCountsByWoohoo } from "@/lib/timeline-counts";
 import { EmptyState } from "@/components/empty-state";
 import { NoWoohoosYet } from "@/components/no-woohoos-yet";
 import { Woohoo, TimelineItem } from "@/app/generated/prisma/client";
-import { cn } from "@/lib/utils";
 import { endOfDayInTz, startOfDayInTz } from "@/lib/date-tz";
 
 export const metadata = { title: "Dashboard" };
@@ -41,8 +41,17 @@ function DashboardSection({
     return (
         <section className={className}>
             <div className="mb-3">
-                <h2 className="text-sm font-semibold text-foreground">
+                <h2 className="text-sm font-semibold text-foreground inline-flex items-center">
                     {heading}
+                    <CountBadge
+                        className={
+                            variant === "overdue" && woohoos.length > 0
+                                ? "ml-2 bg-destructive/15 text-destructive"
+                                : "ml-2"
+                        }
+                        count={woohoos.length}
+                        active={woohoos.length > 0}
+                    />
                 </h2>
                 <p className="text-xs text-muted-foreground mt-0.5">
                     {subheading}
@@ -65,52 +74,6 @@ function DashboardSection({
                 </div>
             )}
         </section>
-    );
-}
-
-function HeroStats({
-    today,
-    overdue,
-    goingCold,
-}: {
-    today: number;
-    overdue: number;
-    goingCold: number;
-}) {
-    const parts: { count: number; label: string; emphasis?: boolean }[] = [
-        { count: today, label: "to follow up today" },
-        { count: overdue, label: "overdue", emphasis: overdue > 0 },
-        { count: goingCold, label: "going cold" },
-    ];
-
-    const allZero = today === 0 && overdue === 0 && goingCold === 0;
-    if (allZero) {
-        return (
-            <p className="text-sm text-muted-foreground">
-                All caught up — nothing needs your attention right now.
-            </p>
-        );
-    }
-
-    return (
-        <p className="text-sm text-muted-foreground">
-            {parts.map((part, i) => (
-                <span key={part.label}>
-                    {i > 0 && <span className="mx-2 text-border">·</span>}
-                    <span
-                        className={cn(
-                            "text-base font-semibold tracking-tight",
-                            part.emphasis
-                                ? "text-destructive"
-                                : "text-foreground",
-                        )}
-                    >
-                        {part.count}
-                    </span>{" "}
-                    <span>{part.label}</span>
-                </span>
-            ))}
-        </p>
     );
 }
 
@@ -155,13 +118,7 @@ export default async function DashboardPage() {
     );
 
     return (
-        <div className="p-6 space-y-8">
-            <HeroStats
-                today={today.length}
-                overdue={overdue.length}
-                goingCold={goingCold.length}
-            />
-
+        <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <DashboardSection
                     heading="Today"

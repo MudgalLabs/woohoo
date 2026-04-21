@@ -1,40 +1,6 @@
+import { ChromeIcon, FirefoxIcon } from "@/app/components/brand/BrandIcons";
+
 export const metadata = { title: "Install Woohoo" };
-
-function ChromeIcon() {
-    return (
-        <svg
-            viewBox="0 0 48 48"
-            className="w-10 h-10"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-        >
-            <circle cx="24" cy="24" r="24" fill="#EAEAEA" />
-            <circle cx="24" cy="24" r="10" fill="#4285F4" />
-            <circle cx="24" cy="24" r="6" fill="white" />
-            <path d="M24 14 L38 14 A14 14 0 0 1 43.1 32.5 Z" fill="#EA4335" />
-            <path d="M24 14 L10 14 A14 14 0 0 0 4.9 32.5 Z" fill="#FBBC05" />
-            <path
-                d="M4.9 32.5 A14 14 0 0 0 43.1 32.5 L37.1 29 A8 8 0 0 1 10.9 29 Z"
-                fill="#34A853"
-            />
-        </svg>
-    );
-}
-
-function FirefoxIcon() {
-    return (
-        <svg
-            viewBox="0 0 48 48"
-            className="w-10 h-10"
-            xmlns="http://www.w3.org/2000/svg"
-        >
-            <circle cx="24" cy="24" r="24" fill="#EAEAEA" />
-            <circle cx="24" cy="24" r="13" fill="#0060DF" />
-            <circle cx="24" cy="24" r="8" fill="#00B3F4" />
-            <circle cx="24" cy="24" r="4" fill="#FF980E" />
-        </svg>
-    );
-}
 
 function BrowserCard({
     icon,

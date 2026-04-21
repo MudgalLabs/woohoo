@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&display=swap");
+
 :root {
     --paper: #f5f0e8;
     --paper-dark: #e3d8c2;
@@ -47,18 +49,15 @@ body {
 .popup-header {
     display: flex;
     align-items: center;
-    gap: 6px;
-}
-
-.popup-logo {
-    height: 20px;
-    width: auto;
 }
 
 .popup-brand {
-    font-size: 15px;
-    font-weight: 600;
+    font-family: "Fredoka", ui-sans-serif, system-ui, sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
     color: var(--red);
+    line-height: 1;
 }
 
 /* Signed-in view */

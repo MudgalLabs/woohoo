@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import type { AuthSession, StatsResponse } from "@woohoo/api";
-import { Logo } from "@/components/Logo";
 import { normalizeRedditUsername } from "@/content/reddit/founder";
 import { useStoredTheme } from "@/lib/theme";
 import { API_BASE_URL as BASE_URL } from "@/lib/api-base-url";
@@ -117,8 +116,7 @@ export default function App() {
         return (
             <div className="popup">
                 <header className="popup-header">
-                    <Logo className="popup-logo" />
-                    <span className="popup-brand">Woohoo</span>
+                    <span className="popup-brand">woohoo</span>
                 </header>
 
                 <div className="account-info">
@@ -159,8 +157,7 @@ export default function App() {
     return (
         <div className="popup">
             <header className="popup-header">
-                <Logo className="popup-logo" />
-                <span className="popup-brand">Woohoo</span>
+                <span className="popup-brand">woohoo</span>
             </header>
 
             <p className="signin-intro">
