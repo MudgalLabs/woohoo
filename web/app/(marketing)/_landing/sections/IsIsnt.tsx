@@ -26,9 +26,9 @@ export function IsIsnt() {
                         <ul className="is-list">
                             <li>
                                 <span>
-                                    <b>A capture tool.</b> 1-click save of
-                                    messages and comments that matter, link back
-                                    to the original.
+                                    <b>A capture tool.</b> 1-click save of DMs
+                                    and comments that matter, link back to the
+                                    original.
                                 </span>
                             </li>
                             <li>

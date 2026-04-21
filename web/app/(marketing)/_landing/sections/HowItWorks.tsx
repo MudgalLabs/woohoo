@@ -59,7 +59,7 @@ export function HowItWorks() {
                             <h3>Organize</h3>
                         </div>
                         <p>
-                            All messages and comments are grouped by person
+                            All DMs and comments are grouped by person
                             automatically.
                         </p>
                         <div className="illo illo-stack">

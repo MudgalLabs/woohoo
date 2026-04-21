@@ -9,11 +9,11 @@ const ITEMS: { q: string; a: string }[] = [
     },
     {
         q: "How is this different from a Notion template or a spreadsheet?",
-        a: "Speed. Save a conversation in one click — no copying, no tab switching. Messages from the same person are grouped automatically.",
+        a: "Speed. Save any DM or comment in one click — no copying, no tab switching. DMs and comments from same person are grouped automatically.",
     },
     {
         q: "Will this get my account flagged or banned?",
-        a: "No. Woohoo doesn’t send messages or automate anything. You reply manually, like you normally would.",
+        a: "No. Woohoo doesn’t send DM or automate anything. You reply manually, like you normally would.",
     },
     {
         q: "What kind of conversations is this useful for?",

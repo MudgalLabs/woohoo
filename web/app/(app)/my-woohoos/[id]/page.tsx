@@ -179,7 +179,7 @@ export default async function WoohooDetailPage({
             <Tabs defaultValue={defaultTab} className="w-full">
                 <TabsList>
                     <TabsTrigger value="messages">
-                        Messages
+                        DMs
                         {dms.length > 0 && (
                             <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary/20 px-1.5 text-xs font-medium text-secondary-foreground">
                                 {dms.length}
@@ -218,8 +218,8 @@ function MessagesView({
     if (items.length === 0) {
         return (
             <EmptyState icon={MessageSquare}>
-                No messages yet. Save a Reddit DM from the extension to start
-                the conversation.
+                No DMs yet. Save a DM using the extension to start the
+                conversation.
             </EmptyState>
         );
     }
@@ -263,8 +263,8 @@ function CommentsView({
     if (items.length === 0) {
         return (
             <EmptyState icon={MessageSquareText}>
-                No comments saved yet. Save a Reddit comment from this peer
-                using the extension.
+                No comments saved yet. Save a comment using the extension to
+                start the conversation.
             </EmptyState>
         );
     }

@@ -82,9 +82,9 @@ export function ThreadMock({
                         place.
                     </h2>
                     <p>
-                        Open a Woohoo and you see the whole conversation —
-                        messages on one tab, comments on another, follow-up
-                        front and center.
+                        Open a Woohoo and you see the whole conversation — DMs
+                        on one tab, comments on another, follow-up front and
+                        center.
                     </p>
                 </div>
 
@@ -139,7 +139,7 @@ export function ThreadMock({
                     <Tabs defaultValue="messages" className="w-full">
                         <TabsList>
                             <TabsTrigger value="messages">
-                                Messages
+                                DMs
                                 {threadDms.length > 0 && (
                                     <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary/20 px-1.5 text-xs font-medium text-secondary-foreground">
                                         {threadDms.length}
