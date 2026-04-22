@@ -1,4 +1,4 @@
-.PHONY: dev kill up install
+.PHONY: dev kill up install build
 
 SESSION_NAME=woohoo
 
@@ -23,3 +23,7 @@ dev:
 
 kill:
 	tmux kill-session -t $(SESSION_NAME) || true
+
+build:
+	cd web && npm run build
+	cd ext && npm run build
