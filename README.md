@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./.github/screenshots/dashboard-landing.png" alt="woohoo banner" height="500px" />
+  <img src="./.github/screenshots/dashboard-landing.png" alt="woohoo dashboard" height="500px" />
 
 Capture the DMs and comments worth acting on. Follow up before the moment's gone.
 
@@ -24,9 +24,6 @@ Anyone whose leads, feedback, ideas, or criticism live inside DMs and comment th
 - **Indie founders & solopreneurs** launching products and fielding "does it do X?" from commenters.
 - **Freelancers & agencies** (web dev studios, designers, consultants) chasing inbound from posts or doing light outbound in communities.
 - **Small clinics, coaches, and service businesses** — e.g. a mental health clinic running education content on LinkedIn or X, replying to DMs from potential clients.
-- **Marketers, community managers, and growth folks** working warm channels where the signal lives in replies.
-- **Sales** running community-led or social-first plays.
-- **Researchers** collecting feedback, feature requests, and bug reports from users in the wild.
 - **Developers** — it's open source (AGPL), self-hostable, and the web + extension share one API you can poke at.
 
 If you find yourself scrolling back through notifications three days later trying to remember who said what, this is for you.
@@ -34,7 +31,7 @@ If you find yourself scrolling back through notifications three days later tryin
 ## How it works
 
 1. **Capture** — hover any DM or comment, click **Save**. Set an optional follow-up date. No tab switch, no copy-paste.
-2. **Organize** — DMs and comments from the same person on the same platform are grouped into one thread, automatically.
+2. **Organize** — DMs and comments from the same person on the same platform are grouped into one Woohoo, automatically.
 3. **Follow up** — the dashboard surfaces who's due today, who's overdue, and who's going cold. One click opens the conversation back on the platform.
 
 ## What it is. And what it isn't.
@@ -59,7 +56,7 @@ cp .env.example .env   # fill in DATABASE_URL, BETTER_AUTH_SECRET, GOOGLE_CLIENT
 make dev               # starts Postgres + tmux session with web and ext dev servers
 ```
 
-Then load `ext/dist/chrome` as an unpacked extension in Chrome and visit `http://localhost:3000`.
+Then load `ext/dist-chrome` as an unpacked extension in Chrome and visit `http://localhost:3000`.
 
 See [`CLAUDE.md`](./CLAUDE.md) for the full architecture tour — data model, save routing rules, auth flow, and directory layout.
 
