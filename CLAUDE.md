@@ -6,27 +6,33 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### The Problem
 
-Founders, indie hackers, and solopreneurs use Reddit (and other platforms) to market their products. When a post blows up, they get flooded with comments and DMs — some are feature requests, some are warm leads saying "I'll try it this weekend", some are feedback, some are criticisms. There is no good way to capture and act on these interactions. Mental tracking fails. Spreadsheets are too slow and need discipline. Scrolling back through notifications and chat inboxes is painful. Important signals get lost.
+Anyone whose leads, feedback, ideas, or criticism live inside DMs and comment threads — indie founders, freelancers, agencies, coaches, small service businesses — loses signal every week to the same problem. A post blows up, DMs start rolling in, comments pile up. Some are feature requests, some are warm leads saying "I'll try it this weekend", some are feedback, some are criticisms. There is no good way to capture and act on these interactions. Mental tracking fails. Spreadsheets are too slow and need discipline. Scrolling back through notifications and chat inboxes three days later is painful. Important signals get lost.
 
 ### The Solution
 
-Woohoo is a social CRM for indie founders. It captures important social media interactions (messages, comments, replies) with one click via a browser extension, organizes them into **Woohoos** (one per platform + person), and reminds founders to follow up at the right time.
+Woohoo is a lightweight follow-up tool for DMs and comments. It captures interactions worth acting on (messages, comments, replies) with one click via a browser extension, organizes them into **Woohoos** (one per platform + person), and nudges you to follow up at the right time. You still reply on the platform like a human — Woohoo just makes sure nothing slips.
+
+Today the extension supports Reddit; X, LinkedIn, and more are next. The data model, API, and UI are built platform-agnostic — Reddit is the first integration, not a hardcoded assumption.
 
 ### Core Concept: A Woohoo
 
-A **Woohoo** is a thread of saved interactions between the founder and one person on one platform. It is identified by `(platform, peer_id)` — e.g., `(reddit, u/some_user)`. Each Woohoo has:
+A **Woohoo** is a thread of saved interactions between you and one person on one platform. It is identified by `(platform, peer_id)` — e.g., `(reddit, u/some_user)`, and in the future `(x, @handle)`, `(linkedin, <profile_id>)`, etc. Each Woohoo has:
 
 - A **timeline** of saved messages/comments, each linking back to its original URL on the platform, sorted by when it happened or when it was saved
-- An optional **follow-up date** so the founder gets reminded
+- An optional **follow-up date** so you get reminded
 - An `archivedAt` lifecycle — archived Woohoos drop out of the dashboard and stop counting toward the plan limit
 - Metadata: platform, peer username, when the Woohoo was created, last interaction
 
-**Example flow:** Someone comments "Cool product, DM me the link" on a Reddit post. Founder saves the comment → new Woohoo created. Founder DMs them, they reply "I'll check it out this weekend" → founder saves that DM → added to the same Woohoo's timeline. Founder sets a follow-up for Monday. On Monday, the dashboard shows this Woohoo under "Follow up today". One click opens the Woohoo view; another click opens the Reddit chat room directly.
+> **A note on terminology:** the codebase uses "founder" as shorthand for the signed-in user (e.g., `founderExternalId`, "founder-authored comment"). That's a historical name — the actual audience is broader (see above). Treat "founder" as "the current Woohoo user" when reading the code.
 
-### MVP Scope (shipped)
+**Example flow:** Someone comments "Cool product, DM me the link" on your Reddit post. You save the comment → new Woohoo created. You DM them, they reply "I'll check it out this weekend" → you save that DM → added to the same Woohoo's timeline. You set a follow-up for Monday. On Monday, the dashboard shows this Woohoo under "Follow up today". One click opens the Woohoo view; another click opens the Reddit chat room directly.
 
-1. **Extension:** Injects a "Save" button on hover for Reddit chat DMs **and** post comments (`shreddit-comment`). 1-click opens a save modal, 1 more click confirms. Captures content, platform, peer ID, timestamp, source URL. Optional follow-up date-time picker. Popup shows session, stats, and a manual Reddit username fallback field.
-2. **Backend:** `POST /api/woohoos/save` upserts a Woohoo by `(userId, platform, peerId)` and appends a `TimelineItem`. See "Save routing rules" below — comment threading is non-trivial.
+### Shipped today
+
+The platform-agnostic core (data model, API, dashboard, plans, auth) is shipped. Reddit is the first and currently only extension integration.
+
+1. **Extension (Reddit):** Injects a "Save" button on hover for Reddit chat DMs **and** post comments (`shreddit-comment`). 1-click opens a save modal, 1 more click confirms. Captures content, platform, peer ID, timestamp, source URL. Optional follow-up date-time picker. Popup shows session, stats, and a manual Reddit username fallback field. Content script scope is `https://www.reddit.com/*`; adding a new platform means a new adapter under `src/content/<platform>/` and widening the manifest scope.
+2. **Backend:** `POST /api/woohoos/save` upserts a Woohoo by `(userId, platform, peerId)` and appends a `TimelineItem`. Platform is an enum — all routing, querying, and UI already key off it. See "Save routing rules" below — comment threading is non-trivial.
 3. **Dashboard:** Three sections — "Follow up today", "Overdue", "Going cold" (no follow-up + no save in 7 days). Timezone-aware. Cards show platform, peer, last interaction, follow-up date, DM/comment counts.
 4. **My Woohoos page** (`/my-woohoos`): grid with **Active** and **Archived** tabs, ordered by `lastSavedAt desc`.
 5. **Woohoo detail view** (`/my-woohoos/[id]`): header, inline `FollowUpEditor`, timeline tabs split into DMs vs. Comments (comments support 1-level reply nesting), archive/delete buttons for the Woohoo, delete per timeline item, "Open chat" link.
@@ -35,27 +41,27 @@ A **Woohoo** is a thread of saved interactions between the founder and one perso
 8. **Marketing site:** Full landing (`(marketing)/_landing/sections/*`), `/extension` install page, `/privacy` policy.
 9. **Auth:** Google OAuth via better-auth; extension signs in by opening `/auth?from=ext&extId=…` in a tab and the web app posts the session token back via `chrome.runtime.sendMessage` (see `auth/ext-return`). No email/password in prod (toggleable via `ENABLE_EMAIL_PASSWORD_AUTH`).
 
-### Post-MVP (ordered)
+### What's next (ordered)
 
-- Multi-platform support: X (tweet replies, DMs), LinkedIn (post comments, DMs), Instagram, etc.
+- Additional platform adapters: X (tweet replies, DMs), LinkedIn (post comments, DMs), Instagram, etc. Each is a new value on the `Platform` enum + a new content-script adapter in `ext/src/content/`.
 - Real Pro upgrade flow (Stripe) — today "Upgrade" is a mailto to `hey@woohoo.to`
 - Daily follow-up digest email (Pro promise on the pricing page)
-- Auto-discovery: use Reddit API to scan subreddits/posts for relevant comments matching keywords, auto-suggest new Woohoos
+- Auto-discovery: scan platform APIs (e.g., Reddit subreddit search) for relevant posts/comments matching keywords, auto-suggest new Woohoos
 - AI lead scoring: rank Woohoos by conversion likelihood
 - AI reply suggestions (view in Woohoo, send manually on platform)
 
-### What Woohoo is NOT (for now)
+### What Woohoo is NOT
 
-- Not a tool for sending messages (no outbound via Woohoo)
-- Not a full CRM (no deals pipeline, no company tracking)
+- Not an outbound tool — you still reply on the platform, manually
+- Not a full CRM (no deals pipeline, no company tracking, no forecast)
 - Not a social media scheduler or analytics tool
 
 ---
 
-Woohoo is a social CRM for indie founders. It captures warm leads from Reddit DMs and comments via a browser extension (1-click save, no tab switching), organizes them into Woohoos (one per platform + person), and reminds founders to follow up — so no warm lead goes cold. It is an npm workspace monorepo sharing a PostgreSQL database:
+Woohoo is a lightweight follow-up tool for DMs and comments. It captures interactions worth acting on via a browser extension (1-click save, no tab switching), organizes them into Woohoos (one per platform + person), and nudges you to follow up — so nothing slips. It is an npm workspace monorepo sharing a PostgreSQL database:
 
 - **`web/`** — Next.js 16 full-stack app (App Router, React 19, Tailwind v4, shadcn/ui, better-auth, Prisma)
-- **`ext/`** — Browser extension MV3 (React 19, Vite, @crxjs/vite-plugin), currently scoped to `https://www.reddit.com/*`. Builds both Chrome and Firefox artifacts (`build:chrome`, `build:firefox`).
+- **`ext/`** — Browser extension MV3 (React 19, Vite, @crxjs/vite-plugin). Content-script scope is currently `https://www.reddit.com/*`; new platforms plug in as additional content-script adapters and a widened manifest scope. Builds both Chrome and Firefox artifacts (`build:chrome`, `build:firefox`).
 - **`packages/ui`** (`@woohoo/ui`) — shared, reusable shadcn primitives consumed by `web/` (and any future app)
 - **`packages/api`** (`@woohoo/api`) — shared API client and types consumed by `web/` and `ext/`
 
