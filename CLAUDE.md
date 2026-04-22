@@ -37,18 +37,21 @@ The platform-agnostic core (data model, API, dashboard, plans, auth) is shipped.
 4. **My Woohoos page** (`/my-woohoos`): grid with **Active** and **Archived** tabs, ordered by `lastSavedAt desc`.
 5. **Woohoo detail view** (`/my-woohoos/[id]`): header, inline `FollowUpEditor`, timeline tabs split into DMs vs. Comments (comments support 1-level reply nesting), archive/delete buttons for the Woohoo, delete per timeline item, "Open chat" link.
 6. **Plans & usage:** Free plan capped at 100 active Woohoos; Pro plan (unlimited, "Request early access" via mailto) resolved through `lib/plans.ts`. Sidebar widget (`SidebarUsage`) surfaces usage; `/settings/plan` shows the detail view and upgrade CTA.
-7. **Settings:** `/settings` timezone editor; `/settings/plan` plan & usage view.
+7. **Settings:** `/settings` timezone editor + Notifications section (in-app + email digest toggles; email gated by Pro); `/settings/plan` plan & usage view.
 8. **Marketing site:** Full landing (`(marketing)/_landing/sections/*`), `/extension` install page, `/privacy` policy.
 9. **Auth:** Google OAuth via better-auth; extension signs in by opening `/auth?from=ext&extId=…` in a tab and the web app posts the session token back via `chrome.runtime.sendMessage` (see `auth/ext-return`). No email/password in prod (toggleable via `ENABLE_EMAIL_PASSWORD_AUTH`).
+10. **In-app notifications (Bodhveda):** every signup provisions a [Bodhveda](https://bodhveda.com) recipient and fires a welcome notification. The app header renders a bell dropdown with unread count + mark-all-read. See "Bodhveda integration" below.
+11. **Extension badge:** the toolbar icon shows `overdue + today` follow-up count, refreshed on every save/sign-out/startup. Zero new manifest permissions (no `alarms`).
+12. **Daily follow-up digest (Pro):** a separate Node cron service ticks every 30m on the VPS, sending each Pro user an email digest of overdue + today items around 8am in their local timezone. Rendered with React Email, sent via Resend. Also mirrors to the Bodhveda bell. Unsubscribe via signed-token link in every email. See "Follow-up digest" below.
 
 ### What's next (ordered)
 
 - Additional platform adapters: X (tweet replies, DMs), LinkedIn (post comments, DMs), Instagram, etc. Each is a new value on the `Platform` enum + a new content-script adapter in `ext/src/content/`.
-- Real Pro upgrade flow (Stripe) — today "Upgrade" is a mailto to `hey@woohoo.to`
-- Daily follow-up digest email (Pro promise on the pricing page)
+- Real Pro upgrade flow (Paddle) — today "Upgrade" is a mailto to `hey@woohoo.to`. On upgrade, should flip `User.emailDigestEnabled=true`; on downgrade, flip to `false`.
 - Auto-discovery: scan platform APIs (e.g., Reddit subreddit search) for relevant posts/comments matching keywords, auto-suggest new Woohoos
 - AI lead scoring: rank Woohoos by conversion likelihood
 - AI reply suggestions (view in Woohoo, send manually on platform)
+- Migrate digest email from Resend to Bodhveda's email channel once Bodhveda ships that — the swap is ~10 lines in `cron/src/digest.ts`.
 
 ### What Woohoo is NOT
 
@@ -62,6 +65,7 @@ Woohoo is a lightweight follow-up tool for DMs and comments. It captures interac
 
 - **`web/`** — Next.js 16 full-stack app (App Router, React 19, Tailwind v4, shadcn/ui, better-auth, Prisma)
 - **`ext/`** — Browser extension MV3 (React 19, Vite, @crxjs/vite-plugin). Content-script scope is currently `https://www.reddit.com/*`; new platforms plug in as additional content-script adapters and a widened manifest scope. Builds both Chrome and Firefox artifacts (`build:chrome`, `build:firefox`).
+- **`cron/`** — Node service that runs on the VPS alongside `web/`. Ticks every 30m via `node-cron`, sends the daily follow-up digest email to Pro users and mirrors to the Bodhveda bell. Reuses web's generated Prisma client + a couple of helpers (`web/lib/date-tz.ts`, `web/lib/unsubscribe.ts`, `web/lib/bodhveda.ts`) via relative imports; has its own Dockerfile.
 - **`packages/ui`** (`@woohoo/ui`) — shared, reusable shadcn primitives consumed by `web/` (and any future app)
 - **`packages/api`** (`@woohoo/api`) — shared API client and types consumed by `web/` and `ext/`
 
@@ -93,6 +97,14 @@ npm run build:chrome   # Chrome-only build
 npm run build:firefox  # Firefox-only build
 ```
 
+### Cron (`cd cron/`)
+
+```bash
+npm run start          # run the main cron loop (tsx, no build step)
+npm run once           # run one digest tick and exit (useful for local testing)
+npm run once -- --user <id>  # force a digest send for one user; bypasses eligibility
+```
+
 ### Database
 
 ```bash
@@ -107,10 +119,16 @@ npx prisma generate                    # regenerate the Prisma client after sche
 Copy `.env.example` to `.env` and fill in:
 
 - `DATABASE_URL` — use the host-side URL (`localhost:42071`) for running `npm run dev` outside Docker; use the container-side URL (`woohoo_db:5432`) when running inside compose
-- `BETTER_AUTH_SECRET` — random secret for signing sessions
-- `BETTER_AUTH_URL` — set to `http://localhost:3000` for local dev
+- `BETTER_AUTH_SECRET` — random secret for signing sessions (also doubles as the HMAC key for unsubscribe tokens via `web/lib/unsubscribe.ts`)
+- `BETTER_AUTH_URL` — set to `http://localhost:3000` for local dev. Used by the cron to build dashboard + unsubscribe links in email.
 - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` — Google OAuth credentials
 - `ENABLE_EMAIL_PASSWORD_AUTH` — optional, set to `"true"` to expose email/password alongside Google (off in prod)
+- `BODHVEDA_API_KEY` — full-scope key; server-only. Used for creating recipients + sending notifications.
+- `NEXT_PUBLIC_BODHVEDA_RECIPIENT_KEY` — recipient-scope key; safe to ship in the browser bundle (only lets the holder act as a single recipient).
+- `BODHVEDA_API_URL`, `NEXT_PUBLIC_BODHVEDA_API_URL` — optional; default to `https://api.bodhveda.com`.
+- `RESEND_API_KEY` — sending-only scope is strongly preferred (full-access is over-permissioned for a sender).
+- `RESEND_FROM_EMAIL` — `Woohoo <hey@woohoo.to>`. The sending domain must be verified in Resend with DKIM+SPF+DMARC.
+- `CRON_ENABLED` — kill switch; set to `"false"` to let the cron container run but skip every tick (useful if deliverability issues surface post-launch).
 
 ## Architecture
 
@@ -118,10 +136,12 @@ Copy `.env.example` to `.env` and fill in:
 
 Domain models beyond better-auth tables:
 
+- **`User`** — better-auth base + extras: `timezone` (IANA), `emailDigestEnabled` / `inAppDigestEnabled` (per-medium toggles for the daily digest; email is gated by the Pro plan at send time).
 - **`Woohoo`** — unique on `(userId, platform, peerId)`. Fields: `peerName`, `chatUrl`, `followUpAt`, `lastInteractionAt`, `lastSavedAt`, `archivedAt`. Cascades from `User`.
 - **`TimelineItem`** — belongs to a Woohoo. Unique on `(woohooId, externalId)` (prevents duplicate saves). `type: dm | comment`, `contentText`, `contentHtml`, `sourceUrl`, `authorId`, `authorName`, `interactionAt`, `savedAt`, `parentId` (self-relation, 1-level reply threading for comments).
 - **`Plan`** — unique on `tier` (`free` | `pro`). Fields: `name`, `activeWoohooLimit` (nullable = unlimited), `priceCents`.
 - **`Subscription`** — unique on `userId`. Links a user to a plan, tracks `status` (`active | canceled | past_due | trialing`) and `endsAt`.
+- **`DigestLog`** — unique on `(userId, localDate)`. Owned by the cron service. `status: sending | sent | failed | skipped_empty`, `itemCount`. The unique index is the idempotency guarantee: the cron claims a row with `status="sending"` before calling Resend, then updates to `sent`/`failed`. A crash between claim and send leaves `sending` in place and the next tick skips that user for the day — we'd rather miss a digest than double-send.
 - **Enums** — `Platform` (currently `reddit` only), `TimelineItemType` (`dm` | `comment`), `PlanTier`, `SubscriptionStatus`.
 
 A better-auth `databaseHooks.user.create.after` upserts a Free `Subscription` row for every new signup (see `lib/auth.ts`). **`Plan` rows must be seeded in prod** for that hook to succeed — `getUserPlan()` falls back to a hard-coded Free plan if no subscription exists, but the hook tries to link to the real Free plan row.
@@ -135,8 +155,10 @@ All non-auth routes accept **either** a `Bearer <session.token>` header (used by
 - `GET /api/woohoos` — list user's Woohoos with most-recent timeline item. Accepts `?archived=true|all` (default returns active only).
 - `GET/PATCH/DELETE /api/woohoos/[id]` — detail fetch, update `followUpAt` / `archived`, or delete (cascades to timeline items). `PATCH` gates unarchive through the plan limit.
 - `DELETE /api/timeline-items/[id]` — delete one item; recomputes the parent Woohoo's `lastInteractionAt`.
-- `GET /api/stats` — `{ totalWoohoos, followUpToday }` for the extension popup and app header.
+- `GET /api/stats` — `{ totalWoohoos, followUpToday, overdue }`. Powers the extension toolbar badge (`overdue + followUpToday`) and the popup stats line.
 - `PATCH /api/me/timezone` — updates the signed-in user's timezone (validated via `isValidTimezone` in `lib/date-tz.ts`).
+- `PATCH /api/me/preferences` — updates `emailDigestEnabled` and/or `inAppDigestEnabled`. Used by the Notifications section in `/settings`.
+- `POST /api/unsubscribe?t=<signed-token>` — one-click unsubscribe from the daily digest. Also referenced by the RFC 8058 `List-Unsubscribe-Post` header in every digest email so Gmail/Yahoo honour the one-click UX. The signed token is HMAC-SHA256 over `unsubscribe:{userId}:{kind}` using `BETTER_AUTH_SECRET`; see `lib/unsubscribe.ts`. The public-facing `/unsubscribe?t=<token>` page renders a form-POST confirmation step (prevents email-scanner prefetchers from accidentally unsubscribing).
 
 ### Save routing rules (comments)
 
@@ -147,6 +169,26 @@ When a saved item is a comment, routing depends on authorship. The extension sen
 - **Founder-authored comment with no saved ancestor** → falls back to the upsert-by-`peerId` path.
 
 Change this logic in `web/app/api/woohoos/save/route.ts` (and keep `api/woohoos/check/route.ts` aligned — it mirrors the same match rules for the UI preview).
+
+### Bodhveda integration (in-app notifications)
+
+Woohoo uses [Bodhveda](https://bodhveda.com) (Mudgal Labs' own notification platform) for the in-app bell.
+
+- Provisioned on signup via `databaseHooks.user.create.after` in `lib/auth.ts`: `createBodhvedaRecipient` + `sendWelcomeNotification`. Both are wrapped in try/catch so Bodhveda downtime can't block signup.
+- Server-side helpers in `web/lib/bodhveda.ts`: lazy `Bodhveda` client + `createBodhvedaRecipient`, `sendWelcomeNotification`, `sendDigestNotification`.
+- Targets catalog: `web/lib/bodhveda-targets.ts` — `marketing/none/welcome` (signup), `digest/none/sent` (daily digest mirror).
+- Client-side inbox: `(app)/BodhvedaBootstrap.tsx` wraps the protected layout in `<QueryClientProvider><BodhvedaProvider apiKey={NEXT_PUBLIC_BODHVEDA_RECIPIENT_KEY} recipientID={session.user.id}>`. The bell lives in `(app)/NotificationBell.tsx` (unread count + popover list + mark-all-read + load-more).
+- Backfill for existing users: `web/scripts/bodhveda-create-recipients.ts` — one-shot `npx tsx` script using `recipients.createBatch`.
+
+### Follow-up digest (cron service)
+
+- Lives in `cron/` — separate Node binary running on the VPS.
+- Schedule: `0,30 * * * *` (every 30 minutes). On each tick + once at boot (catchup), finds Pro users whose local 8am fell in the last 12 hours and who don't already have a `DigestLog` row for today in their timezone. Caps catch-up to 12h so a prolonged outage can't fire yesterday's digest at midnight.
+- For each eligible user: claim a `DigestLog` row with `status="sending"` first, then render the React Email template (`cron/src/emails/FollowUpDigest.tsx`), send via Resend, update log to `sent`/`failed`. On success, also mirror into the Bodhveda bell with `sendDigestNotification`.
+- Email rendering uses `@react-email/render` + `@react-email/components`. Colors are inlined hex derived from the app's OKLCH tokens so email clients render them correctly (email clients can't resolve CSS custom properties).
+- Header includes `List-Unsubscribe: <url>` + `List-Unsubscribe-Post: List-Unsubscribe=One-Click` for Gmail/Yahoo one-click compliance (required for bulk senders as of 2024).
+- Idempotency: unique index on `(userId, localDate)` in `DigestLog`. Claim-first pattern means a crash between claim and send leaves the row at `sending` and skips the user for the day. Intentional — never double-send.
+- Plan gating: cron query filters to `subscription.plan.tier === "pro"` AND `status !== "canceled"`. Paddle should flip `emailDigestEnabled` to `true` on upgrade, `false` on downgrade (not wired yet — subscription webhook is a TODO).
 
 ### Plans & limits (`web/lib/plans.ts`)
 
@@ -221,6 +263,7 @@ Don't manually manage sessions — use `getSession()` from `lib/get-session.ts` 
 
 ### Deployment
 
-- Web is self-hosted on a Hetzner VPS via Docker. `.github/workflows/deploy.yml` builds the image from `web/Dockerfile` (multi-stage, Next.js standalone output), pushes to DockerHub, then SSHes to the VPS and runs `docker compose up -d` using `compose.yaml` + `compose.deploy.yaml`. Caddy (`caddy_net` external network) fronts the web container for TLS.
-- Extension builds to `ext/dist/` + `ext/release/woohoo.zip` for Chrome Web Store / Firefox AMO upload
-- Production Docker setup uses `compose.deploy.yaml` (overrides `compose.yaml`)
+- Web + cron are self-hosted on a Hetzner VPS via Docker. `.github/workflows/deploy.yml` builds both images in parallel (`web/Dockerfile` for the Next.js standalone runtime, `cron/Dockerfile` for the digest cron), pushes to DockerHub, then SSHes to the VPS and runs `docker compose up -d web cron` using `compose.yaml` + `compose.deploy.yaml`. Caddy (`caddy_net` external network) fronts the web container for TLS.
+- The cron Dockerfile is thin — copies `node_modules` + web's generated Prisma client + `web/lib` helpers + `cron/` source, and runs `npx tsx cron/src/index.ts` (no pre-compile step).
+- Extension builds to `ext/dist/` + `ext/release/woohoo.zip` for Chrome Web Store / Firefox AMO upload.
+- Production Docker setup uses `compose.deploy.yaml` (overrides `compose.yaml`).

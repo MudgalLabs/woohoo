@@ -149,6 +149,18 @@ export default function PrivacyPage() {
                             picture; we do not receive access to your Google
                             account contents.
                         </li>
+                        <li>
+                            <strong>Bodhveda</strong> — in-app notifications
+                            (welcome and follow-up reminders shown in the
+                            Woohoo bell). Processes your user ID and the
+                            notification payloads we send on your behalf.
+                        </li>
+                        <li>
+                            <strong>Resend</strong> — transactional email
+                            delivery (daily follow-up digest for Pro users,
+                            unsubscribe flow). Processes your email address
+                            and the email content we send you.
+                        </li>
                     </ul>
                 </section>
 

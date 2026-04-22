@@ -22,7 +22,14 @@ async function main() {
     if (userId) {
         const user = await prisma.user.findUnique({
             where: { id: userId },
-            select: { id: true, name: true, email: true, timezone: true },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                timezone: true,
+                emailDigestEnabled: true,
+                inAppDigestEnabled: true,
+            },
         });
         if (!user) {
             console.error(`[once] user ${userId} not found`);

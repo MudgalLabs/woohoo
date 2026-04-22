@@ -29,14 +29,25 @@ async function handle(request: Request) {
     }
 
     if (parsed.kind === "digest") {
-        // Non-existent userId (deleted account) resolves to an update() throw;
-        // treat that as "already unsubscribed" — 200 either way.
-        await prisma.user
-            .update({
+        try {
+            await prisma.user.update({
                 where: { id: parsed.userId },
                 data: { emailDigestEnabled: false },
-            })
-            .catch(() => null);
+            });
+        } catch (err) {
+            // P2025 = record not found (deleted account). Treat as already
+            // unsubscribed and return success. Any other error surfaces as
+            // 500 so we don't silently claim to unsubscribe when the DB
+            // rejected the write.
+            const code = (err as { code?: string } | null)?.code;
+            if (code !== "P2025") {
+                console.error("[unsubscribe] update failed", err);
+                return NextResponse.json(
+                    { error: "Failed to unsubscribe" },
+                    { status: 500 },
+                );
+            }
+        }
     }
 
     // Redirect form submits back to the confirmation page. Gmail's one-click

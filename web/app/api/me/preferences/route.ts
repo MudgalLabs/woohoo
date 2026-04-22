@@ -11,11 +11,18 @@ export async function PATCH(request: Request) {
 
     const body = (await request.json().catch(() => ({}))) as {
         emailDigestEnabled?: unknown;
+        inAppDigestEnabled?: unknown;
     };
 
-    const data: { emailDigestEnabled?: boolean } = {};
+    const data: {
+        emailDigestEnabled?: boolean;
+        inAppDigestEnabled?: boolean;
+    } = {};
     if (typeof body.emailDigestEnabled === "boolean") {
         data.emailDigestEnabled = body.emailDigestEnabled;
+    }
+    if (typeof body.inAppDigestEnabled === "boolean") {
+        data.inAppDigestEnabled = body.inAppDigestEnabled;
     }
 
     if (Object.keys(data).length === 0) {
@@ -28,10 +35,11 @@ export async function PATCH(request: Request) {
     const updated = await prisma.user.update({
         where: { id: session.user.id },
         data,
-        select: { emailDigestEnabled: true },
+        select: {
+            emailDigestEnabled: true,
+            inAppDigestEnabled: true,
+        },
     });
 
-    return NextResponse.json({
-        emailDigestEnabled: updated.emailDigestEnabled,
-    });
+    return NextResponse.json(updated);
 }

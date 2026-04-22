@@ -35,7 +35,11 @@ model User {
   emailVerified      Boolean       @default(false)
   image              String?
   timezone           String?
+  // Per-medium toggles for the daily follow-up digest. Email is gated by the
+  // Pro plan at send time (cron filters by plan.tier === "pro"); in-app runs
+  // for everyone on Pro since the bell is a paid surface anyway.
   emailDigestEnabled Boolean       @default(true)
+  inAppDigestEnabled Boolean       @default(true)
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
   sessions           Session[]

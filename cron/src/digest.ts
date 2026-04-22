@@ -51,16 +51,22 @@ type EligibleUser = {
     name: string;
     email: string;
     timezone: string | null;
+    emailDigestEnabled: boolean;
+    inAppDigestEnabled: boolean;
 };
 
-// Pro users with digest on, whose local 8am has already passed today (within
-// the last 12 hours — caps catch-up if cron has been down for longer), and
-// who don't already have a DigestLog row for today in their timezone.
+// Pro users with at least one digest medium enabled, whose local 8am has
+// already passed today (within the last 12 hours — caps catch-up if cron
+// has been down for longer), and who don't already have a DigestLog row
+// for today in their timezone.
 export async function findEligibleUsers(now: Date): Promise<EligibleUser[]> {
     const candidates = await prisma.user.findMany({
         where: {
-            emailDigestEnabled: true,
             email: { not: "" },
+            OR: [
+                { emailDigestEnabled: true },
+                { inAppDigestEnabled: true },
+            ],
             subscription: {
                 status: { not: "canceled" },
                 plan: { tier: "pro" },
@@ -71,6 +77,8 @@ export async function findEligibleUsers(now: Date): Promise<EligibleUser[]> {
             name: true,
             email: true,
             timezone: true,
+            emailDigestEnabled: true,
+            inAppDigestEnabled: true,
         },
     });
 
@@ -218,21 +226,27 @@ export async function sendDigestToUser(
               } for today`;
 
     let status: "sent" | "failed" = "sent";
-    try {
-        await getResend().emails.send({
-            from: FROM_EMAIL(),
-            to: user.email,
-            subject,
-            html,
-            text,
-            headers: {
-                "List-Unsubscribe": `<${unsubscribeLink}>`,
-                "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-            },
-        });
-    } catch (err) {
-        console.error(`[digest] resend failed for ${user.email}`, err);
-        status = "failed";
+    if (user.emailDigestEnabled) {
+        try {
+            await getResend().emails.send({
+                from: FROM_EMAIL(),
+                to: user.email,
+                subject,
+                html,
+                text,
+                headers: {
+                    "List-Unsubscribe": `<${unsubscribeLink}>`,
+                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                },
+            });
+        } catch (err) {
+            console.error(`[digest] resend failed for ${user.email}`, err);
+            status = "failed";
+        }
+    } else {
+        console.log(
+            `[digest] ${user.email}: email disabled by user, skipping email`,
+        );
     }
 
     await prisma.digestLog.update({
@@ -240,10 +254,9 @@ export async function sendDigestToUser(
         data: { status },
     });
 
-    // Mirror the digest into the in-app bell. Non-blocking — a Bodhveda
-    // outage shouldn't mark the email as failed (the email is the primary
-    // delivery; in-app is a bonus).
-    if (status === "sent") {
+    // Mirror the digest into the in-app bell when the user has it enabled.
+    // Non-blocking — a Bodhveda outage shouldn't mark the email as failed.
+    if (user.inAppDigestEnabled) {
         await sendDigestNotification(user.id, {
             overdue: data.overdue.length,
             today: data.today.length,
