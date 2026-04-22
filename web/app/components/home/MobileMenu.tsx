@@ -30,7 +30,10 @@ export function MobileMenu({ showAnchorLinks }: MobileMenuProps) {
             { href: "/#faq", label: "FAQ" },
         );
     }
-    links.push({ href: "/extension", label: "Extension" });
+    links.push({
+        href: "/extension",
+        label: "Install the extension",
+    });
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
@@ -45,7 +48,7 @@ export function MobileMenu({ showAnchorLinks }: MobileMenuProps) {
             </SheetTrigger>
             <SheetContent
                 side="right"
-                className="w-80 flex flex-col gap-8 bg-background"
+                className="marketing-scope w-80 flex flex-col gap-8 bg-background"
             >
                 <SheetHeader className="text-left">
                     <SheetTitle className="sr-only">Menu</SheetTitle>

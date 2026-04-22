@@ -53,7 +53,7 @@ export function Nav({
                                 href="/extension"
                                 className="text-sm font-medium text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
                             >
-                                Extension
+                                Install the extension
                             </Link>
                         </>
                     )}
