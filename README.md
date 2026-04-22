@@ -44,7 +44,7 @@ If you find yourself scrolling back through notifications three days later tryin
 
 npm workspace monorepo sharing one PostgreSQL database.
 
-- **`web/`** — Next.js 16 (App Router, React 19), Tailwind v4, shadcn/ui, Prisma, better-auth. Deploys to Cloudflare Workers via `opennextjs-cloudflare`.
+- **`web/`** — Next.js 16 (App Router, React 19), Tailwind v4, shadcn/ui, Prisma, better-auth. Self-hosted on a Hetzner VPS via Docker; `.github/workflows/deploy.yml` builds + pushes the image and redeploys over SSH.
 - **`ext/`** — MV3 browser extension (React 19, Vite, `@crxjs/vite-plugin`). Builds both Chrome and Firefox artifacts.
 - **`packages/ui`** — shared shadcn primitives.
 - **`packages/api`** — shared API client and types consumed by both web and extension.

@@ -10,7 +10,7 @@ Live list of what still needs to happen to call v1 shipped, and the ordered road
 - [x] **Publish Firefox AMO listing.** Submitted — awaiting review.
 - [ ] **Replace `href="#"` on `/extension` page** (`web/app/(marketing)/extension/page.tsx:43-50`) with real Chrome Web Store + Firefox AMO URLs once both approvals land.
 - [ ] **Seed `Plan` rows in prod DB** (`free` + `pro`). Without the Free row the `databaseHooks.user.create.after` in `lib/auth.ts` silently no-ops for new signups — `getUserPlan()` fallback keeps them working but `Subscription` rows will be missing when Pro goes live.
-- [ ] **Verify prod env vars.** `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL=https://woohoo.to`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`. Confirm Cloudflare Worker is deployed with the current build.
+- [ ] **Verify prod env vars.** `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL=https://woohoo.to`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`. Confirm the Hetzner VPS deploy is on the current build (trigger `.github/workflows/deploy.yml` or SSH + `docker compose up -d`).
 - [ ] **Verify Firefox build works end-to-end.** `npm run build:firefox` → load `ext/dist/` as a temporary add-on → save a DM and a comment. MV3 on Firefox has quirks around service workers.
 - [ ] **Smoke test on a brand-new Google account.**
   1. Sign in via `/auth` → land on empty dashboard (`NoWoohoosYet`)
@@ -90,7 +90,7 @@ The heavy lifting (Paddle domain approval, checkout, webhooks, dunning, customer
 ### v1.3 — Deliver the Pro promise
 
 - [ ] **Daily follow-up digest** (morning + evening email). Pro-only. Promised on the Pricing section (`sections/Pricing.tsx`).
-- [ ] Email infra: Resend is the path of least resistance on Cloudflare Workers (native fetch API). Postmark as an alternative.
+- [ ] Email infra: Resend for v1 (swap to Bodhveda email channel post-launch). Sender runs from a separate Node cron service on the VPS; see plan in `.claude/plans/`.
 - [ ] Unsubscribe + per-user cadence preference (morning-only, evening-only, both).
 
 ### v1.4 — Power user quality-of-life

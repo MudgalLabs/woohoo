@@ -118,9 +118,9 @@ export default function PrivacyPage() {
                     </h2>
                     <p className="mt-3">
                         Data is stored in a PostgreSQL database operated by us
-                        and hosted on Cloudflare infrastructure, encrypted at
-                        rest. Transport between your browser and our backend
-                        uses HTTPS.
+                        and hosted on Hetzner Cloud infrastructure in the EU,
+                        encrypted at rest. Transport between your browser and
+                        our backend uses HTTPS.
                     </p>
                 </section>
 
@@ -135,8 +135,8 @@ export default function PrivacyPage() {
                     </p>
                     <ul className="mt-3 list-disc space-y-2 pl-6">
                         <li>
-                            <strong>Cloudflare</strong> — application hosting,
-                            database hosting, and CDN.
+                            <strong>Hetzner Cloud</strong> — application and
+                            database hosting (EU region).
                         </li>
                         <li>
                             <strong>Paddle</strong> — our Merchant of Record for

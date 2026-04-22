@@ -81,8 +81,7 @@ make kill       # kill the tmux session
 npm run dev     # Next.js dev server (port 3000, turbopack)
 npm run build   # production build
 npm run lint    # ESLint
-npm run preview # preview Cloudflare Workers deployment locally
-npm run deploy  # deploy to Cloudflare Workers (opennextjs-cloudflare)
+npm run start   # start the built server (used inside the Docker image)
 ```
 
 ### Extension (`cd ext/`)
@@ -193,7 +192,7 @@ Change this logic in `web/app/api/woohoos/save/route.ts` (and keep `api/woohoos/
 - `src/popup/` — extension popup UI (sign-in, session state, stats line, Reddit username override, sign-out, open-dashboard)
 - `src/background/index.ts` — MV3 service worker (Chrome) / background script (Firefox). Handles internal messages (`GET_SESSION`, `SIGN_OUT`, `GET_STATS`) and the **external** `AUTH_SUCCESS` message the web app posts after OAuth. External messages are restricted to `https://woohoo.to` and `http://localhost:3000` via `ALLOWED_EXTERNAL_ORIGINS` + manifest `externally_connectable`.
 - `src/components/` — shared components (`SaveButton`, `SaveModal`, `DateTimePicker`, `Branding`, `Toast`, `Logo`)
-- `manifest.config.ts` — MV3 manifest. Content script scope is `https://www.reddit.com/*`. Host permissions also cover `woohoo.to` (and localhost in dev) for API calls. Permissions are intentionally minimal: `storage`, `tabs`. Firefox variant adds `browser_specific_settings.gecko` including `data_collection_permissions`.
+- `manifest.config.ts` — MV3 manifest. Content script scope is `https://www.reddit.com/*`. Host permissions also cover `woohoo.to` (and localhost in dev) for API calls. Permissions are intentionally minimal: `storage`. Firefox variant adds `browser_specific_settings.gecko` including `data_collection_permissions`.
 
 The extension talks to the backend through `WoohooApiClient` from `@woohoo/api`, authenticated via Bearer token (stored in extension storage after sign-in).
 
@@ -222,6 +221,6 @@ Don't manually manage sessions — use `getSession()` from `lib/get-session.ts` 
 
 ### Deployment
 
-- Web deploys to Cloudflare Workers via `opennextjs-cloudflare` (`npm run deploy` from `web/`)
+- Web is self-hosted on a Hetzner VPS via Docker. `.github/workflows/deploy.yml` builds the image from `web/Dockerfile` (multi-stage, Next.js standalone output), pushes to DockerHub, then SSHes to the VPS and runs `docker compose up -d` using `compose.yaml` + `compose.deploy.yaml`. Caddy (`caddy_net` external network) fronts the web container for TLS.
 - Extension builds to `ext/dist/` + `ext/release/woohoo.zip` for Chrome Web Store / Firefox AMO upload
 - Production Docker setup uses `compose.deploy.yaml` (overrides `compose.yaml`)
