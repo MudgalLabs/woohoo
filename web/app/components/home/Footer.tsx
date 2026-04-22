@@ -128,6 +128,22 @@ export function Footer() {
                                     Privacy
                                 </Link>
                             </li>
+                            <li>
+                                <Link
+                                    href="/terms"
+                                    className="text-sm font-medium text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
+                                >
+                                    Terms
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    href="/refund"
+                                    className="text-sm font-medium text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
+                                >
+                                    Refund policy
+                                </Link>
+                            </li>
                         </ul>
                     </div>
                 </div>

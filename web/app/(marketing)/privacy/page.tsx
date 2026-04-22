@@ -4,7 +4,7 @@ export const metadata = {
         "How Woohoo collects, stores, and uses data from the Woohoo web app and browser extension.",
 };
 
-const LAST_UPDATED = "April 21, 2026";
+const LAST_UPDATED = "April 22, 2026";
 
 export default function PrivacyPage() {
     return (
@@ -45,10 +45,10 @@ export default function PrivacyPage() {
                         <li>
                             <strong>Account information.</strong> Woohoo uses
                             Google sign-in — we do not manage passwords. When
-                            you sign in, Google shares your name, email
-                            address, and profile picture with us. We use these
-                            to create your account, authenticate you, and send
-                            essential account email.
+                            you sign in, Google shares your name, email address,
+                            and profile picture with us. We use these to create
+                            your account, authenticate you, and send essential
+                            account email.
                         </li>
                         <li>
                             <strong>Saved interactions.</strong> When you click
@@ -56,27 +56,26 @@ export default function PrivacyPage() {
                             platform, we store the text of that message, a
                             sanitized HTML copy, a link back to the original
                             source, the timestamp, and the platform usernames
-                            involved (both the other person and, if you set
-                            it, your own handle so we can thread replies
-                            correctly).
+                            involved (both the other person and, if you set it,
+                            your own handle so we can thread replies correctly).
                         </li>
                         <li>
                             <strong>Follow-up metadata.</strong> Any follow-up
                             date or note you attach to a saved Woohoo.
                         </li>
                         <li>
-                            <strong>Session data.</strong> A session token
+                            <strong>Session data. </strong> A session token
                             issued at sign-in, stored in your browser&rsquo;s
-                            local storage and sent with each request to
-                            identify you.
+                            local storage and sent with each request to identify
+                            you.
                         </li>
                     </ul>
                     <p className="mt-3">
-                        The extension does <em>not</em> read platform content
-                        in the background. It only captures the specific
-                        message or comment you click &ldquo;Save&rdquo; on. It
-                        does not scrape your inbox, your feed, or any other
-                        data from the platforms it integrates with.
+                        The extension does <em>not</em> read platform content in
+                        the background. It only captures the specific message or
+                        comment you click &ldquo;Save&rdquo; on. It does not
+                        scrape your inbox, your feed, or any other data from the
+                        platforms it integrates with.
                     </p>
                 </section>
 
@@ -130,8 +129,8 @@ export default function PrivacyPage() {
                         Sub-processors
                     </h2>
                     <p className="mt-3">
-                        We rely on a small number of infrastructure providers
-                        to run Woohoo. They process data only on our behalf and
+                        We rely on a small number of infrastructure providers to
+                        run Woohoo. They process data only on our behalf and
                         under their own security commitments:
                     </p>
                     <ul className="mt-3 list-disc space-y-2 pl-6">
@@ -140,9 +139,15 @@ export default function PrivacyPage() {
                             database hosting, and CDN.
                         </li>
                         <li>
-                            <strong>Stripe</strong> — if you subscribe to a
-                            paid plan, Stripe handles your payment details. We
-                            never see your card data.
+                            <strong>Paddle</strong> — our Merchant of Record for
+                            the Pro plan. Paddle handles checkout, billing, and
+                            tax collection. We never see your card data.
+                        </li>
+                        <li>
+                            <strong>Google</strong> — authentication (OAuth
+                            sign-in). We receive your name, email, and profile
+                            picture; we do not receive access to your Google
+                            account contents.
                         </li>
                     </ul>
                 </section>
@@ -152,11 +157,11 @@ export default function PrivacyPage() {
                         Retention
                     </h2>
                     <p className="mt-3">
-                        Saved items live in your account until you delete them
-                        — either individually, by deleting the Woohoo they
-                        belong to, or by deleting your account. When you delete
-                        your account, all associated Woohoos and timeline items
-                        are removed.
+                        Saved items live in your account until you delete them —
+                        either individually, by deleting the Woohoo they belong
+                        to, or by deleting your account. When you delete your
+                        account, all associated Woohoos and timeline items are
+                        removed.
                     </p>
                 </section>
 
@@ -167,8 +172,8 @@ export default function PrivacyPage() {
                     <p className="mt-3">
                         You can delete any saved item, Woohoo, or your entire
                         account from within the web app at any time. You can
-                        also request an export of your data, or ask us to
-                        delete specific records, by emailing{" "}
+                        also request an export of your data, or ask us to delete
+                        specific records, by emailing{" "}
                         <a
                             href="mailto:hey@woohoo.to"
                             className="text-primary underline-offset-4 hover:underline"
@@ -190,23 +195,22 @@ export default function PrivacyPage() {
                     <ul className="mt-3 list-disc space-y-2 pl-6">
                         <li>
                             <strong>storage</strong> — to cache your session
-                            token and some local UI preferences in your
-                            browser.
+                            token and some local UI preferences in your browser.
                         </li>
                         <li>
-                            <strong>tabs</strong> — to open the Woohoo
-                            dashboard or sign-up page in a new tab when you
-                            click the extension popup.
+                            <strong>tabs</strong> — to open the Woohoo dashboard
+                            or sign-up page in a new tab when you click the
+                            extension popup.
                         </li>
                         <li>
                             <strong>Host access to supported platforms</strong>{" "}
                             — to inject the save button on DM and comment
                             threads. The currently supported platform is{" "}
                             <code>reddit.com</code>. Support for additional
-                            platforms (such as LinkedIn and X) will be added
-                            in future releases; your browser will prompt you
-                            to approve each new host permission before it
-                            takes effect.
+                            platforms (such as LinkedIn and X) will be added in
+                            future releases; your browser will prompt you to
+                            approve each new host permission before it takes
+                            effect.
                         </li>
                         <li>
                             <strong>Host access to woohoo.to</strong> — to send

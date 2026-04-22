@@ -6,9 +6,9 @@ Live list of what still needs to happen to call v1 shipped, and the ordered road
 
 ## 1. Pre-launch blockers (won't ship without these)
 
-- [ ] **Publish Chrome Web Store listing.** Upload `ext/release/woohoo.zip` (Chrome build). Store listing needs: screenshots (DM save, comment save, dashboard, detail view), short + long description, privacy-policy URL (`https://woohoo.to/privacy`), permission justifications (`storage`, `tabs`, `reddit.com` host, `woohoo.to` host).
-- [ ] **Publish Firefox AMO listing.** Same assets. Firefox MV3 reviewers are stricter about `host_permissions` scope — be ready to justify each.
-- [ ] **Replace `href="#"` on `/extension` page** (`web/app/(marketing)/extension/page.tsx:43-50`) with real Chrome Web Store + Firefox AMO URLs once approved.
+- [x] **Publish Chrome Web Store listing.** Submitted — awaiting review.
+- [x] **Publish Firefox AMO listing.** Submitted — awaiting review.
+- [ ] **Replace `href="#"` on `/extension` page** (`web/app/(marketing)/extension/page.tsx:43-50`) with real Chrome Web Store + Firefox AMO URLs once both approvals land.
 - [ ] **Seed `Plan` rows in prod DB** (`free` + `pro`). Without the Free row the `databaseHooks.user.create.after` in `lib/auth.ts` silently no-ops for new signups — `getUserPlan()` fallback keeps them working but `Subscription` rows will be missing when Pro goes live.
 - [ ] **Verify prod env vars.** `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL=https://woohoo.to`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`. Confirm Cloudflare Worker is deployed with the current build.
 - [ ] **Verify Firefox build works end-to-end.** `npm run build:firefox` → load `ext/dist/` as a temporary add-on → save a DM and a comment. MV3 on Firefox has quirks around service workers.
@@ -24,7 +24,24 @@ Live list of what still needs to happen to call v1 shipped, and the ordered road
   9. Unarchive → counts again; if at 100/100, blocks with plan-limit 403
   10. Delete a Woohoo and a single timeline item — both cascade correctly
 
-## 2. Launch polish (soft blockers — noticeable if missed)
+## 2. Paddle approval & payments setup (start now — async)
+
+Paddle is our merchant of record (replaces the Stripe plan from an earlier draft of this doc — Paddle handles VAT/GST and is friendlier to solo Indian founders). **Domain approval takes Paddle several business days**, so submit early and do the rest in parallel.
+
+Paddle's website requirements: the site must link to or contain **terms of service, privacy policy, and refund policy**. Subdomains aren't approved by default — if we ever want checkout on `app.woohoo.to`, that's a separate submission.
+
+- [ ] **Submit `woohoo.to` for Paddle domain approval.** Do this first so the clock starts. Use the Paddle sandbox seller dashboard.
+- [ ] **Add `/terms` page** on the marketing site (Paddle requirement).
+- [ ] **Add `/refund` page** on the marketing site (Paddle requirement).
+- [ ] **Link Terms, Privacy, Refund from the footer** on every marketing page (Paddle checks this).
+- [ ] **Update `/privacy`** to list Paddle (not Stripe) as the payments sub-processor.
+- [ ] **Wire up Paddle checkout** once approved. Replace the mailto on Pricing section + `/settings/plan` upgrade button with a Paddle overlay/inline checkout for the Pro plan.
+- [ ] **Paddle webhook route** (`POST /api/webhooks/paddle`) that upserts `Subscription.status` from `subscription.created | updated | canceled | past_due` events. Verify signatures with the Paddle webhook secret.
+- [ ] **Dunning:** `past_due` status should block unarchive/new-save with a friendly "update card" message, same 403 shape as `plan_limit_reached`.
+- [ ] **Customer portal link** from `/settings/plan` so users can manage card + cancel via Paddle's hosted page.
+- [ ] **Decide monthly vs. annual pricing.** The landing already advertises `$50/yr` — one Paddle product or two price IDs?
+
+## 3. Launch polish (soft blockers — noticeable if missed)
 
 - [ ] **Plan-limit error UX.** Extension `SaveModal.tsx:266-269` shows a blocking paragraph but no action. Add a link/button to `/my-woohoos?view=archived` so the user can free up a slot without leaving the flow.
 - [ ] **Save modal — network failure state.** `handleSave` currently shows `result.error` but doesn't distinguish offline/timeout from server errors. Cheap to improve.
@@ -32,7 +49,7 @@ Live list of what still needs to happen to call v1 shipped, and the ordered road
 - [ ] **Marketing mobile pass.** Spot-check Hero, Pricing, Dashboard sections at ~375px. The dashboard demo especially is dense on small screens.
 - [ ] **Verify OG image generation** on all marketing pages post-deploy (OG images are generated at build time per recent commit `b2864db`).
 
-## 3. Post-launch — ordered roadmap
+## 4. Post-launch — ordered roadmap
 
 ### v1.1 — Platform expansion (the 90% of your audience)
 
@@ -64,11 +81,11 @@ Both X and LinkedIn are pure additions — extend the `Platform` enum, add conte
 
 ### v1.2 — Pricing → revenue
 
-- [ ] Stripe integration (checkout session + customer portal)
-- [ ] Webhook route that upserts `Subscription.status` from Stripe events
-- [ ] Replace mailto on Pricing section + `/settings/plan` upgrade button with real checkout
-- [ ] Dunning: `past_due` status should block unarchive/new-save with a friendly "update card" message
-- [ ] Revisit: annual discount (`$50/yr` already advertised) — one-click switch between monthly/annual
+The heavy lifting (Paddle domain approval, checkout, webhooks, dunning, customer portal) is tracked in §2. Post-launch, v1.2 is mainly about optimising the flow:
+
+- [ ] Upgrade nudges in-app (plan-limit 403s should deep-link to Paddle checkout, not `mailto:`).
+- [ ] Annual-vs-monthly toggle on `/settings/plan` (one-click switch).
+- [ ] Receipts / invoices surfaced in `/settings/plan` (Paddle hosts these — just deep-link).
 
 ### v1.3 — Deliver the Pro promise
 
@@ -91,7 +108,7 @@ Both X and LinkedIn are pure additions — extend the `Platform` enum, add conte
 
 ---
 
-## 4. Other platforms — quick take
+## 5. Other platforms — quick take
 
 Short answer: **Reddit + X + LinkedIn is the indie-founder / B2B-sales 95%.** The rest are worth knowing but rarely worth the dev cost.
 
@@ -108,7 +125,7 @@ Short answer: **Reddit + X + LinkedIn is the indie-founder / B2B-sales 95%.** Th
 
 ---
 
-## 5. Ideas pool (not scheduled)
+## 6. Ideas pool (not scheduled)
 
 - Browser extension side panel for a faster glance at today's follow-ups
 - Slack integration: daily digest into a personal Slack DM instead of email
