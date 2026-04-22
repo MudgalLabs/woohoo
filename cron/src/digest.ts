@@ -53,12 +53,19 @@ type EligibleUser = {
     timezone: string | null;
     emailDigestEnabled: boolean;
     inAppDigestEnabled: boolean;
+    isPro: boolean;
 };
 
-// Pro users with at least one digest medium enabled, whose local 8am has
-// already passed today (within the last 12 hours — caps catch-up if cron
-// has been down for longer), and who don't already have a DigestLog row
-// for today in their timezone.
+// Users with at least one deliverable digest medium today, whose local 8am
+// has already passed (within the last 12 hours — caps catch-up if cron has
+// been down for longer), and who don't already have a DigestLog row for
+// today in their timezone.
+//
+// Delivery rules:
+//   - in-app: gated by `inAppDigestEnabled` (free + pro)
+//   - email: gated by `emailDigestEnabled && isPro` (double-gate: user
+//     preference AND plan tier — so a Pro-downgrade-to-free stops email
+//     even if the preference flag wasn't flipped)
 export async function findEligibleUsers(now: Date): Promise<EligibleUser[]> {
     const candidates = await prisma.user.findMany({
         where: {
@@ -67,10 +74,6 @@ export async function findEligibleUsers(now: Date): Promise<EligibleUser[]> {
                 { emailDigestEnabled: true },
                 { inAppDigestEnabled: true },
             ],
-            subscription: {
-                status: { not: "canceled" },
-                plan: { tier: "pro" },
-            },
         },
         select: {
             id: true,
@@ -79,14 +82,31 @@ export async function findEligibleUsers(now: Date): Promise<EligibleUser[]> {
             timezone: true,
             emailDigestEnabled: true,
             inAppDigestEnabled: true,
+            subscription: {
+                select: {
+                    status: true,
+                    plan: { select: { tier: true } },
+                },
+            },
         },
     });
 
     const eligible: EligibleUser[] = [];
     const MAX_LATE_MS = 12 * 60 * 60 * 1000;
 
-    for (const user of candidates) {
-        const tz = user.timezone ?? "UTC";
+    for (const c of candidates) {
+        const isPro =
+            c.subscription?.plan.tier === "pro" &&
+            c.subscription?.status !== "canceled";
+
+        // Skip users with nothing deliverable today (e.g. free user with
+        // only emailDigestEnabled). Avoids claiming a DigestLog row for a
+        // no-op.
+        const canSendEmail = c.emailDigestEnabled && isPro;
+        const canSendInApp = c.inAppDigestEnabled;
+        if (!canSendEmail && !canSendInApp) continue;
+
+        const tz = c.timezone ?? "UTC";
         const local8am = userLocal8amAsUtc(now, tz);
         if (local8am > now) continue; // 8am hasn't hit yet
         if (now.getTime() - local8am.getTime() > MAX_LATE_MS) continue;
@@ -94,13 +114,21 @@ export async function findEligibleUsers(now: Date): Promise<EligibleUser[]> {
         const today = localDateString(now, tz);
         const already = await prisma.digestLog.findUnique({
             where: {
-                userId_localDate: { userId: user.id, localDate: today },
+                userId_localDate: { userId: c.id, localDate: today },
             },
             select: { id: true },
         });
         if (already) continue;
 
-        eligible.push(user);
+        eligible.push({
+            id: c.id,
+            name: c.name,
+            email: c.email,
+            timezone: c.timezone,
+            emailDigestEnabled: c.emailDigestEnabled,
+            inAppDigestEnabled: c.inAppDigestEnabled,
+            isPro,
+        });
     }
 
     return eligible;
@@ -226,7 +254,10 @@ export async function sendDigestToUser(
               } for today`;
 
     let status: "sent" | "failed" = "sent";
-    if (user.emailDigestEnabled) {
+    // Email is double-gated: user preference AND Pro plan. findEligibleUsers
+    // already filters on this; the check here is a defense-in-depth so a
+    // bug in eligibility can't leak a Pro-only email to a free user.
+    if (user.emailDigestEnabled && user.isPro) {
         try {
             await getResend().emails.send({
                 from: FROM_EMAIL(),
@@ -245,7 +276,7 @@ export async function sendDigestToUser(
         }
     } else {
         console.log(
-            `[digest] ${user.email}: email disabled by user, skipping email`,
+            `[digest] ${user.email}: email skipped (pref=${user.emailDigestEnabled}, pro=${user.isPro})`,
         );
     }
 

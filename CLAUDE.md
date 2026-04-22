@@ -42,7 +42,7 @@ The platform-agnostic core (data model, API, dashboard, plans, auth) is shipped.
 9. **Auth:** Google OAuth via better-auth; extension signs in by opening `/auth?from=ext&extId=…` in a tab and the web app posts the session token back via `chrome.runtime.sendMessage` (see `auth/ext-return`). No email/password in prod (toggleable via `ENABLE_EMAIL_PASSWORD_AUTH`).
 10. **In-app notifications (Bodhveda):** every signup provisions a [Bodhveda](https://bodhveda.com) recipient and fires a welcome notification. The app header renders a bell dropdown with unread count + mark-all-read. See "Bodhveda integration" below.
 11. **Extension badge:** the toolbar icon shows `overdue + today` follow-up count, refreshed on every save/sign-out/startup. Zero new manifest permissions (no `alarms`).
-12. **Daily follow-up digest (Pro):** a separate Node cron service ticks every 30m on the VPS, sending each Pro user an email digest of overdue + today items around 8am in their local timezone. Rendered with React Email, sent via Resend. Also mirrors to the Bodhveda bell. Unsubscribe via signed-token link in every email. See "Follow-up digest" below.
+12. **Daily follow-up digest:** a separate Node cron service ticks every 30m on the VPS, sending users a digest of overdue + today items around 8am in their local timezone. **In-app (Bodhveda bell)** mirror goes to all users (free + Pro) who have `inAppDigestEnabled`. **Email** is double-gated: `emailDigestEnabled` AND Pro plan. Email rendered with React Email, sent via Resend; unsubscribe via signed-token link in every email. See "Follow-up digest" below.
 
 ### What's next (ordered)
 
@@ -65,7 +65,7 @@ Woohoo is a lightweight follow-up tool for DMs and comments. It captures interac
 
 - **`web/`** — Next.js 16 full-stack app (App Router, React 19, Tailwind v4, shadcn/ui, better-auth, Prisma)
 - **`ext/`** — Browser extension MV3 (React 19, Vite, @crxjs/vite-plugin). Content-script scope is currently `https://www.reddit.com/*`; new platforms plug in as additional content-script adapters and a widened manifest scope. Builds both Chrome and Firefox artifacts (`build:chrome`, `build:firefox`).
-- **`cron/`** — Node service that runs on the VPS alongside `web/`. Ticks every 30m via `node-cron`, sends the daily follow-up digest email to Pro users and mirrors to the Bodhveda bell. Reuses web's generated Prisma client + a couple of helpers (`web/lib/date-tz.ts`, `web/lib/unsubscribe.ts`, `web/lib/bodhveda.ts`) via relative imports; has its own Dockerfile.
+- **`cron/`** — Node service that runs on the VPS alongside `web/`. Ticks every 30m via `node-cron`, sends the daily follow-up digest: in-app (Bodhveda bell) for all users who opted in, email (Resend) for Pro users who opted in. Reuses web's generated Prisma client + a couple of helpers (`web/lib/date-tz.ts`, `web/lib/unsubscribe.ts`, `web/lib/bodhveda.ts`) via relative imports; has its own Dockerfile.
 - **`packages/ui`** (`@woohoo/ui`) — shared, reusable shadcn primitives consumed by `web/` (and any future app)
 - **`packages/api`** (`@woohoo/api`) — shared API client and types consumed by `web/` and `ext/`
 
@@ -136,7 +136,7 @@ Copy `.env.example` to `.env` and fill in:
 
 Domain models beyond better-auth tables:
 
-- **`User`** — better-auth base + extras: `timezone` (IANA), `emailDigestEnabled` / `inAppDigestEnabled` (per-medium toggles for the daily digest; email is gated by the Pro plan at send time).
+- **`User`** — better-auth base + extras: `timezone` (IANA), `emailDigestEnabled` / `inAppDigestEnabled` (per-medium toggles for the daily digest; in-app is free-tier, email is double-gated by preference AND Pro plan at send time).
 - **`Woohoo`** — unique on `(userId, platform, peerId)`. Fields: `peerName`, `chatUrl`, `followUpAt`, `lastInteractionAt`, `lastSavedAt`, `archivedAt`. Cascades from `User`.
 - **`TimelineItem`** — belongs to a Woohoo. Unique on `(woohooId, externalId)` (prevents duplicate saves). `type: dm | comment`, `contentText`, `contentHtml`, `sourceUrl`, `authorId`, `authorName`, `interactionAt`, `savedAt`, `parentId` (self-relation, 1-level reply threading for comments).
 - **`Plan`** — unique on `tier` (`free` | `pro`). Fields: `name`, `activeWoohooLimit` (nullable = unlimited), `priceCents`.
@@ -183,12 +183,16 @@ Woohoo uses [Bodhveda](https://bodhveda.com) (Mudgal Labs' own notification plat
 ### Follow-up digest (cron service)
 
 - Lives in `cron/` — separate Node binary running on the VPS.
-- Schedule: `0,30 * * * *` (every 30 minutes). On each tick + once at boot (catchup), finds Pro users whose local 8am fell in the last 12 hours and who don't already have a `DigestLog` row for today in their timezone. Caps catch-up to 12h so a prolonged outage can't fire yesterday's digest at midnight.
+- Schedule: `0,30 * * * *` (every 30 minutes). On each tick + once at boot (catchup), finds users with at least one deliverable digest medium today, whose local 8am fell in the last 12 hours, and who don't already have a `DigestLog` row for today in their timezone. Caps catch-up to 12h so a prolonged outage can't fire yesterday's digest at midnight.
 - For each eligible user: claim a `DigestLog` row with `status="sending"` first, then render the React Email template (`cron/src/emails/FollowUpDigest.tsx`), send via Resend, update log to `sent`/`failed`. On success, also mirror into the Bodhveda bell with `sendDigestNotification`.
 - Email rendering uses `@react-email/render` + `@react-email/components`. Colors are inlined hex derived from the app's OKLCH tokens so email clients render them correctly (email clients can't resolve CSS custom properties).
 - Header includes `List-Unsubscribe: <url>` + `List-Unsubscribe-Post: List-Unsubscribe=One-Click` for Gmail/Yahoo one-click compliance (required for bulk senders as of 2024).
 - Idempotency: unique index on `(userId, localDate)` in `DigestLog`. Claim-first pattern means a crash between claim and send leaves the row at `sending` and skips the user for the day. Intentional — never double-send.
-- Plan gating: cron query filters to `subscription.plan.tier === "pro"` AND `status !== "canceled"`. Paddle should flip `emailDigestEnabled` to `true` on upgrade, `false` on downgrade (not wired yet — subscription webhook is a TODO).
+- Plan gating (per-medium, not per-user):
+  - **In-app** goes to any user with `inAppDigestEnabled=true` (free + Pro).
+  - **Email** is double-gated: `emailDigestEnabled=true` AND active Pro subscription (`subscription.status !== "canceled"` AND `plan.tier === "pro"`). The eligibility filter pre-checks this; the sender re-checks as defense-in-depth so a bug in eligibility can't leak a Pro email to a free user.
+  - Users with nothing deliverable (e.g. free user with only `emailDigestEnabled`) are skipped at eligibility and never claim a `DigestLog` row.
+  - Paddle should still flip `emailDigestEnabled` to `true` on upgrade / `false` on downgrade for UX clarity (not wired yet — subscription webhook is a TODO); the double-gate means the cron won't leak email even if that flip is skipped.
 
 ### Plans & limits (`web/lib/plans.ts`)
 

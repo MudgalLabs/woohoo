@@ -29,14 +29,34 @@ async function main() {
                 timezone: true,
                 emailDigestEnabled: true,
                 inAppDigestEnabled: true,
+                subscription: {
+                    select: {
+                        status: true,
+                        plan: { select: { tier: true } },
+                    },
+                },
             },
         });
         if (!user) {
             console.error(`[once] user ${userId} not found`);
             process.exit(1);
         }
-        console.log(`[once] sending digest for ${user.email}`);
-        const res = await sendDigestToUser(user, new Date());
+        const isPro =
+            user.subscription?.plan.tier === "pro" &&
+            user.subscription?.status !== "canceled";
+        console.log(`[once] sending digest for ${user.email} (pro=${isPro})`);
+        const res = await sendDigestToUser(
+            {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                timezone: user.timezone,
+                emailDigestEnabled: user.emailDigestEnabled,
+                inAppDigestEnabled: user.inAppDigestEnabled,
+                isPro,
+            },
+            new Date(),
+        );
         console.log(`[once] result: ${res}`);
     } else {
         console.log("[once] running one full tick");
