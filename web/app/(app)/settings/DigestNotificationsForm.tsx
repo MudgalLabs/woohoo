@@ -85,14 +85,14 @@ export function DigestNotificationsForm({
                         timezone.
                     </p>
                 </div>
-                <div className="flex justify-center">
+                <div className="relative flex justify-center">
                     <Toggle
                         value={inApp}
                         onChange={toggleInApp}
                         label="In-app follow-up digest"
                     />
                 </div>
-                <div className="flex flex-col items-center gap-1">
+                <div className="relative flex justify-center">
                     <Toggle
                         value={emailDisplayValue}
                         onChange={toggleEmail}
@@ -100,7 +100,7 @@ export function DigestNotificationsForm({
                         label="Email follow-up digest"
                     />
                     {!isPro && (
-                        <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                        <span className="absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
                             Pro
                         </span>
                     )}

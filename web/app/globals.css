@@ -102,7 +102,10 @@
     --accent-foreground: oklch(0.9488 0.0114 71.8971);
     --destructive: oklch(0.6093 0.1614 29.7957);
     --destructive-foreground: oklch(0.186 0.0089 59.0606);
-    --border: oklch(0.2653 0.0128 62.0432);
+    /* Bumped to match --input so cards + dividers read in dark mode. Old
+       value (0.2653) was only ~0.025 L brighter than --card (0.2397),
+       which rendered card edges and separators nearly invisible. */
+    --border: oklch(0.3262 0.0157 67.2313);
     --input: oklch(0.3262 0.0157 67.2313);
     --ring: oklch(0.6093 0.1614 29.7957);
     --chart-1: oklch(0.6093 0.1614 29.7957);
@@ -116,7 +119,7 @@
     --sidebar-primary-foreground: oklch(0.186 0.0089 59.0606);
     --sidebar-accent: oklch(0.2222 0.011 60.8669);
     --sidebar-accent-foreground: oklch(0.9488 0.0114 71.8971);
-    --sidebar-border: oklch(0.2653 0.0128 62.0432);
+    --sidebar-border: oklch(0.3262 0.0157 67.2313);
     --sidebar-ring: oklch(0.6093 0.1614 29.7957);
     --font-sans: "IBM Plex Sans", sans-serif;
     --font-serif: "IBM Plex Sans", sans-serif;
