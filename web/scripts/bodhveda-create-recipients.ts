@@ -14,7 +14,7 @@ import path from "node:path";
 config({ path: path.resolve(__dirname, "..", "..", ".env") });
 
 import { prisma } from "../lib/prisma";
-import { getBodhvedaClient } from "../lib/bodhveda";
+import { getBodhvedaClient, bodhvedaRecipientId } from "../lib/bodhveda";
 
 const BATCH_SIZE = 100;
 
@@ -36,7 +36,7 @@ async function main() {
         const batch = users.slice(i, i + BATCH_SIZE);
         const res = await bodhveda.recipients.createBatch({
             recipients: batch.map((u) => ({
-                id: u.id,
+                id: bodhvedaRecipientId(u.id),
                 name: u.name ?? undefined,
             })),
         });

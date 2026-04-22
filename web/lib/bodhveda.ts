@@ -16,12 +16,22 @@ function getClient(): Bodhveda {
     return client;
 }
 
+// Bodhveda's entity.NewRecipient lowercases external_id on insert, but its
+// Get(external_id) lookup doesn't — a case-sensitivity bug in Bodhveda's
+// recipient repo that surfaces as a 500 "create recipient: resource not
+// found" on any call that hits CreateIfNotExists for an existing recipient.
+// Until Bodhveda normalizes at the DTO layer, we lowercase on our side so
+// every Woohoo → Bodhveda call matches what Bodhveda actually stores.
+export function bodhvedaRecipientId(userId: string): string {
+    return userId.toLowerCase();
+}
+
 export async function createBodhvedaRecipient(user: {
     id: string;
     name?: string | null;
 }) {
     return getClient().recipients.create({
-        id: user.id,
+        id: bodhvedaRecipientId(user.id),
         name: user.name ?? undefined,
     });
 }
@@ -32,7 +42,7 @@ export async function sendWelcomeNotification(
 ) {
     const greeting = name ? `Welcome to Woohoo, ${name}!` : "Welcome to Woohoo!";
     return getClient().notifications.send({
-        recipient_id: userId,
+        recipient_id: bodhvedaRecipientId(userId),
         target: targets.welcome,
         payload: {
             title: greeting,
