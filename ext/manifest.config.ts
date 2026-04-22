@@ -66,7 +66,7 @@ export default defineManifest({
         default_popup: "src/popup/index.html",
     },
     background,
-    permissions: ["storage", "tabs"],
+    permissions: ["storage"],
     host_permissions: hostPermissions,
     content_scripts: [
         {
