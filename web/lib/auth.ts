@@ -5,6 +5,10 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 
 import { prisma } from "@/lib/prisma";
 import { PlanTier } from "@/app/generated/prisma/client";
+import {
+    createBodhvedaRecipient,
+    sendWelcomeNotification,
+} from "@/lib/bodhveda";
 
 export const emailPasswordAuthEnabled =
     process.env.ENABLE_EMAIL_PASSWORD_AUTH === "true";
@@ -51,12 +55,36 @@ export const auth = betterAuth({
                         where: { tier: PlanTier.free },
                         select: { id: true },
                     });
-                    if (!free) return;
-                    await prisma.subscription.upsert({
-                        where: { userId: user.id },
-                        create: { userId: user.id, planId: free.id },
-                        update: {},
-                    });
+                    if (free) {
+                        await prisma.subscription.upsert({
+                            where: { userId: user.id },
+                            create: { userId: user.id, planId: free.id },
+                            update: {},
+                        });
+                    }
+
+                    // Provision the Bodhveda recipient + fire a welcome in-app
+                    // notification. Non-fatal — signup must succeed even if
+                    // Bodhveda is unreachable.
+                    try {
+                        await createBodhvedaRecipient({
+                            id: user.id,
+                            name: user.name,
+                        });
+                    } catch (err) {
+                        console.error(
+                            "[bodhveda] createRecipient failed on signup",
+                            err,
+                        );
+                    }
+                    try {
+                        await sendWelcomeNotification(user.id, user.name);
+                    } catch (err) {
+                        console.error(
+                            "[bodhveda] sendWelcomeNotification failed",
+                            err,
+                        );
+                    }
                 },
             },
         },

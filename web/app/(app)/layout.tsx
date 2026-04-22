@@ -17,6 +17,7 @@ import { AppHeader } from "./AppHeader";
 import { AppSidebarFooter } from "./AppSidebarFooter";
 import { SidebarUsage } from "./SidebarUsage";
 import { TimezoneBackfill } from "./TimezoneBackfill";
+import { BodhvedaBootstrap } from "./BodhvedaBootstrap";
 import { Logo } from "@/app/components/brand/Logo";
 
 export default async function AppLayout({
@@ -35,7 +36,16 @@ export default async function AppLayout({
         getActiveWoohooCount(session.user.id),
     ]);
 
+    const bodhvedaRecipientKey =
+        process.env.NEXT_PUBLIC_BODHVEDA_RECIPIENT_KEY ?? "";
+    const bodhvedaApiURL = process.env.NEXT_PUBLIC_BODHVEDA_API_URL || undefined;
+
     return (
+        <BodhvedaBootstrap
+            recipientID={session.user.id}
+            apiKey={bodhvedaRecipientKey}
+            apiURL={bodhvedaApiURL}
+        >
         <SidebarProvider defaultOpen={defaultOpen}>
             <Sidebar collapsible="icon" variant="inset">
                 <SidebarHeader>
@@ -83,5 +93,6 @@ export default async function AppLayout({
                 currentTimezone={session.user.timezone ?? null}
             />
         </SidebarProvider>
+        </BodhvedaBootstrap>
     );
 }
