@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     const startOfToday = startOfDayInTz(now, timezone);
     const endOfToday = endOfDayInTz(now, timezone);
 
-    const [totalWoohoos, followUpToday] = await Promise.all([
+    const [totalWoohoos, followUpToday, overdue] = await Promise.all([
         prisma.woohoo.count({ where: { userId, archivedAt: null } }),
         prisma.woohoo.count({
             where: {
@@ -27,7 +27,14 @@ export async function GET(request: Request) {
                 followUpAt: { gte: startOfToday, lte: endOfToday },
             },
         }),
+        prisma.woohoo.count({
+            where: {
+                userId,
+                archivedAt: null,
+                followUpAt: { lt: startOfToday },
+            },
+        }),
     ]);
 
-    return NextResponse.json({ totalWoohoos, followUpToday });
+    return NextResponse.json({ totalWoohoos, followUpToday, overdue });
 }

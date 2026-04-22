@@ -163,6 +163,8 @@ export function SaveModal(props: SaveModalProps) {
             message: kind === "dm" ? "Unsaved DM" : "Unsaved comment",
         });
 
+        chrome.runtime.sendMessage({ type: "REFRESH_BADGE" });
+
         onUnsaved?.();
         onClose?.();
     };
@@ -283,6 +285,8 @@ export function SaveModal(props: SaveModalProps) {
             message: kind === "dm" ? "Saved DM" : "Saved comment",
             href: savedWoohooUrl,
         });
+
+        chrome.runtime.sendMessage({ type: "REFRESH_BADGE" });
 
         onSaved?.();
         onClose?.();

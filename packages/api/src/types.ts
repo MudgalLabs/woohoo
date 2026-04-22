@@ -69,6 +69,7 @@ export interface ApiError {
 export interface StatsResponse {
     totalWoohoos: number;
     followUpToday: number;
+    overdue: number;
 }
 
 export interface CheckSavedResponse {

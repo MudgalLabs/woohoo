@@ -5,13 +5,57 @@ import { API_BASE_URL as BASE_URL } from "@/lib/api-base-url";
 type IncomingMessage =
     | { type: "GET_SESSION" }
     | { type: "SIGN_OUT" }
-    | { type: "GET_STATS" };
+    | { type: "GET_STATS" }
+    | { type: "REFRESH_BADGE" };
 
 type Reply =
     | { session: AuthSession | null }
     | { ok: true }
     | { ok: false; error: string }
     | { stats: StatsResponse | null };
+
+// Woohoo brand primary + foreground, converted from the OKLCH tokens in
+// web/app/globals.css. MV3 can't reliably read toolbar theme, so one fixed
+// pair covers both light and dark browser themes.
+const BADGE_BG = "#c0392b";
+const BADGE_FG = "#f5f0e8";
+
+function setBadge(stats: StatsResponse | null) {
+    if (!stats) {
+        chrome.action.setBadgeText({ text: "" });
+        return;
+    }
+    const count = stats.overdue + stats.followUpToday;
+    if (count <= 0) {
+        chrome.action.setBadgeText({ text: "" });
+        return;
+    }
+    const text = count > 99 ? "99+" : String(count);
+    chrome.action.setBadgeText({ text });
+    chrome.action.setBadgeBackgroundColor({ color: BADGE_BG });
+    // setBadgeTextColor is MV3-only and not in older Firefox builds.
+    if (typeof chrome.action.setBadgeTextColor === "function") {
+        chrome.action.setBadgeTextColor({ color: BADGE_FG });
+    }
+}
+
+async function refreshBadge(): Promise<StatsResponse | null> {
+    try {
+        const stored = await chrome.storage.local.get("session");
+        const session = stored["session"] as AuthSession | undefined;
+        if (!session) {
+            setBadge(null);
+            return null;
+        }
+        const client = new WoohooApiClient(BASE_URL, session.token);
+        const stats = await client.getStats();
+        setBadge(stats);
+        return stats;
+    } catch {
+        // Transient failure — leave badge as-is rather than flashing empty.
+        return null;
+    }
+}
 
 async function handle(msg: IncomingMessage): Promise<Reply> {
     if (msg.type === "GET_SESSION") {
@@ -26,6 +70,7 @@ async function handle(msg: IncomingMessage): Promise<Reply> {
 
         if (!refreshed) {
             await chrome.storage.local.remove("session");
+            setBadge(null);
             return { session: null };
         }
 
@@ -41,17 +86,27 @@ async function handle(msg: IncomingMessage): Promise<Reply> {
             await client.signOut();
         }
         await chrome.storage.local.remove("session");
+        setBadge(null);
         return { ok: true };
     }
 
     if (msg.type === "GET_STATS") {
         const stored = await chrome.storage.local.get("session");
         const session = stored["session"] as AuthSession | undefined;
-        if (!session) return { stats: null };
+        if (!session) {
+            setBadge(null);
+            return { stats: null };
+        }
 
         const client = new WoohooApiClient(BASE_URL, session.token);
         const stats = await client.getStats();
+        setBadge(stats);
         return { stats };
+    }
+
+    if (msg.type === "REFRESH_BADGE") {
+        await refreshBadge();
+        return { ok: true };
     }
 
     return { ok: false, error: "Unknown message type." };
@@ -99,7 +154,20 @@ chrome.runtime.onMessageExternal.addListener(
                     },
                 },
             })
-            .then(() => sendResponse({ ok: true }));
+            .then(async () => {
+                await refreshBadge();
+                sendResponse({ ok: true });
+            });
         return true; // async response
     },
 );
+
+// Refresh the badge whenever the service worker wakes up — covers browser
+// restart, extension install/update, and cold-start after the worker slept.
+chrome.runtime.onStartup.addListener(() => {
+    refreshBadge();
+});
+chrome.runtime.onInstalled.addListener(() => {
+    refreshBadge();
+});
+refreshBadge();
