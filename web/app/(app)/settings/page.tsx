@@ -25,45 +25,31 @@ export default async function SettingsPage() {
     const isPro = plan.tier === "pro";
 
     return (
-        <div className="p-6 w-full max-w-2xl space-y-5">
-            <div>
-                <h1 className="text-xl font-semibold">Settings</h1>
-                <p className="text-sm text-muted-foreground mt-1">
-                    Your account preferences.
-                </p>
-            </div>
-
-            <div className="rounded-lg border bg-card p-5">
-                <div className="mb-4">
-                    <h2 className="text-sm font-medium">Timezone</h2>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                        Used to decide what &ldquo;today&rdquo; and
-                        &ldquo;overdue&rdquo; mean for your follow-ups.
-                    </p>
-                </div>
-                <TimezoneForm currentTimezone={currentTimezone} />
-            </div>
-
-            <div className="rounded-lg border bg-card p-5">
-                <div className="mb-4">
-                    <h2 className="text-sm font-medium">Notifications</h2>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                        How we nudge you on follow-ups that need attention.
-                    </p>
-                </div>
-                <div className="space-y-5">
-                    <div>
-                        <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-3">
-                            Follow-up digest
+        <div className="p-6 w-full max-w-3xl space-y-8">
+            <section>
+                <h2 className="text-sm font-semibold mb-3">Profile</h2>
+                <div className="rounded-lg border bg-card p-5">
+                    <div className="mb-4">
+                        <h3 className="text-sm font-medium">Timezone</h3>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                            Used to decide what &ldquo;today&rdquo; and
+                            &ldquo;overdue&rdquo; mean for your follow-ups.
                         </p>
-                        <DigestNotificationsForm
-                            initialInApp={me?.inAppDigestEnabled ?? true}
-                            initialEmail={me?.emailDigestEnabled ?? true}
-                            isPro={isPro}
-                        />
                     </div>
+                    <TimezoneForm currentTimezone={currentTimezone} />
                 </div>
-            </div>
+            </section>
+
+            <section>
+                <h2 className="text-sm font-semibold mb-3">Notifications</h2>
+                <div className="rounded-lg border bg-card p-5">
+                    <DigestNotificationsForm
+                        initialInApp={me?.inAppDigestEnabled ?? true}
+                        initialEmail={me?.emailDigestEnabled ?? true}
+                        isPro={isPro}
+                    />
+                </div>
+            </section>
         </div>
     );
 }

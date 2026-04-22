@@ -23,18 +23,13 @@ export function DigestNotificationsForm({
         inAppDigestEnabled?: boolean;
     }) => {
         setStatus("idle");
-        try {
-            const res = await fetch("/api/me/preferences", {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(patch),
-            });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            setStatus("saved");
-        } catch {
-            setStatus("error");
-            throw new Error("save_failed");
-        }
+        const res = await fetch("/api/me/preferences", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(patch),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        setStatus("saved");
     };
 
     const toggleInApp = async () => {
@@ -45,6 +40,7 @@ export function DigestNotificationsForm({
             await save({ inAppDigestEnabled: next });
         } catch {
             setInApp(prev);
+            setStatus("error");
         }
     };
 
@@ -57,32 +53,60 @@ export function DigestNotificationsForm({
             await save({ emailDigestEnabled: next });
         } catch {
             setEmail(prev);
+            setStatus("error");
         }
     };
 
-    // Free users see the email toggle in a visually-disabled state regardless
-    // of DB value (cron wouldn't send anyway — filter runs on plan).
+    // Free users see the email toggle off + disabled regardless of DB value
+    // (cron wouldn't send anyway — filter runs on plan).
     const emailDisplayValue = isPro ? email : false;
 
     return (
-        <div className="space-y-4">
-            <ToggleRow
-                label="In-app notification"
-                description="Show the digest in your notifications bell."
-                value={inApp}
-                onChange={toggleInApp}
-            />
-            <ToggleRow
-                label="Email"
-                description={
-                    isPro
-                        ? "Send the digest to your email around 8am in your timezone."
-                        : "Available on Pro. Upgrade to receive a daily email digest."
-                }
-                value={emailDisplayValue}
-                onChange={toggleEmail}
-                disabled={!isPro}
-            />
+        <div className="space-y-3">
+            <div className="grid grid-cols-[1fr_72px_72px] items-center gap-x-4">
+                {/* Column headers */}
+                <div />
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground text-center">
+                    In app
+                </div>
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground text-center">
+                    Email
+                </div>
+
+                {/* Separator under headers, spans all 3 columns */}
+                <div className="col-span-3 border-t my-2" />
+
+                {/* Follow-up digest row */}
+                <div>
+                    <p className="text-sm font-medium">Follow-up digest</p>
+                    <p className="text-xs text-muted-foreground mt-0.5 max-w-sm">
+                        A daily nudge covering Woohoos that need a follow-up
+                        today or are already overdue, around 8am in your
+                        timezone.
+                    </p>
+                </div>
+                <div className="flex justify-center">
+                    <Toggle
+                        value={inApp}
+                        onChange={toggleInApp}
+                        label="In-app follow-up digest"
+                    />
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                    <Toggle
+                        value={emailDisplayValue}
+                        onChange={toggleEmail}
+                        disabled={!isPro}
+                        label="Email follow-up digest"
+                    />
+                    {!isPro && (
+                        <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                            Pro
+                        </span>
+                    )}
+                </div>
+            </div>
+
             <div className="min-h-[16px]">
                 {status === "error" && (
                     <span className="text-xs text-destructive">
@@ -99,56 +123,39 @@ export function DigestNotificationsForm({
     );
 }
 
-function ToggleRow({
-    label,
-    description,
+function Toggle({
     value,
     onChange,
     disabled,
+    label,
 }: {
-    label: string;
-    description: string;
     value: boolean;
     onChange: () => void;
     disabled?: boolean;
+    label: string;
 }) {
     return (
-        <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-                <p
-                    className={cn(
-                        "text-sm font-medium",
-                        disabled && "text-muted-foreground",
-                    )}
-                >
-                    {label}
-                </p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                    {description}
-                </p>
-            </div>
-            <button
-                type="button"
-                role="switch"
-                aria-checked={value}
-                aria-label={label}
-                onClick={onChange}
-                disabled={disabled}
+        <button
+            type="button"
+            role="switch"
+            aria-checked={value}
+            aria-label={label}
+            onClick={onChange}
+            disabled={disabled}
+            className={cn(
+                "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                "disabled:cursor-not-allowed disabled:opacity-50",
+                value ? "bg-primary" : "bg-input",
+            )}
+        >
+            <span
+                aria-hidden
                 className={cn(
-                    "relative mt-0.5 inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                    "disabled:cursor-not-allowed disabled:opacity-50",
-                    value ? "bg-primary" : "bg-input",
+                    "pointer-events-none inline-block h-5 w-5 rounded-full bg-background shadow ring-0 transition-transform",
+                    value ? "translate-x-5" : "translate-x-0",
                 )}
-            >
-                <span
-                    aria-hidden
-                    className={cn(
-                        "pointer-events-none inline-block h-5 w-5 rounded-full bg-background shadow ring-0 transition-transform",
-                        value ? "translate-x-5" : "translate-x-0",
-                    )}
-                />
-            </button>
-        </div>
+            />
+        </button>
     );
 }

@@ -30,10 +30,14 @@ async function handle(request: Request) {
 
     if (parsed.kind === "digest") {
         try {
-            await prisma.user.update({
+            const res = await prisma.user.update({
                 where: { id: parsed.userId },
                 data: { emailDigestEnabled: false },
+                select: { id: true, emailDigestEnabled: true },
             });
+            console.log(
+                `[unsubscribe] flipped emailDigestEnabled=${res.emailDigestEnabled} for userId=${res.id}`,
+            );
         } catch (err) {
             // P2025 = record not found (deleted account). Treat as already
             // unsubscribed and return success. Any other error surfaces as
@@ -41,7 +45,11 @@ async function handle(request: Request) {
             // rejected the write.
             const code = (err as { code?: string } | null)?.code;
             if (code !== "P2025") {
-                console.error("[unsubscribe] update failed", err);
+                console.error(
+                    "[unsubscribe] update failed for userId=" +
+                        parsed.userId,
+                    err,
+                );
                 return NextResponse.json(
                     { error: "Failed to unsubscribe" },
                     { status: 500 },

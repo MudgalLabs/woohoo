@@ -9,6 +9,9 @@ interface Route {
     protected?: boolean;
 }
 
+// Order matters: AppHeader does prefix matching via startsWith, so more
+// specific paths (e.g. /settings/plan) must appear before their parent
+// (/settings) to get the right title.
 export const ROUTES: Route[] = [
     {
         title: "Dashboard",
@@ -23,6 +26,11 @@ export const ROUTES: Route[] = [
     {
         title: "Plan & usage",
         url: "/settings/plan",
+        protected: true,
+    },
+    {
+        title: "Settings",
+        url: "/settings",
         protected: true,
     },
 ];
