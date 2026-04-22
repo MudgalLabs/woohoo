@@ -5,6 +5,7 @@ import { prisma } from "./prisma";
 import { FollowUpDigest } from "./emails/FollowUpDigest";
 import { signUnsubscribeToken } from "../../web/lib/unsubscribe";
 import { startOfDayInTz, wallClockInTzToUtc } from "../../web/lib/date-tz";
+import { sendDigestNotification } from "../../web/lib/bodhveda";
 
 // Lazy so env vars don't need to be resolved at module load — lets us import
 // digest.ts from scripts that haven't called dotenv.config yet.
@@ -149,16 +150,21 @@ type DigestRow = {
     lastInteractionAt: Date | null;
 };
 
+type SendResult = "sent" | "failed" | "skipped_empty" | "skipped_duplicate";
+
 export async function sendDigestToUser(
     user: EligibleUser,
     now: Date,
-): Promise<"sent" | "failed" | "skipped_empty"> {
+): Promise<SendResult> {
     const tz = user.timezone ?? "UTC";
     const today = localDateString(now, tz);
     const data = await buildDigestData(user.id, tz, now);
     const itemCount = data.today.length + data.overdue.length;
 
     if (itemCount === 0) {
+        // No email to send. Record the decision so the next tick skips this
+        // user. create() throws on duplicate — that's fine, someone else
+        // already decided today.
         await prisma.digestLog
             .create({
                 data: {
@@ -168,13 +174,25 @@ export async function sendDigestToUser(
                     itemCount: 0,
                 },
             })
-            .catch((err: unknown) => {
-                console.warn(
-                    `[digest] DigestLog insert conflict for ${user.email} (skipped_empty)`,
-                    err,
-                );
-            });
+            .catch(() => undefined);
         return "skipped_empty";
+    }
+
+    // Claim the (userId, localDate) slot BEFORE sending. If another worker
+    // already claimed it, return skipped_duplicate without sending. If send
+    // crashes after claim, the row stays at "sending" and the next tick
+    // skips — we'd rather miss a day than double-send.
+    try {
+        await prisma.digestLog.create({
+            data: {
+                userId: user.id,
+                localDate: today,
+                status: "sending",
+                itemCount,
+            },
+        });
+    } catch {
+        return "skipped_duplicate";
     }
 
     const token = signUnsubscribeToken(user.id, "digest");
@@ -217,24 +235,25 @@ export async function sendDigestToUser(
         status = "failed";
     }
 
-    await prisma.digestLog
-        .create({
-            data: {
-                userId: user.id,
-                localDate: today,
-                status,
-                itemCount,
-            },
-        })
-        .catch((err: unknown) => {
-            // If two cron workers race, the unique index on (userId, localDate)
-            // will throw here — that's the dedup guarantee doing its job. Log
-            // and move on; the email went out either way.
+    await prisma.digestLog.update({
+        where: { userId_localDate: { userId: user.id, localDate: today } },
+        data: { status },
+    });
+
+    // Mirror the digest into the in-app bell. Non-blocking — a Bodhveda
+    // outage shouldn't mark the email as failed (the email is the primary
+    // delivery; in-app is a bonus).
+    if (status === "sent") {
+        await sendDigestNotification(user.id, {
+            overdue: data.overdue.length,
+            today: data.today.length,
+        }).catch((err: unknown) => {
             console.warn(
-                `[digest] DigestLog insert conflict for ${user.email}`,
+                `[digest] bodhveda notification failed for ${user.email}`,
                 err,
             );
         });
+    }
 
     return status;
 }

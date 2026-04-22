@@ -1,6 +1,6 @@
 import { Bodhveda } from "bodhveda";
 
-import { targets } from "@/lib/bodhveda-targets";
+import { targets } from "./bodhveda-targets";
 
 let client: Bodhveda | null = null;
 
@@ -16,22 +16,12 @@ function getClient(): Bodhveda {
     return client;
 }
 
-// Bodhveda's entity.NewRecipient lowercases external_id on insert, but its
-// Get(external_id) lookup doesn't — a case-sensitivity bug in Bodhveda's
-// recipient repo that surfaces as a 500 "create recipient: resource not
-// found" on any call that hits CreateIfNotExists for an existing recipient.
-// Until Bodhveda normalizes at the DTO layer, we lowercase on our side so
-// every Woohoo → Bodhveda call matches what Bodhveda actually stores.
-export function bodhvedaRecipientId(userId: string): string {
-    return userId.toLowerCase();
-}
-
 export async function createBodhvedaRecipient(user: {
     id: string;
     name?: string | null;
 }) {
     return getClient().recipients.create({
-        id: bodhvedaRecipientId(user.id),
+        id: user.id,
         name: user.name ?? undefined,
     });
 }
@@ -42,11 +32,35 @@ export async function sendWelcomeNotification(
 ) {
     const greeting = name ? `Welcome to Woohoo, ${name}!` : "Welcome to Woohoo!";
     return getClient().notifications.send({
-        recipient_id: bodhvedaRecipientId(userId),
+        recipient_id: userId,
         target: targets.welcome,
         payload: {
             title: greeting,
             body: "Install the extension and save your first DM or comment in one click. Your follow-ups show up here and on your dashboard.",
+        },
+    });
+}
+
+export async function sendDigestNotification(
+    userId: string,
+    counts: { overdue: number; today: number },
+) {
+    const parts: string[] = [];
+    if (counts.overdue > 0)
+        parts.push(
+            `${counts.overdue} overdue follow-up${counts.overdue === 1 ? "" : "s"}`,
+        );
+    if (counts.today > 0)
+        parts.push(
+            `${counts.today} follow-up${counts.today === 1 ? "" : "s"} for today`,
+        );
+    const title = parts.join(" and ");
+    return getClient().notifications.send({
+        recipient_id: userId,
+        target: targets.digestSent,
+        payload: {
+            title: title || "Your Woohoo digest",
+            body: "Open the dashboard to knock them out.",
         },
     });
 }

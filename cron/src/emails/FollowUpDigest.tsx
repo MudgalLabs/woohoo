@@ -28,6 +28,28 @@ export interface FollowUpDigestProps {
     overdue: DigestWoohoo[];
 }
 
+// Colors — hex equivalents of the OKLCH tokens in web/app/globals.css :root.
+// Kept inline so the template is a true email client artefact (email clients
+// don't evaluate CSS custom properties across the <head>/<body> boundary
+// reliably). Keep in sync if the theme changes.
+const colors = {
+    // Outer page background — slightly darker than the card so the card pops.
+    // Maps to --sidebar, which is the "paper with a hint more shadow" tone.
+    bg: "#ede7db",
+    // Inner card surface — the app's primary writing surface (--background).
+    card: "#f5f0e8",
+    foreground: "#1a1410",
+    mutedFg: "#635a4a",
+    border: "#c8bfb0",
+    primary: "#c0392b",
+    primaryFg: "#f5f0e8",
+};
+
+const logoFont =
+    "'Fredoka', ui-rounded, 'Segoe UI', system-ui, -apple-system, sans-serif";
+const bodyFont =
+    "'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+
 function platformLabel(p: string): string {
     return p.charAt(0).toUpperCase() + p.slice(1);
 }
@@ -55,11 +77,27 @@ export function FollowUpDigest({
 
     return (
         <Html>
-            <Head />
+            <Head>
+                <link
+                    rel="preconnect"
+                    href="https://fonts.googleapis.com"
+                />
+                <link
+                    rel="preconnect"
+                    href="https://fonts.gstatic.com"
+                    crossOrigin=""
+                />
+                <link
+                    href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+                    rel="stylesheet"
+                />
+            </Head>
             <Preview>{previewText}</Preview>
-            <Body style={body}>
-                <Container style={container}>
-                    <Heading style={h1}>Woohoo</Heading>
+            <Body style={bodyStyle}>
+                <Container style={containerStyle}>
+                    <Link href={baseUrl} style={logoLink}>
+                        <Text style={logo}>woohoo</Text>
+                    </Link>
                     <Text style={greeting}>Hey {name},</Text>
                     <Text style={paragraph}>
                         {previewText}. Knock them out while it's fresh.
@@ -67,7 +105,7 @@ export function FollowUpDigest({
 
                     {overdue.length > 0 && (
                         <Section>
-                            <Heading as="h2" style={h2}>
+                            <Heading as="h2" style={sectionHeading}>
                                 Overdue ({overdue.length})
                             </Heading>
                             {overdue.map((w) => (
@@ -77,10 +115,9 @@ export function FollowUpDigest({
                                         style={itemLink}
                                     >
                                         {w.peerName ?? w.peerId}
-                                    </Link>{" "}
+                                    </Link>
                                     <span style={itemMeta}>
-                                        &middot; {platformLabel(w.platform)}
-                                        {" · "}
+                                        {" "}&middot; {platformLabel(w.platform)}{" "}&middot;{" "}
                                         {overdueLabel(w.followUpAt, now)}
                                     </span>
                                 </Text>
@@ -90,7 +127,7 @@ export function FollowUpDigest({
 
                     {today.length > 0 && (
                         <Section>
-                            <Heading as="h2" style={h2}>
+                            <Heading as="h2" style={sectionHeading}>
                                 Today ({today.length})
                             </Heading>
                             {today.map((w) => (
@@ -100,9 +137,9 @@ export function FollowUpDigest({
                                         style={itemLink}
                                     >
                                         {w.peerName ?? w.peerId}
-                                    </Link>{" "}
+                                    </Link>
                                     <span style={itemMeta}>
-                                        &middot; {platformLabel(w.platform)}
+                                        {" "}&middot; {platformLabel(w.platform)}
                                     </span>
                                 </Text>
                             ))}
@@ -111,11 +148,11 @@ export function FollowUpDigest({
 
                     <Hr style={hr} />
 
-                    <Text style={cta}>
+                    <Section style={ctaSection}>
                         <Link href={`${baseUrl}/dashboard`} style={ctaLink}>
                             Open dashboard
                         </Link>
-                    </Text>
+                    </Section>
 
                     <Hr style={hr} />
 
@@ -140,82 +177,96 @@ export function FollowUpDigest({
     );
 }
 
-const body: React.CSSProperties = {
-    background: "#f5f0e8",
-    fontFamily:
-        "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+const bodyStyle: React.CSSProperties = {
+    background: colors.bg,
+    fontFamily: bodyFont,
     margin: 0,
     padding: 0,
+    color: colors.foreground,
 };
 
-const container: React.CSSProperties = {
-    padding: "32px 24px",
+const containerStyle: React.CSSProperties = {
+    padding: "32px 28px",
     margin: "40px auto",
     maxWidth: 560,
-    background: "#ffffff",
+    background: colors.card,
     borderRadius: 8,
+    border: `1px solid ${colors.border}`,
 };
 
-const h1: React.CSSProperties = {
+const logoLink: React.CSSProperties = {
+    textDecoration: "none",
+    display: "inline-block",
+    marginBottom: 20,
+};
+
+const logo: React.CSSProperties = {
+    fontFamily: logoFont,
     fontSize: 20,
-    fontWeight: 700,
-    color: "#c0392b",
-    margin: "0 0 24px",
+    fontWeight: 500,
+    color: colors.primary,
+    margin: 0,
+    letterSpacing: "-0.01em",
+    lineHeight: 1,
 };
 
 const greeting: React.CSSProperties = {
     fontSize: 16,
     margin: "0 0 8px",
+    color: colors.foreground,
 };
 
 const paragraph: React.CSSProperties = {
     fontSize: 14,
-    color: "#555",
+    color: colors.mutedFg,
     margin: "0 0 24px",
     lineHeight: "1.5",
 };
 
-const h2: React.CSSProperties = {
-    fontSize: 13,
+const sectionHeading: React.CSSProperties = {
+    fontSize: 12,
     fontWeight: 600,
-    margin: "24px 0 8px",
-    color: "#333",
+    margin: "24px 0 10px",
+    color: colors.foreground,
     textTransform: "uppercase",
-    letterSpacing: "0.04em",
+    letterSpacing: "0.06em",
 };
 
 const item: React.CSSProperties = {
     fontSize: 14,
-    margin: "0 0 6px",
+    margin: "0 0 8px",
     lineHeight: "1.4",
+    color: colors.foreground,
 };
 
 const itemLink: React.CSSProperties = {
-    color: "#c0392b",
+    color: colors.primary,
     textDecoration: "none",
     fontWeight: 500,
 };
 
 const itemMeta: React.CSSProperties = {
-    color: "#888",
+    color: colors.mutedFg,
     fontSize: 13,
+    fontWeight: 400,
 };
 
 const hr: React.CSSProperties = {
-    borderTop: "1px solid #e5e5e5",
+    borderTop: `1px solid ${colors.border}`,
     borderBottom: "none",
-    margin: "24px 0",
+    margin: "28px 0",
 };
 
-const cta: React.CSSProperties = {
+const ctaSection: React.CSSProperties = {
     textAlign: "center",
-    margin: "24px 0",
+    margin: "0",
 };
 
 const ctaLink: React.CSSProperties = {
-    background: "#c0392b",
-    color: "#f5f0e8",
-    padding: "10px 20px",
+    display: "inline-block",
+    background: colors.primary,
+    color: colors.primaryFg,
+    padding: "10px 22px",
     borderRadius: 6,
     textDecoration: "none",
     fontWeight: 500,
@@ -224,13 +275,13 @@ const ctaLink: React.CSSProperties = {
 
 const footer: React.CSSProperties = {
     fontSize: 12,
-    color: "#888",
+    color: colors.mutedFg,
     textAlign: "center",
     margin: 0,
     lineHeight: "1.5",
 };
 
 const footerLink: React.CSSProperties = {
-    color: "#888",
+    color: colors.mutedFg,
     textDecoration: "underline",
 };

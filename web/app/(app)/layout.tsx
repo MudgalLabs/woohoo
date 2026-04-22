@@ -42,9 +42,7 @@ export default async function AppLayout({
 
     return (
         <BodhvedaBootstrap
-            // Lowercased to match what Bodhveda stores — see lib/bodhveda.ts
-            // bodhvedaRecipientId comment for the Bodhveda-side case bug.
-            recipientID={session.user.id.toLowerCase()}
+            recipientID={session.user.id}
             apiKey={bodhvedaRecipientKey}
             apiURL={bodhvedaApiURL}
         >

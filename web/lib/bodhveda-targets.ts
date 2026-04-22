@@ -9,4 +9,9 @@ export const targets = {
         topic: "none",
         event: "welcome",
     },
+    digestSent: {
+        channel: "digest",
+        topic: "none",
+        event: "sent",
+    },
 } as const satisfies Record<string, Target>;
