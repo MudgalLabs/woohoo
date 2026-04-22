@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./.github/screenshots/dashboard-landing.png" alt="woohoo dashboard" height="500px" />
+  <img src="./.github/screenshots/dashboard-app.png" alt="woohoo dashboard" height="500px" />
 
 Capture the DMs and comments worth acting on. Follow up before the moment's gone.
 
