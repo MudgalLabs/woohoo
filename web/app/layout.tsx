@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import NextTopLoader from "nextjs-toploader";
 
 import "./globals.css";
 
@@ -100,6 +101,12 @@ export default function RootLayout({
             )}
         >
             <body className="min-h-full flex flex-col">
+                <NextTopLoader
+                    color="oklch(0.5433 0.174 29.6967)"
+                    height={2}
+                    showSpinner={false}
+                    shadow="0 0 8px oklch(0.5433 0.174 29.6967), 0 0 4px oklch(0.5433 0.174 29.6967)"
+                />
                 <ThemeProvider
                     attribute="class"
                     defaultTheme="system"
