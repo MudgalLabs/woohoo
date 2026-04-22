@@ -29,21 +29,41 @@ enum SubscriptionStatus {
 }
 
 model User {
-  id            String        @id
-  name          String
-  email         String
-  emailVerified Boolean       @default(false)
-  image         String?
-  timezone      String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  woohoos       Woohoo[]
-  subscription  Subscription?
+  id                 String        @id
+  name               String
+  email              String
+  emailVerified      Boolean       @default(false)
+  image              String?
+  timezone           String?
+  emailDigestEnabled Boolean       @default(true)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  sessions           Session[]
+  accounts           Account[]
+  woohoos            Woohoo[]
+  subscription       Subscription?
+  digestLogs         DigestLog[]
 
   @@unique([email])
   @@map("user")
+}
+
+model DigestLog {
+  id        String   @id @default(cuid())
+  userId    String
+  // YYYY-MM-DD in the user's local timezone at send time. Paired with userId
+  // in a unique index — that's the idempotency guarantee against double-sends.
+  localDate String
+  sentAt    DateTime @default(now())
+  status    String
+  itemCount Int      @default(0)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, localDate])
+  @@index([userId])
+  @@map("digest_log")
 }
 
 model Plan {

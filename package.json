@@ -1,5 +1,5 @@
 {
     "name": "woohoo",
     "private": true,
-    "workspaces": ["packages/*", "web", "ext"]
+    "workspaces": ["packages/*", "web", "ext", "cron"]
 }

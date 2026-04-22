@@ -65,6 +65,25 @@ services:
             - woohoo_network
         restart: unless-stopped
 
+    cron:
+        container_name: woohoo_cron
+        build:
+            context: .
+            dockerfile: cron/Dockerfile
+        image: woohoo_cron:latest
+        env_file: .env
+        environment:
+            NODE_ENV: production
+            DATABASE_URL: postgres://${WOOHOO_DB_USER}:${WOOHOO_DB_PASSWORD}@woohoo_db:5432/${WOOHOO_DB_NAME}
+        depends_on:
+            db:
+                condition: service_healthy
+            migrate:
+                condition: service_completed_successfully
+        networks:
+            - woohoo_network
+        restart: unless-stopped
+
 networks:
     woohoo_network:
         name: woohoo_network

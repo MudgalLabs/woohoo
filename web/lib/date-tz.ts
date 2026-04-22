@@ -34,7 +34,7 @@ function tzOffsetMs(date: Date, tz: string): number {
     return asUtc - date.getTime();
 }
 
-function wallClockInTzToUtc(
+export function wallClockInTzToUtc(
     tz: string,
     year: number,
     month: number,

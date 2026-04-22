@@ -9,6 +9,9 @@ services:
     migrate:
         image: ${DOCKERHUB_USERNAME}/woohoo-web:latest
 
+    cron:
+        image: ${DOCKERHUB_USERNAME}/woohoo-cron:latest
+
 networks:
     caddy_net:
         external: true
