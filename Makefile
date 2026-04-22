@@ -8,6 +8,12 @@ install:
 up:
 	docker compose up -d db
 
+logs:
+	docker compose logs -f
+
+db:
+	docker compose exec db psql -U postgres -d postgres
+
 dev:
 	$(MAKE) up
 	@if tmux has-session -t $(SESSION_NAME) 2>/dev/null; then \

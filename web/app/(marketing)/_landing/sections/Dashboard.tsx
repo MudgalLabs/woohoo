@@ -71,8 +71,8 @@ export function Dashboard() {
                         <span className="mark">who to reply to.</span>
                     </h2>
                     <p>
-                        Open your dashboard and see what’s due today, what’s
-                        overdue, and what’s going cold. No setup. No pipeline.
+                        Open your dashboard and see what’s overdue, what’s due
+                        today, and what’s going cold. No setup. No pipeline.
                         Just people.
                     </p>
                 </div>
@@ -81,23 +81,21 @@ export function Dashboard() {
                     <div className="p-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             <DemoDashboardSection
-                                heading="Today"
-                                subheading="Woohoos you planned to follow up on today."
-                                woohoos={dashboardToday}
-                                className="order-2 lg:order-0"
-                            />
-                            <DemoDashboardSection
                                 heading="Overdue"
                                 subheading="Follow-up dates that have passed. Don't let these slip."
                                 woohoos={dashboardOverdue}
                                 variant="overdue"
-                                className="order-1 lg:order-0"
+                            />
+                            <DemoDashboardSection
+                                heading="Today"
+                                subheading="Woohoos you planned to follow up on today."
+                                woohoos={dashboardToday}
                             />
                             <DemoDashboardSection
                                 heading="Going cold"
                                 subheading="No follow-up set and no new interaction in the last 7 days."
                                 woohoos={dashboardCold}
-                                className="order-3 md:col-span-2 lg:col-span-1 lg:order-0"
+                                className="md:col-span-2 lg:col-span-1"
                             />
                         </div>
                     </div>

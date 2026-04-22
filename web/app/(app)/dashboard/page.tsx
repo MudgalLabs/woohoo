@@ -121,16 +121,6 @@ export default async function DashboardPage() {
         <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <DashboardSection
-                    heading="Today"
-                    subheading="Woohoos you planned to follow up on today."
-                    woohoos={today}
-                    emptyText="Nothing due today — enjoy the quiet."
-                    emptyIcon={Coffee}
-                    countsMap={countsMap}
-                    timezone={timezone}
-                    className="order-2 lg:order-0"
-                />
-                <DashboardSection
                     heading="Overdue"
                     subheading="Follow-up dates that have passed. Don't let these slip."
                     woohoos={overdue}
@@ -139,7 +129,15 @@ export default async function DashboardPage() {
                     variant="overdue"
                     countsMap={countsMap}
                     timezone={timezone}
-                    className="order-1 lg:order-0"
+                />
+                <DashboardSection
+                    heading="Today"
+                    subheading="Woohoos you planned to follow up on today."
+                    woohoos={today}
+                    emptyText="Nothing due today — enjoy the quiet."
+                    emptyIcon={Coffee}
+                    countsMap={countsMap}
+                    timezone={timezone}
                 />
                 <DashboardSection
                     heading="Going cold"
@@ -149,7 +147,7 @@ export default async function DashboardPage() {
                     emptyIcon={Flame}
                     countsMap={countsMap}
                     timezone={timezone}
-                    className="order-3 md:col-span-2 lg:col-span-1 lg:order-0"
+                    className="md:col-span-2 lg:col-span-1"
                 />
             </div>
         </div>
