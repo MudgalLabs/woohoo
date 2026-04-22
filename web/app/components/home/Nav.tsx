@@ -49,6 +49,12 @@ export function Nav({
                             >
                                 FAQ
                             </Link>
+                            <Link
+                                href="/extension"
+                                className="text-sm font-medium text-primary underline-offset-4 hover:underline hover:brightness-90 transition"
+                            >
+                                Extension
+                            </Link>
                         </>
                     )}
                 </div>

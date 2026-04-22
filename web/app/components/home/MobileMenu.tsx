@@ -26,13 +26,11 @@ export function MobileMenu({ showAnchorLinks }: MobileMenuProps) {
         links.push(
             { href: "/#how", label: "How it works" },
             { href: "/#product", label: "Product" },
+            { href: "/#pricing", label: "Pricing" },
             { href: "/#faq", label: "FAQ" },
         );
     }
-    links.push(
-        { href: "/#pricing", label: "Pricing" },
-        { href: "/extension", label: "Extension" },
-    );
+    links.push({ href: "/extension", label: "Extension" });
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
