@@ -844,6 +844,12 @@
     border: 1px solid var(--line);
     border-radius: var(--radius-lg);
     position: relative;
+    display: flex;
+    flex-direction: column;
+}
+.landing .price-card > .btn {
+    margin-top: auto;
+    justify-content: center;
 }
 .landing .price-card.featured {
     background: var(--ink);
