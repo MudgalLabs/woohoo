@@ -99,9 +99,9 @@ export function HowItWorks() {
                             <h3>Follow up</h3>
                         </div>
                         <p>
-                            Set a date. Your dashboard shows{" "}
-                            <b>Follow up today</b>, <b>Overdue</b>, and{" "}
-                            <b>Going cold</b> — nothing slips through.
+                            Set a date. Woohoo taps you on the shoulder at 8am
+                            — in-app, or in your inbox on Pro — so nothing
+                            slips through.
                         </p>
                         <div className="illo">
                             <div className="illo-followup">
@@ -109,7 +109,7 @@ export function HowItWorks() {
                                     followUpAt={stepThreeFollowUp}
                                 />
                                 <span className="illo-followup-caption">
-                                    nudged in your dashboard on the day.
+                                    nudged where you&rsquo;ll see it.
                                 </span>
                             </div>
                         </div>

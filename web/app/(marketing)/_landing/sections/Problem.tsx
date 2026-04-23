@@ -17,6 +17,9 @@ export function Problem() {
                         Notifications pile up. Important signals get lost — and
                         warm becomes cold, quietly.
                     </p>
+                    <p className="problem-hint">
+                        Unless something nudges you the morning it matters.
+                    </p>
                 </div>
 
                 <div className="timeline">

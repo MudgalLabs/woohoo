@@ -329,8 +329,14 @@
 .landing .demo-step-label--reddit .demo-step-label__num {
     color: var(--reddit);
 }
+.landing .demo-step-label--reddit .demo-step-label__num svg {
+    display: block;
+}
 .landing .demo-step-label--woohoo .demo-step-label__num {
     color: var(--accent);
+    font-family: var(--font-logo);
+    font-weight: 600;
+    font-size: 13px;
 }
 .landing .reddit-panel {
     background: var(--card-2);
@@ -588,6 +594,15 @@
     color: var(--ink-2);
     max-width: 520px;
     line-height: 1.5;
+}
+.landing .problem-hint {
+    margin-top: 18px;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 20px;
+    color: var(--accent);
+    max-width: 520px;
+    line-height: 1.35;
 }
 .landing .timeline {
     position: relative;
@@ -882,6 +897,303 @@
     overflow: hidden;
 }
 
+/* ---------- NUDGE ("tap on the shoulder") ----------
+   Two-card grid: bell popover mock (left) + email digest mock (right),
+   followed by a three-item proof row. Both mocks are static markup —
+   they only need to *look* like the real NotificationBell and the real
+   FollowUpDigest email template. No shared components; keep styles
+   self-contained here so tweaks to the real app don't drift the landing. */
+.landing .nudge-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    max-width: 1040px;
+    margin: 0 auto;
+}
+.landing .nudge-card {
+    position: relative;
+    padding: 40px 28px 28px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-card);
+}
+.landing .nudge-label {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+}
+.landing .nudge-label--free {
+    background: var(--card-2);
+    color: var(--ink-2);
+}
+.landing .nudge-label--pro {
+    background: var(--highlight);
+    color: var(--ink);
+    border-color: transparent;
+}
+
+/* ---- Bell mock ---- */
+.landing .bell-chrome {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    margin-top: 16px;
+}
+.landing .bell-chrome__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    background: var(--card);
+}
+.landing .bell-chrome__bell {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    color: var(--ink-2);
+}
+.landing .bell-chrome__badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.landing .bell-popover {
+    background: var(--card);
+}
+.landing .bell-popover__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+}
+.landing .bell-popover__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+}
+.landing .bell-popover__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--ink-3);
+}
+.landing .bell-popover__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.landing .bell-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+}
+.landing .bell-item:last-child {
+    border-bottom: 0;
+}
+.landing .bell-item--unread {
+    background: var(--card-2);
+}
+.landing .bell-item__dot {
+    width: 6px;
+    height: 6px;
+    margin-top: 6px;
+    border-radius: 999px;
+    background: var(--accent);
+    flex: 0 0 auto;
+}
+.landing .bell-item__body {
+    min-width: 0;
+    flex: 1;
+}
+.landing .bell-item__title {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.3;
+}
+.landing .bell-item__sub {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: var(--ink-3);
+    line-height: 1.3;
+}
+.landing .bell-item__time {
+    margin: 6px 0 0;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-3);
+}
+
+/* ---- Email mock ---- */
+.landing .email-chrome {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    margin-top: 16px;
+}
+.landing .email-chrome__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--ink-2);
+    min-width: 0;
+}
+.landing .email-chrome__sender {
+    font-weight: 600;
+    color: var(--ink);
+    flex: 0 0 auto;
+}
+.landing .email-chrome__subject {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--ink);
+}
+.landing .email-chrome__subject b {
+    font-weight: 500;
+}
+.landing .email-chrome__preview {
+    color: var(--ink-3);
+}
+.landing .email-chrome__time {
+    flex: 0 0 auto;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-3);
+}
+.landing .email-body {
+    padding: 22px 22px 18px;
+    background: var(--card);
+}
+.landing .email-body__logo {
+    margin-bottom: 16px;
+}
+.landing .email-body__greet {
+    margin: 0 0 6px;
+    font-size: 14px;
+    color: var(--ink);
+}
+.landing .email-body__lede {
+    margin: 0 0 18px;
+    font-size: 13px;
+    color: var(--ink-3);
+    line-height: 1.5;
+}
+.landing .email-body__heading {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 18px 0 8px;
+}
+.landing .email-item {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: var(--ink);
+    line-height: 1.4;
+}
+.landing .email-item__peer {
+    color: var(--accent);
+    font-weight: 500;
+}
+.landing .email-item__meta {
+    color: var(--ink-3);
+    font-size: 12px;
+}
+.landing .email-body__cta {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 8px 18px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+}
+.landing .email-body__footer {
+    margin: 18px 0 0;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    font-size: 11px;
+    color: var(--ink-3);
+    text-align: center;
+}
+
+/* ---- Proof row ---- */
+.landing .nudge-proof-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 1040px;
+    margin: 48px auto 0;
+    padding-top: 32px;
+    border-top: 1px dashed var(--line);
+}
+.landing .nudge-proof {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+.landing .nudge-proof__icon {
+    color: var(--accent);
+    flex: 0 0 auto;
+    margin-top: 2px;
+}
+.landing .nudge-proof__title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+}
+.landing .nudge-proof__body {
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.45;
+}
+
 /* ---------- IS / ISN'T ---------- */
 .landing .isnot-section {
     background: var(--bg-2);
@@ -1160,8 +1472,13 @@
     .landing .hero-grid,
     .landing .problem-grid,
     .landing .isnot-grid,
-    .landing .pricing-grid {
+    .landing .pricing-grid,
+    .landing .nudge-grid {
         grid-template-columns: 1fr;
+    }
+    .landing .nudge-proof-row {
+        grid-template-columns: 1fr;
+        gap: 18px;
     }
     .landing .steps {
         grid-template-columns: 1fr;

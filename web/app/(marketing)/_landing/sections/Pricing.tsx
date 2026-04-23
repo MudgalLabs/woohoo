@@ -31,7 +31,9 @@ export function Pricing() {
                             <li>Up to 100 active conversations</li>
                             <li>1 platform</li>
                             <li>Unlimited DMs and comments</li>
-                            <li>Daily in-app follow-up digest</li>
+                            <li>
+                                Daily in-app digest — who to reply to today
+                            </li>
                             <li>Self-host if you want to</li>
                         </ul>
                         <Link
@@ -62,8 +64,8 @@ export function Pricing() {
                                 more
                             </li>
                             <li>
-                                Daily email follow-up digest — morning &amp;
-                                evening
+                                Daily email digest — delivered at 8am in your
+                                local timezone
                             </li>
                             <li>Help shape what gets built next</li>
                         </ul>

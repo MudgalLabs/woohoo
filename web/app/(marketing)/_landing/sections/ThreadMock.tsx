@@ -95,7 +95,6 @@ export function ThreadMock({
     return (
         <section
             className="section"
-            id="product"
             style={{
                 background: "var(--bg-2)",
                 borderTop: "1px solid var(--line)",

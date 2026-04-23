@@ -35,7 +35,9 @@ export function HeroDemo({ woohoo }: HeroDemoProps) {
     return (
         <div className={`demo-stage ${saved ? "is-saved" : ""}`}>
             <div className="demo-step-label demo-step-label--reddit">
-                <span className="demo-step-label__num">1</span>
+                <span className="demo-step-label__num" aria-hidden>
+                    <PlatformIcon platform="reddit" size={14} />
+                </span>
                 In your Reddit tab
             </div>
 
@@ -105,7 +107,9 @@ export function HeroDemo({ woohoo }: HeroDemoProps) {
 
             <div className="thread-preview" aria-hidden={!saved}>
                 <div className="demo-step-label demo-step-label--woohoo">
-                    <span className="demo-step-label__num">2</span>
+                    <span className="demo-step-label__num" aria-hidden>
+                        W
+                    </span>
                     In Woohoo
                 </div>
                 <DemoWoohooCard

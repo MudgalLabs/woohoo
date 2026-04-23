@@ -12,6 +12,10 @@ const ITEMS: { q: string; a: string }[] = [
         a: "Speed. Save any DM or comment in one click — no copying, no tab switching. DMs and comments from same person are grouped automatically.",
     },
     {
+        q: "Will Woohoo spam me with notifications?",
+        a: "No. One nudge, once a day, around 8am in your timezone — in-app for everyone, email for Pro. You can turn either off in Settings, and every email has a one-click unsubscribe. That’s it.",
+    },
+    {
         q: "Will this get my account flagged or banned?",
         a: "No. Woohoo doesn’t send DM or automate anything. You reply manually, like you normally would.",
     },
