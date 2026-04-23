@@ -48,7 +48,7 @@ export function Hero() {
                     </div>
 
                     <div className="hero-note">
-                        <span>Free forever. No credit card.</span>
+                        <span>Open source · Free forever · No credit card</span>
                     </div>
                 </div>
 

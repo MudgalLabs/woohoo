@@ -116,7 +116,7 @@ export function CtaBig() {
                         transform: "rotate(-2deg)",
                     }}
                 >
-                    Free forever. No credit card.
+                    Open source. Free forever. No credit card.
                 </div>
             </div>
         </section>
