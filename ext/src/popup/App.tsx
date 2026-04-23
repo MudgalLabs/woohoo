@@ -107,11 +107,15 @@ export default function App() {
     }
 
     if (session) {
-        const statsLine = stats
-            ? stats.followUpToday > 0
-                ? `${stats.totalWoohoos} woohoos · ${stats.followUpToday} to follow up today`
-                : `${stats.totalWoohoos} ${stats.totalWoohoos === 1 ? "woohoo" : "woohoos"}`
-            : null;
+        let statsLine: string | null = null;
+        if (stats) {
+            const parts = [
+                `${stats.totalWoohoos} ${stats.totalWoohoos === 1 ? "woohoo" : "woohoos"}`,
+            ];
+            if (stats.overdue > 0) parts.push(`${stats.overdue} overdue`);
+            if (stats.followUpToday > 0) parts.push(`${stats.followUpToday} today`);
+            statsLine = parts.join(" · ");
+        }
 
         return (
             <div className="popup">
