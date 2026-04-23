@@ -912,6 +912,7 @@
 }
 .landing .nudge-card {
     position: relative;
+    min-width: 0;
     padding: 40px 28px 28px;
     background: var(--card);
     border: 1px solid var(--line);
