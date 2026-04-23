@@ -1,15 +1,26 @@
 <div align="center">
-  <img src="./.github/screenshots/dashboard-app.png" alt="woohoo dashboard" height="500px" />
 
-Capture the DMs and comments worth acting on. Follow up before the moment's gone.
+<img src="./.github/screenshots/Banner.png" alt="woohoo" width="100%" />
+
+### Don't let warm conversations go cold.
+
+[![License: AGPL v3](https://img.shields.io/badge/license-AGPL_v3-red.svg)](./LICENSE)
+[![Website](https://img.shields.io/badge/website-woohoo.to-red)](https://woohoo.to)
+[![Made by Mudgal Labs](https://img.shields.io/badge/made_by-Mudgal_Labs-red)](https://mudgallabs.com)
 
 **Supported today:** Reddit · **Coming soon:** X, LinkedIn, and more
 
 [Website](https://woohoo.to) · [Open App](https://woohoo.to/dashboard) · [Install Extension](https://woohoo.to/extension)
 
+<img src="./.github/screenshots/dashboard-app.png" alt="woohoo dashboard" width="100%" />
+
 </div>
 
-# woohoo
+## Documentation
+
+For architecture, data model, save routing rules, auth flow, and directory layout, see [**CLAUDE.md**](./CLAUDE.md).
+
+---
 
 A lightweight follow-up tool for DMs and comments.
 
@@ -46,6 +57,7 @@ npm workspace monorepo sharing one PostgreSQL database.
 
 - **`web/`** — Next.js 16 (App Router, React 19), Tailwind v4, shadcn/ui, Prisma, better-auth. Self-hosted on a Hetzner VPS via Docker; `.github/workflows/deploy.yml` builds + pushes the image and redeploys over SSH.
 - **`ext/`** — MV3 browser extension (React 19, Vite, `@crxjs/vite-plugin`). Builds both Chrome and Firefox artifacts.
+- **`cron/`** — Node service for the daily follow-up digest (in-app + email), running alongside `web/` on the VPS.
 - **`packages/ui`** — shared shadcn primitives.
 - **`packages/api`** — shared API client and types consumed by both web and extension.
 
@@ -58,11 +70,9 @@ make dev               # starts Postgres + tmux session with web and ext dev ser
 
 Then load `ext/dist-chrome` as an unpacked extension in Chrome and visit `http://localhost:3000`.
 
-See [`CLAUDE.md`](./CLAUDE.md) for the full architecture tour — data model, save routing rules, auth flow, and directory layout.
+## License
 
-## 📜 License
-
-[AGPL v3](LICENSE)
+[AGPL v3](./LICENSE)
 
 <p align="center">
   Built with 💙️ by <a href="https://mudgallabs.com" target="_blank">Mudgal Labs</a>
