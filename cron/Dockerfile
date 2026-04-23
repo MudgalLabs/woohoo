@@ -44,4 +44,7 @@ COPY --from=builder --chown=app:nodejs /app/cron ./cron/
 COPY --from=builder --chown=app:nodejs /app/package.json ./package.json
 
 USER app
-CMD ["npx", "tsx", "cron/src/index.ts"]
+# --tsconfig is required: tsx's tsconfig discovery starts at cwd (/app), not
+# at the source file, so without it cron/tsconfig.json is missed and JSX
+# falls back to the classic transform (breaks FollowUpDigest.tsx).
+CMD ["npx", "tsx", "--tsconfig", "cron/tsconfig.json", "cron/src/index.ts"]
