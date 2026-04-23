@@ -288,6 +288,50 @@
     box-shadow: var(--shadow-pop);
     overflow: hidden;
 }
+/* Two-surface step labels — small tags tying the Reddit panel to
+   step 1 and the revealed Woohoo card to step 2. Solid-filled to
+   match the HowItWorks surface badges and stand out against the
+   demo-stage background. */
+.landing .demo-step-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 3px 11px 3px 3px;
+    margin-bottom: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    border-radius: 999px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+}
+.landing .demo-step-label--reddit {
+    background: var(--reddit);
+}
+.landing .demo-step-label--woohoo {
+    background: var(--accent);
+}
+.landing .demo-step-label__num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: #ffffff;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 1;
+}
+.landing .demo-step-label--reddit .demo-step-label__num {
+    color: var(--reddit);
+}
+.landing .demo-step-label--woohoo .demo-step-label__num {
+    color: var(--accent);
+}
 .landing .reddit-panel {
     background: var(--card-2);
     border: 1px solid var(--line);
@@ -606,6 +650,29 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
 }
+/* Desktop-only connector: dashed line + small triangle linking step
+   1 → 2 and step 2 → 3 in the gutter. Primary red (solid, not washed
+   out) so the hand-off reads as action. */
+.landing .step + .step::before {
+    content: "";
+    position: absolute;
+    left: -22px;
+    top: 60px;
+    width: 20px;
+    height: 0;
+    border-top: 2px dashed var(--accent);
+}
+.landing .step + .step::after {
+    content: "";
+    position: absolute;
+    left: -6px;
+    top: 53px;
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 9px solid var(--accent);
+}
 .landing .step {
     position: relative;
     padding: 28px 26px 26px;
@@ -617,11 +684,61 @@
     display: flex;
     flex-direction: column;
 }
+/* Surface badge: "In your Reddit tab" / "In Woohoo" — teaches the
+   two-surface model at a glance. Positioned top-right so it reads as
+   a location tag on each step card. Solid-filled so it catches the
+   eye and says clearly which surface this step happens on. */
+.landing .step-surface {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 3px 11px 3px 3px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    border-radius: 999px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+}
+.landing .step-surface--reddit {
+    background: var(--reddit);
+}
+.landing .step-surface--woohoo {
+    background: var(--accent);
+}
+.landing .step-surface__mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: #ffffff;
+    line-height: 1;
+}
+/* Woohoo mark: Fredoka uppercase "W" — matches the app's Logo component
+   brand mark, not a random italic glyph. */
+.landing .step-surface--woohoo .step-surface__mark {
+    color: var(--accent);
+    font-family: var(--font-logo);
+    font-weight: 600;
+    font-size: 13px;
+}
+/* Reddit mark: real platform icon, colored orange on the white chip. */
+.landing .step-surface--reddit .step-surface__mark svg {
+    display: block;
+}
 .landing .step .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
+    margin-top: 18px;
 }
 .landing .step .num {
     font-family: var(--font-display);
@@ -651,6 +768,21 @@
     border: 1px solid var(--line);
     border-radius: 10px;
     position: relative;
+}
+/* Step 1 — real extension screenshot. Anchored full-width inside the
+   illo slot with a subtle border so it reads as a product capture, not
+   a photo. */
+.landing .illo-screenshot {
+    display: flex;
+    justify-content: center;
+}
+.landing .illo-screenshot img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-card);
+    display: block;
 }
 .landing .mini-msg .who {
     color: var(--reddit);
@@ -1033,6 +1165,27 @@
     }
     .landing .steps {
         grid-template-columns: 1fr;
+        row-gap: 44px;
+    }
+    /* Rotate the connector so it points downward between stacked cards,
+       centered in the row gap. */
+    .landing .step + .step::before {
+        left: 50%;
+        top: -30px;
+        width: 0;
+        height: 18px;
+        border-top: none;
+        border-left: 2px dashed var(--accent);
+    }
+    .landing .step + .step::after {
+        left: calc(50% - 7px);
+        top: -10px;
+        width: 0;
+        height: 0;
+        border-top: 9px solid var(--accent);
+        border-bottom: 0;
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
     }
     .landing .thread-frame {
         padding: 20px;

@@ -1,7 +1,29 @@
-import { Bookmark } from "lucide-react";
+import Image from "next/image";
 import { DemoChatBubble } from "../demo/DemoChatBubble";
 import { DemoFollowUpChip } from "../demo/DemoFollowUpChip";
+import { PlatformIcon } from "@/components/PlatformIcon";
 import { stepTwoMessages, stepThreeFollowUp } from "../demo/mocks";
+
+function SurfaceBadge({ surface }: { surface: "reddit" | "woohoo" }) {
+    if (surface === "reddit") {
+        return (
+            <span className="step-surface step-surface--reddit">
+                <span className="step-surface__mark" aria-hidden>
+                    <PlatformIcon platform="reddit" size={14} />
+                </span>
+                In your Reddit tab
+            </span>
+        );
+    }
+    return (
+        <span className="step-surface step-surface--woohoo">
+            <span className="step-surface__mark" aria-hidden>
+                W
+            </span>
+            In Woohoo
+        </span>
+    );
+}
 
 export function HowItWorks() {
     return (
@@ -28,6 +50,7 @@ export function HowItWorks() {
 
                 <div className="steps">
                     <div className="step">
+                        <SurfaceBadge surface="reddit" />
                         <div className="header">
                             <div className="num">1</div>
                             <h3>Capture</h3>
@@ -36,31 +59,26 @@ export function HowItWorks() {
                             Save any DM or comment in one click. The extension
                             captures everything that matters.
                         </p>
-                        <div className="illo">
-                            <div className="mini-msg">
-                                <div>
-                                    <span className="who">u/ship_it_pls</span> ·
-                                    r/SaaS · 3h
-                                </div>
-                                <div style={{ marginTop: 6 }}>
-                                    ...would kill for a tool like this. does it
-                                    do X?
-                                </div>
-                                <span className="bm" aria-hidden>
-                                    <Bookmark size={14} strokeWidth={2.5} />
-                                </span>
-                            </div>
+                        <div className="illo illo-screenshot">
+                            <Image
+                                src="/landing/ext-save-comment.png"
+                                alt="The Woohoo extension's Save Comment dialog open on a Reddit comment, showing the comment preview and an optional follow-up picker."
+                                width={1684}
+                                height={1024}
+                                sizes="(max-width: 900px) 100vw, 360px"
+                            />
                         </div>
                     </div>
 
                     <div className="step">
+                        <SurfaceBadge surface="woohoo" />
                         <div className="header">
                             <div className="num">2</div>
                             <h3>Organize</h3>
                         </div>
                         <p>
-                            All DMs and comments are grouped by person
-                            automatically.
+                            Open Woohoo — every DM and comment is grouped by
+                            person, automatically.
                         </p>
                         <div className="illo illo-stack">
                             <DemoChatBubble
@@ -75,6 +93,7 @@ export function HowItWorks() {
                     </div>
 
                     <div className="step">
+                        <SurfaceBadge surface="woohoo" />
                         <div className="header">
                             <div className="num">3</div>
                             <h3>Follow up</h3>
