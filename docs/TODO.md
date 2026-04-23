@@ -37,6 +37,7 @@ Paddle's website requirements: the site must link to or contain **terms of servi
 - [ ] **Update `/privacy`** to list Paddle (not Stripe) as the payments sub-processor.
 - [ ] **Wire up Paddle checkout** once approved. Replace the mailto on Pricing section + `/settings/plan` upgrade button with a Paddle overlay/inline checkout for the Pro plan.
 - [ ] **Paddle webhook route** (`POST /api/webhooks/paddle`) that upserts `Subscription.status` from `subscription.created | updated | canceled | past_due` events. Verify signatures with the Paddle webhook secret.
+- [ ] **`SubscriptionEvent` append-only log.** Add alongside the Paddle webhook handler — every webhook event writes one row (`userId`, `type`, `fromTier`, `toTier`, `fromStatus`, `toStatus`, `paddleEventId`, `occurredAt`, raw payload `jsonb`). Gives us audit trail, churn/upgrade analytics, and debugging ("when did this user become Pro?") without round-tripping to Paddle. Keep `Subscription` as the single mutable "current state" row; don't switch to latest-row-wins.
 - [ ] **Dunning:** `past_due` status should block unarchive/new-save with a friendly "update card" message, same 403 shape as `plan_limit_reached`.
 - [ ] **Customer portal link** from `/settings/plan` so users can manage card + cancel via Paddle's hosted page.
 - [ ] **Decide monthly vs. annual pricing.** The landing already advertises `$50/yr` — one Paddle product or two price IDs?
