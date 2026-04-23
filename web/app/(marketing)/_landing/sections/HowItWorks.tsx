@@ -43,8 +43,8 @@ export function HowItWorks() {
                     </h2>
                     <p>
                         No tab switching. No copy-paste. No &ldquo;I&rsquo;ll
-                        log it later.&rdquo; The extension lives where your
-                        conversations already happen.
+                        log it later.&rdquo; The extension works right inside
+                        Reddit.
                     </p>
                 </div>
 
@@ -99,9 +99,8 @@ export function HowItWorks() {
                             <h3>Follow up</h3>
                         </div>
                         <p>
-                            Set a date. Woohoo taps you on the shoulder at 8am
-                            — in-app, or in your inbox on Pro — so nothing
-                            slips through.
+                            Set a date. Woohoo reminds you at 8am — in-app,
+                            or in your inbox on Pro — so nothing slips through.
                         </p>
                         <div className="illo">
                             <div className="illo-followup">
@@ -109,7 +108,7 @@ export function HowItWorks() {
                                     followUpAt={stepThreeFollowUp}
                                 />
                                 <span className="illo-followup-caption">
-                                    nudged where you&rsquo;ll see it.
+                                    reminded where you&rsquo;ll see it.
                                 </span>
                             </div>
                         </div>

@@ -18,7 +18,7 @@ export function Problem() {
                         warm becomes cold, quietly.
                     </p>
                     <p className="problem-hint">
-                        Unless something nudges you the morning it matters.
+                        Unless you get a reminder on the day you said you&rsquo;d follow up.
                     </p>
                 </div>
 

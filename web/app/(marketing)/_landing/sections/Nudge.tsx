@@ -7,7 +7,7 @@ export function Nudge() {
             <div className="wrap">
                 <div className="section-head">
                     <div className="eyebrow">
-                        <span className="dot">●</span> the tap on the shoulder
+                        <span className="dot">●</span> the notification
                     </div>
                     <div style={{ height: 14 }} />
                     <h2>
@@ -15,7 +15,7 @@ export function Nudge() {
                         <span className="mark">who to reply to.</span>
                     </h2>
                     <p>
-                        One nudge. Not forty. You open the app already knowing
+                        One notification. Not forty. You open the app already knowing
                         what needs you today — in-app for everyone, in your
                         inbox on Pro.
                     </p>
@@ -232,7 +232,7 @@ export function Nudge() {
                         />
                         <div>
                             <p className="nudge-proof__title">
-                                One nudge, not forty
+                                One notification, not forty
                             </p>
                             <p className="nudge-proof__body">
                                 Your whole follow-up queue, collapsed into one

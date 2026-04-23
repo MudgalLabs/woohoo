@@ -13,7 +13,7 @@ const ITEMS: { q: string; a: string }[] = [
     },
     {
         q: "Will Woohoo spam me with notifications?",
-        a: "No. One nudge, once a day, around 8am in your timezone — in-app for everyone, email for Pro. You can turn either off in Settings, and every email has a one-click unsubscribe. That’s it.",
+        a: "No. One notification, once a day, around 8am in your timezone — in-app for everyone, email for Pro. You can turn either off in Settings, and every email has a one-click unsubscribe. That’s it.",
     },
     {
         q: "Will this get my account flagged or banned?",

@@ -14,7 +14,7 @@ export function IsIsnt() {
                     </h2>
                     <p>
                         Woohoo is built for follow-ups — not everything else.
-                        Here&rsquo;s what it does and what it refuses to become.
+                        Here&rsquo;s what it does — and what it doesn&rsquo;t.
                     </p>
                 </div>
 
