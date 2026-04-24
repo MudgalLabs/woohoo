@@ -1,36 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import {
-    getActiveLinkedInChatUrl,
-    getActivePeer,
     injectAndReturnSaveButtonContainers,
-    isOnLinkedInThreadPage,
-    observeLinkedInRouteChanges,
-    observeLinkedInThread,
+    observeLinkedInMessages,
 } from "@/content/linkedin/dm";
 import { SaveButton } from "@/components/SaveButton";
 import { mountWithShadow } from "@/content/lib/react";
 
 function App() {
-    const [onThread, setOnThread] = useState<boolean>(() =>
-        isOnLinkedInThreadPage(),
-    );
-
-    // SPA nav — flip the gate whenever the pathname changes.
+    // The observer watches document.body for changes and debounces at 150ms.
+    // We don't gate on URL anymore — LinkedIn's messaging overlay (the
+    // bottom-right popup list + per-chat bubbles) appears on every page, so
+    // we inject save buttons wherever a conversation wrapper is visible.
     useEffect(() => {
-        return observeLinkedInRouteChanges(() => {
-            setOnThread(isOnLinkedInThreadPage());
-        });
-    }, []);
-
-    useEffect(() => {
-        if (!onThread) return;
-
-        const cleanup = observeLinkedInThread(() => {
-            const peer = getActivePeer();
-            if (!peer) return;
-            const chatUrl = getActiveLinkedInChatUrl() ?? undefined;
-
+        const cleanup = observeLinkedInMessages(() => {
             const containers = injectAndReturnSaveButtonContainers();
             containers.forEach((container) => {
                 if (container.element.shadowRoot) return;
@@ -42,11 +25,11 @@ function App() {
                     mountWithShadow(container.element, SaveButton, {
                         message: container.message,
                         isSaved: false,
-                        peer: peer.peerId,
-                        peerName: peer.peerName ?? undefined,
+                        peer: container.peerId,
+                        peerName: container.peerName ?? undefined,
                         kind: "dm",
                         platform: "linkedin",
-                        chatUrl,
+                        chatUrl: container.chatUrl,
                         founderExternalId: null,
                         align: "left",
                         theme: "light",
@@ -61,11 +44,11 @@ function App() {
                     mountWithShadow(container.element, SaveButton, {
                         message: container.message,
                         isSaved,
-                        peer: peer.peerId,
-                        peerName: peer.peerName ?? undefined,
+                        peer: container.peerId,
+                        peerName: container.peerName ?? undefined,
                         kind: "dm",
                         platform: "linkedin",
-                        chatUrl,
+                        chatUrl: container.chatUrl,
                         founderExternalId: null,
                         align: "left",
                         theme: "light",
@@ -75,7 +58,7 @@ function App() {
         });
 
         return cleanup;
-    }, [onThread]);
+    }, []);
 
     return null;
 }
