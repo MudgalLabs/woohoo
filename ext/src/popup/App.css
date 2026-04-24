@@ -93,6 +93,34 @@ body {
     border-top: 1px solid var(--border);
 }
 
+.help-card {
+    all: unset;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.help-card:hover {
+    background: var(--paper-dark);
+}
+
+.help-card-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+}
+
+.help-card-hint {
+    font-size: 11px;
+    color: var(--ink-muted);
+}
+
 .reddit-username {
     display: flex;
     flex-direction: column;

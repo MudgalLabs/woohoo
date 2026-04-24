@@ -80,10 +80,11 @@ export default async function WoohooDetailPage({
         dms.length === 0 && comments.length > 0 ? "comments" : "messages";
 
     const profileUrl = peerProfileUrl(woohoo.platform, woohoo.peerId);
-    const handle = peerHandle(woohoo.platform, woohoo.peerId);
+    const handle = peerHandle(woohoo.platform, woohoo.peerId, woohoo.peerName);
     const initial = peerInitial(
         woohoo.platform,
-        woohoo.peerName ?? woohoo.peerId,
+        woohoo.peerId,
+        woohoo.peerName,
     );
 
     return (

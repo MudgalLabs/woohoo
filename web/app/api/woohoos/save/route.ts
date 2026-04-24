@@ -12,6 +12,7 @@ import {
 interface SaveItemBody {
     platform: string;
     peerId: string;
+    peerName?: string;
     chatUrl?: string;
     followUpAt?: string;
     ancestorExternalIds?: string[];
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
     }
 
     const body = (await request.json()) as SaveItemBody;
-    const { platform, peerId, chatUrl, followUpAt, ancestorExternalIds, founderExternalId, item } = body;
+    const { platform, peerId, peerName, chatUrl, followUpAt, ancestorExternalIds, founderExternalId, item } = body;
 
     if (!platform || !peerId || !item?.externalId || !item?.contentText) {
         return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -156,12 +157,14 @@ export async function POST(request: Request) {
                 userId: session.user.id,
                 platform: Platform[platformValue],
                 peerId,
+                peerName: peerName ?? null,
                 chatUrl: chatUrl ?? null,
                 followUpAt: followUpAt ? new Date(followUpAt) : null,
                 lastInteractionAt: interactionAt,
                 lastSavedAt: now,
             },
             update: {
+                ...(peerName ? { peerName } : {}),
                 ...(chatUrl ? { chatUrl } : {}),
                 ...(followUpAt !== undefined ? { followUpAt: followUpAt ? new Date(followUpAt) : null } : {}),
                 lastSavedAt: now,

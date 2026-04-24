@@ -7,8 +7,41 @@ import "./App.css";
 
 const AUTH_URL = `${BASE_URL}/auth?from=ext&extId=${chrome.runtime.id}`;
 const DASHBOARD_URL = `${BASE_URL}/dashboard`;
+const EXTENSION_HELP_URL = `${BASE_URL}/extension`;
 
 const FOUNDER_KEY = "founder_reddit_username";
+
+type Platform = "reddit" | "linkedin";
+
+const PLATFORM_LABEL: Record<Platform, string> = {
+    reddit: "Reddit",
+    linkedin: "LinkedIn",
+};
+
+/**
+ * Sniffs the active tab's hostname to infer which platform we're on. The
+ * manifest's `activeTab` permission makes `tab.url` readable whenever the
+ * popup is open (user just clicked the icon), so this works on any
+ * Reddit/LinkedIn subdomain — not just the www. ones in host_permissions.
+ */
+async function detectActivePlatform(): Promise<Platform | null> {
+    try {
+        const [tab] = await chrome.tabs.query({
+            active: true,
+            currentWindow: true,
+        });
+        const url = tab?.url;
+        if (!url) return null;
+        const host = new URL(url).hostname;
+        if (host === "reddit.com" || host.endsWith(".reddit.com"))
+            return "reddit";
+        if (host === "linkedin.com" || host.endsWith(".linkedin.com"))
+            return "linkedin";
+        return null;
+    } catch {
+        return null;
+    }
+}
 
 export default function App() {
     const [session, setSession] = useState<AuthSession | null | undefined>(
@@ -16,6 +49,7 @@ export default function App() {
     );
     const [stats, setStats] = useState<StatsResponse | null>(null);
     const [redditUsername, setRedditUsername] = useState("");
+    const [platform, setPlatform] = useState<Platform | null>(null);
     const theme = useStoredTheme();
 
     useEffect(() => {
@@ -40,6 +74,7 @@ export default function App() {
                 }
             }
         });
+        detectActivePlatform().then((p) => setPlatform(p));
     }, []);
 
     useEffect(() => {
@@ -102,6 +137,11 @@ export default function App() {
         chrome.tabs.create({ url: DASHBOARD_URL });
     }
 
+    function handleOpenHelp() {
+        if (!platform) return;
+        chrome.tabs.create({ url: `${EXTENSION_HELP_URL}#${platform}` });
+    }
+
     if (session === undefined) {
         return <div className="popup" />;
     }
@@ -129,20 +169,41 @@ export default function App() {
                     {statsLine && <p className="account-stats">{statsLine}</p>}
                 </div>
 
-                <div className="reddit-username">
-                    <label className="reddit-username-label" htmlFor="reddit-username-input">
-                        Your Reddit username
-                    </label>
-                    <input
-                        id="reddit-username-input"
-                        className="input"
-                        type="text"
-                        placeholder="u/yourhandle"
-                        value={redditUsername}
-                        onChange={(e) => setRedditUsername(e.target.value)}
-                        onBlur={handleRedditUsernameBlur}
-                    />
-                </div>
+                {platform && (
+                    <button
+                        className="help-card"
+                        onClick={handleOpenHelp}
+                    >
+                        <span className="help-card-title">
+                            How to use Woohoo on {PLATFORM_LABEL[platform]}
+                        </span>
+                        <span className="help-card-hint">
+                            Opens a short guide in a new tab
+                        </span>
+                    </button>
+                )}
+
+                {platform === "reddit" && (
+                    <div className="reddit-username">
+                        <label
+                            className="reddit-username-label"
+                            htmlFor="reddit-username-input"
+                        >
+                            Your Reddit username
+                        </label>
+                        <input
+                            id="reddit-username-input"
+                            className="input"
+                            type="text"
+                            placeholder="u/yourhandle"
+                            value={redditUsername}
+                            onChange={(e) =>
+                                setRedditUsername(e.target.value)
+                            }
+                            onBlur={handleRedditUsernameBlur}
+                        />
+                    </div>
+                )}
 
                 <button
                     className="btn-dashboard"

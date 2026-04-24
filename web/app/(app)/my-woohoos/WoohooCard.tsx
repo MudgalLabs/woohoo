@@ -35,8 +35,12 @@ export function timeAgo(date: Date | string): string {
     return `${Math.floor(seconds / 86400)}d ago`;
 }
 
-export function peerInitial(platform: string, peerId: string): string {
-    const handle = peerHandle(platform, peerId);
+export function peerInitial(
+    platform: string,
+    peerId: string,
+    peerName?: string | null,
+): string {
+    const handle = peerHandle(platform, peerId, peerName);
     const stripped = handle.replace(/^u\//, "").replace(/^@/, "");
     return (stripped[0] ?? "?").toUpperCase();
 }
@@ -67,7 +71,7 @@ export function WoohooCard({
             : latestItem.contentText
         : null;
 
-    const handle = peerHandle(woohoo.platform, woohoo.peerId);
+    const handle = peerHandle(woohoo.platform, woohoo.peerId, woohoo.peerName);
     const isOverdue = variant === "overdue";
     const label = counts ? countsLabel(counts) : null;
 
@@ -82,7 +86,11 @@ export function WoohooCard({
             <div className="flex items-start gap-3">
                 <Avatar className="h-9 w-9 mt-0.5">
                     <AvatarFallback className="text-xs font-medium text-muted-foreground">
-                        {peerInitial(woohoo.platform, woohoo.peerId)}
+                        {peerInitial(
+                            woohoo.platform,
+                            woohoo.peerId,
+                            woohoo.peerName,
+                        )}
                     </AvatarFallback>
                 </Avatar>
 

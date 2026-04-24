@@ -4,7 +4,7 @@ import { SquareArrowOutUpRight } from "lucide-react";
 import { ToastPayload, onToast } from "@/content/lib/toast";
 import { useTheme } from "@/content/lib/useTheme";
 
-const VISIBLE_MS = 2000;
+const VISIBLE_MS = 5000;
 const FADE_MS = 180;
 
 interface VisibleToast extends ToastPayload {

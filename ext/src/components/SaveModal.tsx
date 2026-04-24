@@ -3,8 +3,7 @@ import { SquareArrowOutUpRight } from "lucide-react";
 import { WoohooApiClient } from "@woohoo/api";
 import type { AuthSession } from "@woohoo/api";
 
-import { Message, getActiveRedditChatRoomUrl } from "@/content/reddit/dm";
-import { getFounderUsername } from "@/content/reddit/founder";
+import type { Message } from "@/components/types";
 import { Branding } from "@/components/Branding";
 import { emitToast } from "@/content/lib/toast";
 import { DateTimePicker } from "@/components/DateTimePicker";
@@ -14,14 +13,33 @@ interface SaveModalProps {
     message: Message;
     isSaved: boolean;
     peer: string;
+    peerName?: string;
     kind: "dm" | "comment";
+    platform: string;
+    chatUrl?: string;
+    founderExternalId?: string | null;
+    saveable?: boolean;
+    unsaveableReason?: string;
     onSaved?: () => void;
     onUnsaved?: () => void;
     onClose?: () => void;
 }
 
 export function SaveModal(props: SaveModalProps) {
-    const { message, peer, kind, onSaved, onUnsaved, onClose } = props;
+    const {
+        message,
+        peer,
+        peerName,
+        kind,
+        platform,
+        chatUrl,
+        founderExternalId,
+        saveable = true,
+        unsaveableReason,
+        onSaved,
+        onUnsaved,
+        onClose,
+    } = props;
 
     const [session, setSession] = useState<AuthSession | null | undefined>(
         undefined,
@@ -38,7 +56,6 @@ export function SaveModal(props: SaveModalProps) {
         peerId: string;
         peerName?: string | null;
     } | null>(null);
-    const [founderUsername, setFounderUsername] = useState<string | null>(null);
 
     const signOutOnExpiry = () => {
         chrome.runtime.sendMessage({ type: "SIGN_OUT" });
@@ -46,6 +63,9 @@ export function SaveModal(props: SaveModalProps) {
 
     // Load session and check saved state from DB on every open.
     useEffect(() => {
+        // Unsaveable items (reshares, reactions, files) don't need a session
+        // or a DB check — the render below is a static info panel.
+        if (!saveable) return;
         chrome.runtime.sendMessage(
             { type: "GET_SESSION" },
             async (res: { session: AuthSession | null }) => {
@@ -53,21 +73,18 @@ export function SaveModal(props: SaveModalProps) {
                 setSession(s);
 
                 if (s && peer && message.id) {
-                    const founder = await getFounderUsername();
-                    setFounderUsername(founder);
-
                     const client = new WoohooApiClient(
                         BASE_URL,
                         s.token,
                         signOutOnExpiry,
                     );
                     const result = await client.checkSaved({
-                        platform: "reddit",
+                        platform,
                         peerId: peer,
                         externalId: message.id,
                         authorId:
                             kind === "comment" ? message.username : undefined,
-                        founderExternalId: founder ?? undefined,
+                        founderExternalId: founderExternalId ?? undefined,
                         ancestorExternalIds:
                             kind === "comment"
                                 ? message.ancestorExternalIds
@@ -109,6 +126,22 @@ export function SaveModal(props: SaveModalProps) {
         return () =>
             chrome.storage.onChanged.removeListener(handleStorageChange);
     }, []);
+
+    // Short-circuit render for items that can't be saved. We still show
+    // Woohoo branding so users know the click registered, plus a one-line
+    // explanation ("Only text messages can be saved.").
+    if (!saveable) {
+        return (
+            <div className="cb-modal">
+                <div className="flex-y cb-modal-header" style={{ rowGap: 0 }}>
+                    <Branding />
+                </div>
+                <p className="cb-modal-text" style={{ marginTop: 8 }}>
+                    {unsaveableReason ?? "This message can't be saved."}
+                </p>
+            </div>
+        );
+    }
 
     if (session === undefined) return null;
 
@@ -238,18 +271,16 @@ export function SaveModal(props: SaveModalProps) {
             session.token,
             signOutOnExpiry,
         );
-        const chatUrl =
-            kind === "dm"
-                ? (getActiveRedditChatRoomUrl() ?? undefined)
-                : undefined;
+        const saveChatUrl = kind === "dm" ? chatUrl : undefined;
         const result = await client.saveItem({
-            platform: "reddit",
+            platform,
             peerId: peer,
-            chatUrl,
+            peerName,
+            chatUrl: saveChatUrl,
             followUpAt: followUpAt ? followUpAt.toISOString() : undefined,
             ancestorExternalIds:
                 kind === "comment" ? message.ancestorExternalIds : undefined,
-            founderExternalId: founderUsername ?? undefined,
+            founderExternalId: founderExternalId ?? undefined,
             item: {
                 type: kind,
                 externalId: message.id,

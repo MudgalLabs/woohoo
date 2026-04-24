@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { ComponentType } from "react";
 
-import styles from "@/content/views/App.css?inline";
+import styles from "@/content/App.css?inline";
 
 export function mount(
     container: HTMLElement,

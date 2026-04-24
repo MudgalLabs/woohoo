@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 
-import styles from "@/content/views/App.css?inline";
+import styles from "@/content/App.css?inline";
 import { Toast } from "@/components/Toast";
 
 const HOST_ID = "woohoo-toast-host";

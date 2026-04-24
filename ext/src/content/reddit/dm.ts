@@ -7,6 +7,9 @@ import {
     withLineBreaks,
 } from "@/content/lib/dom";
 import { getActive } from "@/content/store/activeSaveButton";
+import type { Message } from "@/components/types";
+
+export type { Message };
 
 export function isChatPopupOpen(): boolean {
     const chatClient = queryAllDeep('[data-testid="reddit-chat-client"]')[0];
@@ -187,18 +190,6 @@ export function injectAndReturnSaveButtonContainers(): SaveButtonContainer[] {
 
     return containers;
 }
-
-export type Message = {
-    id: string;
-    username: string;
-    timestamp: string;
-    contentText: string;
-    contentHTML: string;
-    // Only populated for comments; DMs leave this undefined.
-    sourceUrl?: string;
-    // Only populated for comments; nearest-first ancestor Reddit thingids.
-    ancestorExternalIds?: string[];
-};
 
 export function parseMessage(
     parent: HTMLElement,

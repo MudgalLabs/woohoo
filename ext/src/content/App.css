@@ -56,6 +56,14 @@
     opacity: 0;
 }
 
+/*
+ * Scope variables to both :host (shadow DOM root, which is how we mount
+ * SaveButton/Toast/HowToCard) and :root (fallback for any non-shadow
+ * render path). Previously only :root — that works when the stylesheet
+ * is attached to the page document, but leaks LinkedIn/Reddit styles.
+ * Inlining into a shadow DOM requires :host to declare the same tokens.
+ */
+:host,
 :root {
     --paper: #f5f0e8;
     --paper-dark: #e3d8c2;
@@ -159,6 +167,7 @@ h4 {
     position: absolute;
     bottom: calc(100% + 8px);
     right: 0;
+    left: auto;
 
     background: var(--paper);
     color: var(--ink);
@@ -183,6 +192,11 @@ h4 {
     transform: translateY(0px) scale(1);
     opacity: 1;
     pointer-events: auto;
+}
+
+.cb-popover--align-left {
+    left: 0;
+    right: auto;
 }
 
 .cb-icon-btn {
@@ -308,6 +322,111 @@ h4 {
 .cb-toast-link:hover {
     color: var(--red-dark);
     text-decoration: underline;
+}
+
+/* How-to card (floating in-page hint) */
+
+.cb-howto {
+    position: fixed;
+    z-index: 2147483646;
+
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+
+    background: var(--paper);
+    color: var(--ink);
+    border: 1px solid var(--rule-dark);
+
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-family: var(--body);
+    font-size: 13px;
+    line-height: 1.3;
+
+    cursor: pointer;
+    max-width: 280px;
+
+    box-shadow:
+        0 12px 24px -6px rgb(0 0 0 / 0.28),
+        0 4px 8px -4px rgb(0 0 0 / 0.18);
+
+    transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.cb-howto:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        0 16px 30px -8px rgb(0 0 0 / 0.32),
+        0 6px 12px -4px rgb(0 0 0 / 0.22);
+}
+
+.cb-howto--bottom-left {
+    bottom: 24px;
+    left: 24px;
+}
+
+.cb-howto--bottom-right {
+    bottom: 24px;
+    right: 24px;
+}
+
+.cb-howto--top-left {
+    top: 24px;
+    left: 24px;
+}
+
+.cb-howto--top-right {
+    top: 24px;
+    right: 24px;
+}
+
+.cb-howto-body {
+    display: flex;
+    flex-direction: column;
+    row-gap: 2px;
+    min-width: 0;
+}
+
+.cb-howto-brand {
+    font-family: var(--display, "Fredoka", ui-sans-serif, system-ui, sans-serif);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--red);
+    letter-spacing: -0.01em;
+    line-height: 1;
+}
+
+.cb-howto-title {
+    display: inline-flex;
+    align-items: center;
+    column-gap: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+}
+
+.cb-howto-extlink {
+    color: var(--ink-muted);
+    flex-shrink: 0;
+}
+
+.cb-howto-dismiss {
+    all: unset;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    color: var(--ink-muted);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.cb-howto-dismiss:hover {
+    background: var(--paper-dark);
+    color: var(--ink);
 }
 
 /* DateTimePicker */

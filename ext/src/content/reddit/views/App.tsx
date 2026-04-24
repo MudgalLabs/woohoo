@@ -4,12 +4,16 @@ import {
     injectAndReturnSaveButtonContainers,
     observeActiveRedditDM,
     observeActiveRedditDMMessages,
+    getActiveRedditChatRoomUrl,
 } from "@/content/reddit/dm";
 import {
     injectAndReturnCommentSaveButtonContainers,
     observeRedditPostPage,
 } from "@/content/reddit/comment";
-import { startFounderScraper } from "@/content/reddit/founder";
+import {
+    startFounderScraper,
+    getFounderUsername,
+} from "@/content/reddit/founder";
 import { SaveButton } from "@/components/SaveButton";
 import { mountWithShadow } from "@/content/lib/react";
 import { setActive } from "@/content/store/activeSaveButton";
@@ -20,10 +24,30 @@ import { DebugButton } from "./DebugButton";
 function App() {
     const [peer, setPeer] = useState<null | string>(null);
     const [isReady, setIsReady] = useState(false);
+    const [founderUsername, setFounderUsername] = useState<string | null>(null);
 
     // Capture the logged-in Reddit username the first time the user drawer
     // renders. Used server-side to route comment saves deterministically.
-    useEffect(() => startFounderScraper(), []);
+    useEffect(() => {
+        const cleanup = startFounderScraper();
+        // Also listen for storage updates so the in-memory copy stays in sync
+        // with whatever startFounderScraper writes (primary path is a fetch
+        // which resolves async).
+        const readFounder = () => {
+            getFounderUsername().then((name) => setFounderUsername(name));
+        };
+        readFounder();
+        const handler = (changes: {
+            [key: string]: chrome.storage.StorageChange;
+        }) => {
+            if ("founder_reddit_username" in changes) readFounder();
+        };
+        chrome.storage.onChanged.addListener(handler);
+        return () => {
+            cleanup();
+            chrome.storage.onChanged.removeListener(handler);
+        };
+    }, []);
 
     // Mirror Reddit's theme into chrome.storage so the popup (which can't see
     // the Reddit DOM) can render in the same theme as the save modal.
@@ -64,6 +88,10 @@ function App() {
                         isSaved,
                         peer: peer ?? "",
                         kind: "dm",
+                        platform: "reddit",
+                        chatUrl:
+                            getActiveRedditChatRoomUrl() ?? undefined,
+                        founderExternalId: founderUsername,
                     });
                 });
             });
@@ -72,7 +100,7 @@ function App() {
         });
 
         return cleanup;
-    }, [peer]);
+    }, [peer, founderUsername]);
 
     // Inject a save button on every Reddit post comment. Unlike DMs, comments
     // don't share a single "active peer" — each comment's author is its own
@@ -92,13 +120,15 @@ function App() {
                         isSaved,
                         peer: container.comment.username,
                         kind: "comment",
+                        platform: "reddit",
+                        founderExternalId: founderUsername,
                     });
                 });
             });
         });
 
         return cleanup;
-    }, []);
+    }, [founderUsername]);
 
     // Keep DebugButton + isReady referenced so flipping the debug return on
     // below remains a one-line change.

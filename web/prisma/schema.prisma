@@ -9,6 +9,7 @@ datasource db {
 
 enum Platform {
   reddit
+  linkedin
 }
 
 enum TimelineItemType {

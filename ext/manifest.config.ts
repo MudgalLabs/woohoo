@@ -6,6 +6,7 @@ const isProd = process.env.NODE_ENV === "production";
 
 const hostPermissions = [
     "https://www.reddit.com/*",
+    "https://www.linkedin.com/*",
     "https://woohoo.to/*",
     ...(isProd ? [] : ["http://localhost:3000/*"]),
 ];
@@ -66,18 +67,29 @@ export default defineManifest({
         default_popup: "src/popup/index.html",
     },
     background,
-    permissions: ["storage"],
+    // "activeTab" is granted only when the user clicks the extension icon
+    // (i.e. opens the popup), and gives the popup read access to the active
+    // tab's URL — which we use to show the platform-specific "How to use"
+    // help card. Not a broad permission, well-accepted by store review.
+    permissions: ["storage", "activeTab"],
     host_permissions: hostPermissions,
     content_scripts: [
         {
-            js: ["src/content/main.tsx"],
+            js: ["src/content/reddit/reddit.tsx"],
             matches: ["https://www.reddit.com/*"],
+        },
+        {
+            js: ["src/content/linkedin/linkedin.tsx"],
+            matches: ["https://www.linkedin.com/*"],
         },
     ],
     web_accessible_resources: [
         {
             resources: ["public/logo.png", "assets/*"],
-            matches: ["https://www.reddit.com/*"],
+            matches: [
+                "https://www.reddit.com/*",
+                "https://www.linkedin.com/*",
+            ],
         },
     ],
     externally_connectable: {

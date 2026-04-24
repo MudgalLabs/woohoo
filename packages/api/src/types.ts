@@ -21,6 +21,10 @@ export interface RedditMessage {
 export interface SaveItemPayload {
     platform: string;
     peerId: string;
+    // Human-readable display name for the peer. For Reddit it's redundant
+    // with peerId (username == name). For LinkedIn the peerId is an opaque
+    // URN, so peerName is how the UI shows "Alex Morgan" on cards.
+    peerName?: string;
     chatUrl?: string;
     followUpAt?: string;
     // Reddit-only: nearest-first ancestor comment ids. The backend only
