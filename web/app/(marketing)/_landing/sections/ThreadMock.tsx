@@ -38,6 +38,7 @@ import { DemoFollowUpChip } from "../demo/DemoFollowUpChip";
 interface ThreadMockWoohoo {
     platform: "reddit";
     peerId: string;
+    peerName?: string | null;
     followUpAt: Date;
     lastInteractionAt: Date;
 }
@@ -74,8 +75,16 @@ export function ThreadMock({
     dms: threadDms,
     comments: threadComments,
 }: ThreadMockProps) {
-    const handle = peerHandle(threadWoohoo.platform, threadWoohoo.peerId);
-    const initial = peerInitial(threadWoohoo.platform, threadWoohoo.peerId);
+    const handle = peerHandle(
+        threadWoohoo.platform,
+        threadWoohoo.peerId,
+        threadWoohoo.peerName,
+    );
+    const initial = peerInitial(
+        threadWoohoo.platform,
+        threadWoohoo.peerId,
+        threadWoohoo.peerName,
+    );
     const profileUrl = peerProfileUrl(
         threadWoohoo.platform,
         threadWoohoo.peerId,

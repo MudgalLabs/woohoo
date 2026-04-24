@@ -33,7 +33,7 @@ export function DemoWoohooCard({
             : latestItem.contentText
         : null;
 
-    const handle = peerHandle(woohoo.platform, woohoo.peerId);
+    const handle = peerHandle(woohoo.platform, woohoo.peerId, woohoo.peerName);
     const isOverdue = variant === "overdue";
     const label = counts ? countsLabel(counts) : null;
 
@@ -47,7 +47,11 @@ export function DemoWoohooCard({
             <div className="flex items-start gap-3">
                 <Avatar className="h-9 w-9 mt-0.5">
                     <AvatarFallback className="text-xs font-medium text-muted-foreground">
-                        {peerInitial(woohoo.platform, woohoo.peerId)}
+                        {peerInitial(
+                            woohoo.platform,
+                            woohoo.peerId,
+                            woohoo.peerName,
+                        )}
                     </AvatarFallback>
                 </Avatar>
 

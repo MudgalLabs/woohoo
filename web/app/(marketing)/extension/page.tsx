@@ -6,10 +6,12 @@ function BrowserCard({
     icon,
     browser,
     href,
+    comingSoon,
 }: {
     icon: React.ReactNode;
     browser: string;
-    href: string;
+    href?: string;
+    comingSoon?: boolean;
 }) {
     return (
         <div className="flex flex-col items-center gap-4 rounded-xl border border-border bg-card p-8 w-56 hover:shadow-sm transition">
@@ -17,12 +19,24 @@ function BrowserCard({
             <span className="text-sm font-medium text-foreground">
                 {browser}
             </span>
-            <a
-                href={href}
-                className="text-sm font-medium text-primary-foreground bg-primary px-4 py-1.5 rounded-md hover:opacity-90 transition-opacity"
-            >
-                Add to {browser}
-            </a>
+            {comingSoon ? (
+                <button
+                    type="button"
+                    disabled
+                    className="text-sm font-medium text-muted-foreground bg-muted px-4 py-1.5 rounded-md cursor-not-allowed"
+                >
+                    Coming soon
+                </button>
+            ) : (
+                <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-medium text-primary-foreground bg-primary px-4 py-1.5 rounded-md hover:opacity-90 transition-opacity"
+                >
+                    Add to {browser}
+                </a>
+            )}
         </div>
     );
 }
@@ -41,11 +55,15 @@ export default function ExtensionPage() {
             </p>
 
             <div className="flex gap-6 flex-wrap justify-center">
-                <BrowserCard icon={<ChromeIcon />} browser="Chrome" href="#" />
+                <BrowserCard
+                    icon={<ChromeIcon />}
+                    browser="Chrome"
+                    href="https://chromewebstore.google.com/detail/woohoo/ajbhmciagbhndmfijmolmjfekajoegkp"
+                />
                 <BrowserCard
                     icon={<FirefoxIcon />}
                     browser="Firefox"
-                    href="#"
+                    comingSoon
                 />
             </div>
         </div>
