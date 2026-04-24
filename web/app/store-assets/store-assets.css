@@ -1,0 +1,1005 @@
+/* =============================================================
+   Chrome Web Store screenshot frames.
+   Each .sa-frame is exactly 1280×800. Screenshot with DevTools
+   "Capture node screenshot" on each frame (Cmd+Shift+P → "Capture").
+   ============================================================= */
+
+.sa-root {
+    min-height: 100vh;
+    background: #2a211a;
+    padding: 48px 24px 96px;
+}
+
+.sa-instructions {
+    max-width: 1280px;
+    margin: 0 auto 32px;
+    padding: 20px 24px;
+    background: #f5efe4;
+    border-radius: 12px;
+    color: #1a1512;
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+}
+.sa-instructions h1 {
+    margin: 0 0 8px;
+    font-family: "Instrument Serif", serif;
+    font-size: 28px;
+    font-weight: 400;
+}
+.sa-instructions code {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    background: #ede4d3;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.sa-frame-wrap {
+    max-width: 1280px;
+    margin: 0 auto 40px;
+}
+
+.sa-frame-label {
+    color: #ede4d3;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    opacity: 0.7;
+}
+
+.sa-frame {
+    width: 1280px;
+    height: 800px;
+    background: #f5efe4;
+    background-image:
+        radial-gradient(
+            900px 500px at 8% -10%,
+            rgba(229, 70, 59, 0.08),
+            transparent 60%
+        ),
+        radial-gradient(
+            700px 400px at 100% 5%,
+            rgba(246, 212, 91, 0.12),
+            transparent 60%
+        );
+    position: relative;
+    overflow: hidden;
+    font-family: "IBM Plex Sans", sans-serif;
+    color: #1a1512;
+    display: flex;
+    align-items: center;
+}
+
+.sa-inner {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 48px;
+    padding: 0 72px;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+}
+
+.sa-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    max-width: 540px;
+}
+
+.sa-wordmark {
+    font-family: "Fredoka", sans-serif;
+    font-weight: 500;
+    font-size: 22px;
+    color: #e5463b;
+    letter-spacing: -0.01em;
+    margin-bottom: 0;
+    line-height: 1;
+}
+
+.sa-eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #6e6155;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sa-eyebrow .dot {
+    color: #e5463b;
+    font-size: 10px;
+    line-height: 1;
+}
+
+.sa-headline {
+    font-family: "Instrument Serif", serif;
+    font-weight: 400;
+    font-size: 68px;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    color: #1a1512;
+    margin: 0;
+}
+.sa-headline .accent {
+    font-style: italic;
+    color: #e5463b;
+}
+
+.sa-sub {
+    font-size: 19px;
+    line-height: 1.5;
+    color: #3c332b;
+    margin: 0;
+}
+.sa-sub b {
+    font-weight: 600;
+    color: #1a1512;
+}
+.sa-mark {
+    background: linear-gradient(180deg, transparent 60%, #f6d45b 60%);
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+/* ---- Hero CTAs (static, for Frame 1) ---- */
+.sa-cta-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.sa-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    font-family: "IBM Plex Sans", sans-serif;
+    line-height: 1;
+}
+.sa-btn-primary {
+    background: #e5463b;
+    color: #ffffff;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+.sa-btn-ghost {
+    background: #fbf7ee;
+    color: #1a1512;
+    border-color: #bdae93;
+}
+.sa-note {
+    font-size: 13px;
+    color: #6e6155;
+    margin-top: 2px;
+}
+
+/* ---- Surface badges ("IN YOUR REDDIT TAB" / "IN WOOHOO") ---- */
+.sa-surface {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 3px 11px 3px 3px;
+    margin-bottom: 10px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #ffffff;
+    border-radius: 999px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+    align-self: flex-start;
+}
+.sa-surface--reddit {
+    background: #ff4500;
+}
+.sa-surface--woohoo {
+    background: #e5463b;
+}
+.sa-surface__mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: #ffffff;
+    line-height: 1;
+}
+.sa-surface--woohoo .sa-surface__mark {
+    color: #e5463b;
+    font-family: "Fredoka", sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.sa-stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    position: relative;
+    padding: 24px 0;
+}
+.sa-stage-col {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: 520px;
+    position: relative;
+}
+
+/* ---- Reddit DM mock (frame 1) ---- */
+.sa-reddit-card {
+    position: relative;
+    background: #fbf7ee;
+    border: 1px solid #d9cdb8;
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow:
+        0 4px 0 rgba(0, 0, 0, 0.04),
+        0 24px 60px -20px rgba(20, 14, 8, 0.22);
+}
+.sa-reddit {
+    background: #ffffff;
+    border: 1px solid #d9cdb8;
+    border-radius: 14px;
+    padding: 16px 18px 52px;
+    position: relative;
+}
+.sa-reddit-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: #6e6155;
+    margin-bottom: 10px;
+}
+.sa-reddit-top .sub {
+    color: #1a1512;
+    font-weight: 700;
+}
+.sa-reddit-msg {
+    color: #1a1512;
+    font-size: 15px;
+    line-height: 1.5;
+}
+.sa-reddit-msg .highlight {
+    background: linear-gradient(180deg, transparent 62%, #f6d45b 62%);
+}
+
+.sa-save-btn {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(229, 70, 59, 0.12);
+    color: #e5463b;
+    border: 1px solid rgba(229, 70, 59, 0.3);
+    border-radius: 8px;
+    z-index: 1;
+}
+.sa-save-btn::before {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 10px;
+    background: #e5463b;
+    opacity: 0.28;
+    animation: sa-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+    z-index: -1;
+}
+@keyframes sa-ping {
+    0% {
+        transform: scale(1);
+        opacity: 0.35;
+    }
+    75%,
+    100% {
+        transform: scale(1.6);
+        opacity: 0;
+    }
+}
+
+/* Handwritten hint under the card, with a curly arrow pointing at the
+   bookmark. Uses the same SVG path as the landing HeroDemo. */
+.sa-hint {
+    position: absolute;
+    right: 28px;
+    bottom: -54px;
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    pointer-events: none;
+    color: #1a1512;
+    line-height: 1;
+}
+.sa-hint .hand {
+    font-family: "Caveat", cursive;
+    font-weight: 500;
+    font-size: 24px;
+    white-space: nowrap;
+    transform: translateY(-6px);
+}
+.sa-hint-arrow {
+    width: 42px;
+    height: 54px;
+    flex-shrink: 0;
+    color: #1a1512;
+    /* Original SVG has arrow head at top-left. Flip horizontally so the
+       head ends up at top-right, pointing up toward the bookmark button. */
+    transform: scaleX(-1);
+}
+
+.sa-caption {
+    margin-top: 60px;
+    text-align: center;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: #6e6155;
+    letter-spacing: 0.04em;
+}
+
+/* ---- Save modal mock (frame 2) ---- */
+.sa-modal-stack {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+}
+.sa-reddit-thread {
+    background: #ffffff;
+    border: 1px solid #d9cdb8;
+    border-radius: 14px;
+    padding: 20px 22px;
+    width: 100%;
+    box-shadow:
+        0 4px 0 rgba(0, 0, 0, 0.04),
+        0 24px 60px -20px rgba(20, 14, 8, 0.22);
+}
+.sa-reddit-thread .comment-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: #6e6155;
+    margin-bottom: 6px;
+}
+.sa-reddit-thread .comment-meta .sub {
+    color: #1a1512;
+    font-weight: 700;
+}
+.sa-reddit-thread .comment-body {
+    color: #1a1512;
+    font-size: 15px;
+    line-height: 1.55;
+    margin: 0 0 12px;
+}
+.sa-reddit-thread .comment-body .highlight {
+    background: linear-gradient(180deg, transparent 62%, #f6d45b 62%);
+}
+.sa-reddit-thread .comment-footer {
+    display: flex;
+    gap: 14px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: #6e6155;
+    padding-top: 10px;
+    border-top: 1px solid #ede4d3;
+}
+
+.sa-save-modal {
+    position: absolute;
+    right: -20px;
+    top: 82px;
+    width: 320px;
+    background: #f5efe4;
+    border: 1px solid #d9cdb8;
+    border-radius: 14px;
+    box-shadow: 0 24px 60px -20px rgba(20, 14, 8, 0.38);
+    padding: 16px 18px 14px;
+}
+.sa-save-modal h4 {
+    margin: 0 0 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1512;
+}
+.sa-save-modal blockquote {
+    margin: 0 0 10px;
+    padding: 0 0 0 12px;
+    border-left: 2px solid #d9cdb8;
+    font-size: 13px;
+    font-style: italic;
+    color: #3c332b;
+    line-height: 1.45;
+}
+.sa-save-modal .saving-to {
+    font-size: 12px;
+    color: #6e6155;
+    margin: 10px 0 14px;
+}
+.sa-save-modal .saving-to b {
+    color: #1a1512;
+    font-weight: 600;
+}
+.sa-save-modal .fu-label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6e6155;
+    margin-bottom: 6px;
+}
+.sa-save-modal .fu-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 9px 11px;
+    background: #fbf7ee;
+    border: 1px solid #d9cdb8;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #1a1512;
+    margin-bottom: 12px;
+}
+.sa-save-modal .save-cta {
+    width: 100%;
+    padding: 10px 12px;
+    background: #e5463b;
+    color: #ffffff;
+    border: 0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+/* ---- Dashboard mock (frame 4) ---- */
+.sa-dash {
+    width: 100%;
+    max-width: 520px;
+    background: #fbf7ee;
+    border: 1px solid #d9cdb8;
+    border-radius: 20px;
+    box-shadow:
+        0 4px 0 rgba(0, 0, 0, 0.04),
+        0 24px 60px -20px rgba(20, 14, 8, 0.22);
+    padding: 24px;
+}
+.sa-dash-section {
+    margin-bottom: 20px;
+}
+.sa-dash-section:last-child {
+    margin-bottom: 0;
+}
+.sa-dash-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.sa-dash-head h4 {
+    margin: 0;
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1512;
+}
+.sa-dash-head .count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #ede4d3;
+    color: #1a1512;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 500;
+}
+.sa-dash-head .count.overdue {
+    background: rgba(229, 70, 59, 0.15);
+    color: #e5463b;
+}
+.sa-dash-sub {
+    font-size: 11px;
+    color: #6e6155;
+    margin: -6px 0 10px;
+}
+
+.sa-dash-card {
+    display: flex;
+    gap: 12px;
+    padding: 14px;
+    background: #f5efe4;
+    border: 1px solid #d9cdb8;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+.sa-dash-card:last-child {
+    margin-bottom: 0;
+}
+.sa-dash-card.overdue {
+    border-left: 3px solid #e5463b;
+}
+.sa-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #ede4d3;
+    color: #6e6155;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 500;
+    flex: 0 0 auto;
+}
+.sa-dash-card .body {
+    flex: 1;
+    min-width: 0;
+}
+.sa-dash-card .head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+.sa-dash-card .handle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1512;
+}
+.sa-dash-card .fu {
+    font-size: 11px;
+    font-weight: 500;
+    color: #e5463b;
+    white-space: nowrap;
+}
+.sa-dash-card .preview {
+    font-size: 12px;
+    font-style: italic;
+    color: #6e6155;
+    margin: 2px 0 6px;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.sa-dash-card .meta {
+    font-size: 11px;
+    color: #6e6155;
+    font-family: "JetBrains Mono", monospace;
+}
+
+/* ---- Woohoo detail mock (frame 3) ---- */
+.sa-thread {
+    width: 100%;
+    max-width: 520px;
+    background: #fbf7ee;
+    border: 1px solid #d9cdb8;
+    border-radius: 20px;
+    box-shadow:
+        0 4px 0 rgba(0, 0, 0, 0.04),
+        0 24px 60px -20px rgba(20, 14, 8, 0.22);
+    padding: 22px;
+}
+.sa-thread-head {
+    display: flex;
+    gap: 14px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #ede4d3;
+    margin-bottom: 14px;
+}
+.sa-thread-head .avatar-lg {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #ede4d3;
+    color: #6e6155;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 500;
+    flex: 0 0 auto;
+}
+.sa-thread-head .peer-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 22px;
+    font-weight: 600;
+    color: #1a1512;
+    margin-bottom: 2px;
+    line-height: 1.2;
+}
+.sa-thread-head .meta-row {
+    font-size: 11px;
+    color: #6e6155;
+    font-family: "JetBrains Mono", monospace;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.sa-thread-head .meta-row .open-chat {
+    color: #e5463b;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.sa-fu-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    background: rgba(229, 70, 59, 0.1);
+    color: #e5463b;
+    border: 1px solid rgba(229, 70, 59, 0.25);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+}
+.sa-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 3px;
+    background: #ede4d3;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    width: fit-content;
+}
+.sa-tabs .tab {
+    padding: 5px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6e6155;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.sa-tabs .tab.active {
+    background: #fbf7ee;
+    color: #1a1512;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.sa-tabs .tab .count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #ede4d3;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+}
+.sa-tabs .tab.active .count {
+    background: #ede4d3;
+}
+
+.sa-day-divider {
+    text-align: center;
+    font-size: 11px;
+    color: #6e6155;
+    font-family: "JetBrains Mono", monospace;
+    padding: 6px 0 4px;
+}
+.sa-bubble-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    max-width: 72%;
+}
+.sa-bubble-row.peer {
+    align-items: flex-start;
+    margin-right: auto;
+}
+.sa-bubble-row.you {
+    align-items: flex-end;
+    margin-left: auto;
+}
+.sa-bubble {
+    padding: 8px 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+.sa-bubble-row.peer .sa-bubble {
+    background: #ede4d3;
+    color: #1a1512;
+    border-bottom-left-radius: 4px;
+}
+.sa-bubble-row.you .sa-bubble {
+    background: #e5463b;
+    color: #ffffff;
+    border-bottom-right-radius: 4px;
+}
+.sa-bubble-time {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    color: #6e6155;
+    margin-top: 3px;
+    padding: 0 4px;
+}
+
+/* ---- Reminders (frame 5) ---- */
+.sa-reminders {
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.sa-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: #ffffff;
+    border: 1px solid #d9cdb8;
+    border-radius: 999px;
+    box-shadow:
+        0 1px 0 rgba(0, 0, 0, 0.04),
+        0 8px 20px -10px rgba(20, 14, 8, 0.18);
+    width: 100%;
+}
+.sa-toolbar .url-pill {
+    flex: 1;
+    min-width: 220px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: #f5efe4;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: #6e6155;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.sa-toolbar .ext-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #ede4d3;
+    flex: 0 0 auto;
+}
+.sa-toolbar .ext-icon.woohoo {
+    position: relative;
+    background: #e5463b;
+    color: #ffffff;
+    font-family: "Fredoka", sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.sa-toolbar .ext-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: #1a1512;
+    color: #ffffff;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    border: 2px solid #ffffff;
+}
+.sa-toolbar-caption {
+    margin-top: 4px;
+    padding-right: 20px;
+    font-family: "Caveat", cursive;
+    font-size: 18px;
+    color: #6e6155;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.sa-bell {
+    background: #fbf7ee;
+    border: 1px solid #d9cdb8;
+    border-radius: 14px;
+    box-shadow:
+        0 4px 0 rgba(0, 0, 0, 0.04),
+        0 24px 60px -20px rgba(20, 14, 8, 0.22);
+    overflow: hidden;
+}
+.sa-bell-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid #ede4d3;
+}
+.sa-bell-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1512;
+}
+.sa-bell-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #6e6155;
+}
+.sa-bell-item {
+    display: flex;
+    gap: 10px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #ede4d3;
+}
+.sa-bell-item:last-child {
+    border-bottom: 0;
+}
+.sa-bell-item.unread {
+    background: #f5efe4;
+}
+.sa-bell-item .dot {
+    width: 6px;
+    height: 6px;
+    margin-top: 6px;
+    border-radius: 999px;
+    background: #e5463b;
+    flex: 0 0 auto;
+}
+.sa-bell-item .dot.empty {
+    background: transparent;
+}
+.sa-bell-item .body {
+    min-width: 0;
+    flex: 1;
+}
+.sa-bell-item .title {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: #1a1512;
+    line-height: 1.3;
+}
+.sa-bell-item .sub {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: #6e6155;
+    line-height: 1.35;
+}
+.sa-bell-item .time {
+    margin: 6px 0 0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    color: #6e6155;
+}
+
+.sa-email {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #ffffff;
+    border: 1px solid #d9cdb8;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px -6px rgba(20, 14, 8, 0.12);
+    font-size: 12px;
+    color: #3c332b;
+    min-width: 0;
+}
+.sa-email .sender {
+    font-weight: 600;
+    color: #1a1512;
+    flex: 0 0 auto;
+}
+.sa-email .subject {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #1a1512;
+}
+.sa-email .subject b {
+    font-weight: 500;
+}
+.sa-email .subject .preview {
+    color: #6e6155;
+}
+.sa-email .time {
+    flex: 0 0 auto;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    color: #6e6155;
+}
+.sa-email .pro-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    background: #f6d45b;
+    color: #1a1512;
+    border-radius: 999px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    flex: 0 0 auto;
+}
+
+/* ---- Promo tile (440×280) ---- */
+.sa-tile {
+    width: 440px;
+    height: 280px;
+    background: #f5efe4;
+    background-image: radial-gradient(
+        600px 400px at 50% 40%,
+        rgba(246, 212, 91, 0.15),
+        transparent 60%
+    );
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: "IBM Plex Sans", sans-serif;
+    position: relative;
+}
+.sa-tile .wordmark {
+    font-family: "Fredoka", sans-serif;
+    font-weight: 500;
+    font-size: 88px;
+    color: #e5463b;
+    letter-spacing: -0.02em;
+    line-height: 1;
+}
+.sa-tile .tagline {
+    margin-top: 14px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #6e6155;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sa-tile .tagline .dot {
+    color: #e5463b;
+}
